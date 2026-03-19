@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/db";
-import { createMeal, deleteMeal } from "@/app/actions/meals";
+import { createMeal, updateMeal, deleteMeal } from "@/app/actions/meals";
 
 export default async function MealsPage() {
   const meals = await prisma.meal.findMany({
@@ -42,27 +42,52 @@ export default async function MealsPage() {
       ) : (
         <ul className="space-y-2">
           {meals.map((m) => (
-            <li
-              key={m.id}
-              className="bg-white rounded-lg border border-gray-200 px-4 py-3 flex justify-between items-start"
-            >
-              <div>
-                <p className="font-medium">{m.name}</p>
-                <p className="text-xs text-gray-400">
-                  {m._count.dinners} dinner{m._count.dinners !== 1 ? "s" : ""}
-                </p>
-                {m.notes && <p className="text-xs text-gray-400 mt-0.5">{m.notes}</p>}
+            <li key={m.id} className="bg-white rounded-lg border border-gray-200 px-4 py-3 space-y-3">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="font-medium">{m.name}</p>
+                  <p className="text-xs text-gray-400">
+                    {m._count.dinners} dinner{m._count.dinners !== 1 ? "s" : ""}
+                  </p>
+                  {m.notes && <p className="text-xs text-gray-400 mt-0.5">{m.notes}</p>}
+                </div>
+                <form
+                  action={async () => {
+                    "use server";
+                    await deleteMeal(m.id);
+                  }}
+                >
+                  <button type="submit" className="text-xs text-red-400 hover:text-red-600">
+                    Delete
+                  </button>
+                </form>
               </div>
-              <form
-                action={async () => {
-                  "use server";
-                  await deleteMeal(m.id);
-                }}
-              >
-                <button type="submit" className="text-xs text-red-400 hover:text-red-600">
-                  Delete
-                </button>
-              </form>
+              <details>
+                <summary className="cursor-pointer text-xs text-indigo-500 hover:text-indigo-700">Edit</summary>
+                <form action={updateMeal} className="mt-2 space-y-2">
+                  <input type="hidden" name="id" value={m.id} />
+                  <input
+                    name="name"
+                    required
+                    defaultValue={m.name}
+                    placeholder="Name *"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  />
+                  <textarea
+                    name="notes"
+                    defaultValue={m.notes ?? ""}
+                    placeholder="Notes"
+                    rows={2}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  />
+                  <button
+                    type="submit"
+                    className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
+                  >
+                    Save
+                  </button>
+                </form>
+              </details>
             </li>
           ))}
         </ul>

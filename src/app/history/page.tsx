@@ -45,12 +45,20 @@ export default async function HistoryPage({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Dinner history</h1>
-        <Link
-          href="/add"
-          className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
-        >
-          + Add dinner
-        </Link>
+        <form method="get" action="/add" className="flex items-center gap-2">
+          <input
+            type="date"
+            name="date"
+            defaultValue={new Date().toISOString().split("T")[0]}
+            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          />
+          <button
+            type="submit"
+            className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
+          >
+            + Add
+          </button>
+        </form>
       </div>
 
       {dinners.length === 0 ? (
@@ -69,13 +77,16 @@ export default async function HistoryPage({
                 <p className="text-xs text-gray-400">
                   {formatDate(dinner.date)} · {dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
                 </p>
+                {(dinner.restaurant?.notes ?? dinner.meal?.notes) && (
+                  <p className="text-xs text-gray-400 mt-0.5">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
+                )}
                 {dinner.notes && (
                   <p className="text-xs text-gray-400 mt-0.5">{dinner.notes}</p>
                 )}
               </div>
               <div className="flex gap-3 items-center">
                 <Link
-                  href={`/add?date=${toDateStr(dinner.date)}`}
+                  href={`/add?id=${dinner.id}`}
                   className="text-xs text-indigo-600 hover:underline"
                 >
                   Edit

@@ -6,41 +6,49 @@ import { AddDinnerForm } from "./AddDinnerForm";
 export default async function AddPage({
   searchParams,
 }: {
-  searchParams: Promise<{ date?: string; type?: string; suggestedId?: string }>;
+  searchParams: Promise<{ id?: string; date?: string; type?: string; suggestedId?: string }>;
 }) {
-  const { date, type, suggestedId } = await searchParams;
+  const { id, date, type, suggestedId } = await searchParams;
 
   const todayStr = new Date().toISOString().split("T")[0];
-  const resolvedDate = date ?? todayStr;
 
-  const [restaurants, meals, existing] = await Promise.all([
+  const [restaurants, meals] = await Promise.all([
     prisma.restaurant.findMany({ orderBy: { name: "asc" } }),
     prisma.meal.findMany({ orderBy: { name: "asc" } }),
-    prisma.dinner.findFirst({
-      where: { date: new Date(resolvedDate + "T00:00:00.000Z") },
-      include: { restaurant: true, meal: true },
-    }),
   ]);
 
-  const initialType =
-    (type as "RESTAURANT" | "HOMECOOKED") ??
-    existing?.type ??
-    "RESTAURANT";
+  // Edit mode: existing dinner by id
+  if (id) {
+    const dinner = await prisma.dinner.findUnique({ where: { id } });
+    const resolvedDate = dinner ? dinner.date.toISOString().split("T")[0] : todayStr;
+    const initialType = (type as "RESTAURANT" | "HOMECOOKED") ?? dinner?.type ?? "RESTAURANT";
+    const initialSelectedId = suggestedId ?? dinner?.restaurantId ?? dinner?.mealId ?? null;
 
-  const initialSelectedId =
-    suggestedId ??
-    existing?.restaurantId ??
-    existing?.mealId ??
-    null;
+    return (
+      <AddDinnerForm
+        date={resolvedDate}
+        dinnerId={id}
+        restaurants={restaurants}
+        meals={meals}
+        initialType={initialType}
+        initialSelectedId={initialSelectedId}
+        existingNotes={dinner?.notes ?? null}
+      />
+    );
+  }
+
+  // Create mode: new dinner for a date
+  const resolvedDate = date ?? todayStr;
 
   return (
     <AddDinnerForm
       date={resolvedDate}
+      dinnerId={null}
       restaurants={restaurants}
       meals={meals}
-      initialType={initialType}
-      initialSelectedId={initialSelectedId}
-      existingNotes={existing?.notes ?? null}
+      initialType={(type as "RESTAURANT" | "HOMECOOKED") ?? "RESTAURANT"}
+      initialSelectedId={suggestedId ?? null}
+      existingNotes={null}
     />
   );
 }
