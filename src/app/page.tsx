@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/db";
-import { pickAndRedirect } from "@/app/actions/dinners";
+import { pickAndRedirect, deleteDinner } from "@/app/actions/dinners";
 import { SubmitButton } from "@/components/SubmitButton";
 import { LoadingLink } from "@/components/LoadingLink";
 
@@ -108,13 +108,17 @@ export default async function Home({
                     <p className="text-sm text-gray-500 mt-1">{dinner.notes}</p>
                   )}
                 </div>
-                <LoadingLink
-                  href={`/add?id=${dinner.id}`}
-                  className="text-sm text-indigo-600 hover:underline shrink-0 ml-4"
-                >
-                  Edit
-                </LoadingLink>
-
+                <div className="flex gap-3 items-center shrink-0 ml-4">
+                  <LoadingLink
+                    href={`/add?id=${dinner.id}`}
+                    className="text-sm text-indigo-600 hover:underline"
+                  >
+                    Edit
+                  </LoadingLink>
+                  <form action={async () => { "use server"; await deleteDinner(dinner.id); }}>
+                    <SubmitButton className="text-sm text-red-400 hover:text-red-600">Delete</SubmitButton>
+                  </form>
+                </div>
               </div>
             ))}
             <div className="flex gap-3 pt-1 border-t border-gray-100">
