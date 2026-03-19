@@ -32,7 +32,16 @@ export default async function Home() {
 
   const todayStr = toDateStr(today);
   const todayDinner = recentDinners.find((d) => toDateStr(d.date) === todayStr);
-  const pastDinners = recentDinners.filter((d) => toDateStr(d.date) !== todayStr);
+
+  // Build last 7 days (excluding today), most recent first
+  const pastDays = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today);
+    d.setUTCDate(d.getUTCDate() - (i + 1));
+    return d;
+  });
+  const dinnerByDate = Object.fromEntries(
+    recentDinners.map((d) => [toDateStr(d.date), d])
+  );
 
   return (
     <div className="space-y-6">
@@ -86,33 +95,47 @@ export default async function Home() {
       {/* Recent */}
       <section>
         <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">Last 7 nights</h2>
-        {pastDinners.length === 0 ? (
-          <p className="text-gray-400 text-sm">No dinners recorded yet.</p>
-        ) : (
-          <ul className="space-y-2">
-            {pastDinners.map((dinner) => (
+        <ul className="space-y-2">
+          {pastDays.map((day) => {
+            const dateStr = toDateStr(day);
+            const dinner = dinnerByDate[dateStr];
+            return (
               <li
-                key={dinner.id}
+                key={dateStr}
                 className="bg-white rounded-lg border border-gray-200 px-4 py-3 flex justify-between items-center"
               >
-                <div>
-                  <p className="font-medium">
-                    {dinner.restaurant?.name ?? dinner.meal?.name}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    {formatDate(dinner.date)} · {dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
-                  </p>
-                </div>
-                <Link
-                  href={`/add?date=${toDateStr(dinner.date)}`}
-                  className="text-xs text-gray-400 hover:text-indigo-600"
-                >
-                  Edit
-                </Link>
+                {dinner ? (
+                  <>
+                    <div>
+                      <p className="font-medium">
+                        {dinner.restaurant?.name ?? dinner.meal?.name}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {formatDate(day)} · {dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
+                      </p>
+                    </div>
+                    <Link
+                      href={`/add?date=${dateStr}`}
+                      className="text-xs text-gray-400 hover:text-indigo-600"
+                    >
+                      Edit
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm text-gray-400">{formatDate(day)}</p>
+                    <Link
+                      href={`/add?date=${dateStr}`}
+                      className="text-xs text-indigo-500 hover:text-indigo-700"
+                    >
+                      Add
+                    </Link>
+                  </>
+                )}
               </li>
-            ))}
-          </ul>
-        )}
+            );
+          })}
+        </ul>
       </section>
     </div>
   );

@@ -45,12 +45,20 @@ export default async function HistoryPage({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Dinner history</h1>
-        <Link
-          href="/add"
-          className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
-        >
-          + Add dinner
-        </Link>
+        <form method="get" action="/add" className="flex items-center gap-2">
+          <input
+            type="date"
+            name="date"
+            defaultValue={new Date().toISOString().split("T")[0]}
+            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          />
+          <button
+            type="submit"
+            className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
+          >
+            + Add
+          </button>
+        </form>
       </div>
 
       {dinners.length === 0 ? (
