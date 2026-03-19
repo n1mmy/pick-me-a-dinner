@@ -137,6 +137,7 @@ export function AddDinnerForm({
           className="mt-3 space-y-2"
         >
           <input type="hidden" name="returnDate" value={date} />
+          {dinnerId && <input type="hidden" name="returnDinnerId" value={dinnerId} />}
           <input
             name="name"
             required

@@ -23,14 +23,22 @@ export async function createRestaurant(formData: FormData) {
 export async function createRestaurantAndReturn(formData: FormData) {
   const name = (formData.get("name") as string).trim();
   const returnDate = formData.get("returnDate") as string;
+  const returnDinnerId = (formData.get("returnDinnerId") as string) || null;
   if (!name) return;
 
-  await prisma.restaurant.create({
-    data: { name },
+  const restaurant = await prisma.restaurant.create({
+    data: {
+      name,
+      orderUrl: (formData.get("orderUrl") as string)?.trim() || null,
+      phoneNumber: (formData.get("phoneNumber") as string)?.trim() || null,
+    },
   });
 
   revalidatePath("/restaurants");
-  redirect(`/add?date=${returnDate}&type=RESTAURANT`);
+  if (returnDinnerId) {
+    redirect(`/add?id=${returnDinnerId}&suggestedId=${restaurant.id}&type=RESTAURANT`);
+  }
+  redirect(`/add?date=${returnDate}&suggestedId=${restaurant.id}&type=RESTAURANT`);
 }
 
 export async function updateRestaurant(formData: FormData) {

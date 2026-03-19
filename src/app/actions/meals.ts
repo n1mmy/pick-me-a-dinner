@@ -21,14 +21,21 @@ export async function createMeal(formData: FormData) {
 export async function createMealAndReturn(formData: FormData) {
   const name = (formData.get("name") as string).trim();
   const returnDate = formData.get("returnDate") as string;
+  const returnDinnerId = (formData.get("returnDinnerId") as string) || null;
   if (!name) return;
 
-  await prisma.meal.create({
-    data: { name },
+  const meal = await prisma.meal.create({
+    data: {
+      name,
+      notes: (formData.get("notes") as string)?.trim() || null,
+    },
   });
 
   revalidatePath("/meals");
-  redirect(`/add?date=${returnDate}&type=HOMECOOKED`);
+  if (returnDinnerId) {
+    redirect(`/add?id=${returnDinnerId}&suggestedId=${meal.id}&type=HOMECOOKED`);
+  }
+  redirect(`/add?date=${returnDate}&suggestedId=${meal.id}&type=HOMECOOKED`);
 }
 
 export async function updateMeal(formData: FormData) {
