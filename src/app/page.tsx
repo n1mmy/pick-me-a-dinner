@@ -1,8 +1,9 @@
 export const dynamic = "force-dynamic";
 
-import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { pickAndRedirect } from "@/app/actions/dinners";
+import { SubmitButton } from "@/components/SubmitButton";
+import { LoadingLink } from "@/components/LoadingLink";
 
 function toDateStr(d: Date) {
   return d.toISOString().split("T")[0];
@@ -107,30 +108,28 @@ export default async function Home({
                     <p className="text-sm text-gray-500 mt-1">{dinner.notes}</p>
                   )}
                 </div>
-                <Link
+                <LoadingLink
                   href={`/add?id=${dinner.id}`}
                   className="text-sm text-indigo-600 hover:underline shrink-0 ml-4"
                 >
                   Edit
-                </Link>
+                </LoadingLink>
+
               </div>
             ))}
             <div className="flex gap-3 pt-1 border-t border-gray-100">
               <form action={pickAndRedirect}>
                 <input type="hidden" name="date" value={todayStr} />
-                <button
-                  type="submit"
-                  className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
-                >
+                <SubmitButton className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
                   Pick another
-                </button>
+                </SubmitButton>
               </form>
-              <Link
+              <LoadingLink
                 href={`/add?date=${todayStr}`}
                 className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50"
               >
                 Add another
-              </Link>
+              </LoadingLink>
             </div>
           </div>
         ) : (
@@ -141,7 +140,7 @@ export default async function Home({
               <ul className="space-y-2">
                 {suggestions.map((s) => (
                   <li key={s.id}>
-                    <Link
+                    <LoadingLink
                       href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
                       className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 hover:bg-gray-100 transition-colors"
                     >
@@ -158,18 +157,18 @@ export default async function Home({
                         )}
                       </div>
                       <span className="text-sm text-indigo-600 font-medium shrink-0 ml-4">Choose →</span>
-                    </Link>
+                    </LoadingLink>
                   </li>
                 ))}
               </ul>
             )}
             <div className="flex gap-3">
-              <Link
+              <LoadingLink
                 href={`/add?date=${todayStr}`}
                 className="text-sm text-gray-500 hover:text-gray-700"
               >
                 Choose myself →
-              </Link>
+              </LoadingLink>
             </div>
           </div>
         )}
@@ -189,12 +188,12 @@ export default async function Home({
               >
                 <div className="flex justify-between items-center">
                   <p className="text-xs text-gray-400 font-medium">{formatDate(day)}</p>
-                  <Link
+                  <LoadingLink
                     href={`/add?date=${dateStr}`}
                     className="text-xs text-indigo-500 hover:text-indigo-700"
                   >
                     + Add
-                  </Link>
+                  </LoadingLink>
                 </div>
                 {dinners.length === 0 ? (
                   <p className="text-sm text-gray-300">No dinner recorded</p>
@@ -215,12 +214,12 @@ export default async function Home({
                           <p className="text-xs text-gray-400 mt-0.5">{dinner.notes}</p>
                         )}
                       </div>
-                      <Link
+                      <LoadingLink
                         href={`/add?id=${dinner.id}`}
                         className="text-xs text-gray-400 hover:text-indigo-600 shrink-0 ml-4"
                       >
                         Edit
-                      </Link>
+                      </LoadingLink>
                     </div>
                   ))
                 )}
@@ -229,13 +228,13 @@ export default async function Home({
           })}
         </ul>
         <div className="pt-3 text-center">
-          <Link
+          <LoadingLink
             href={`/?days=${days + 14}`}
             scroll={false}
             className="text-sm text-gray-400 hover:text-gray-600"
           >
             Load more
-          </Link>
+          </LoadingLink>
         </div>
       </section>
     </div>
