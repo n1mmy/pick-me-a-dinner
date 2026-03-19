@@ -66,17 +66,26 @@ export default async function Home({
     }
   }
 
+  function tagAwareScore(id: string, tags: string[]): number {
+    const entityDays = lastUsed.get(id) ?? Infinity;
+    const tagMinDays = tags.length > 0
+      ? Math.min(...tags.map((tag) => tagLastUsed.get(tag) ?? Infinity))
+      : Infinity;
+    const base = Math.min(Math.min(entityDays, tagMinDays), 21);
+    return base + Math.random() * 3; // noise keeps similar scores randomised
+  }
+
   type TagWithRecency = { tag: string; daysSince: number | null };
-  type Suggestion = { type: "RESTAURANT" | "HOMECOOKED"; id: string; name: string; tagsWithRecency: TagWithRecency[]; orderUrl: string | null; phoneNumber: string | null; daysSinceLastOrder: number | null; score: number; rand: number };
-  function pickTop<T extends { score: number; rand: number }>(options: T[], n: number) {
-    return [...options].sort((a, b) => b.score - a.score || a.rand - b.rand).slice(0, n);
+  type Suggestion = { type: "RESTAURANT" | "HOMECOOKED"; id: string; name: string; tagsWithRecency: TagWithRecency[]; orderUrl: string | null; phoneNumber: string | null; daysSinceLastOrder: number | null; score: number };
+  function pickTop<T extends { score: number }>(options: T[], n: number) {
+    return [...options].sort((a, b) => b.score - a.score).slice(0, n);
   }
   const restaurantSuggestions = pickTop(
-    restaurants.map((r) => ({ type: "RESTAURANT" as const, id: r.id, name: r.name, tagsWithRecency: r.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })), orderUrl: r.orderUrl, phoneNumber: r.phoneNumber, daysSinceLastOrder: lastUsed.get(r.id) ?? null, score: lastUsed.get(r.id) ?? 21, rand: Math.random() })),
+    restaurants.map((r) => ({ type: "RESTAURANT" as const, id: r.id, name: r.name, tagsWithRecency: r.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })), orderUrl: r.orderUrl, phoneNumber: r.phoneNumber, daysSinceLastOrder: lastUsed.get(r.id) ?? null, score: tagAwareScore(r.id, r.tags) })),
     3,
   );
   const mealSuggestions = pickTop(
-    meals.map((m) => ({ type: "HOMECOOKED" as const, id: m.id, name: m.name, tagsWithRecency: m.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })), orderUrl: null, phoneNumber: null, daysSinceLastOrder: lastUsed.get(m.id) ?? null, score: lastUsed.get(m.id) ?? 21, rand: Math.random() })),
+    meals.map((m) => ({ type: "HOMECOOKED" as const, id: m.id, name: m.name, tagsWithRecency: m.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })), orderUrl: null, phoneNumber: null, daysSinceLastOrder: lastUsed.get(m.id) ?? null, score: tagAwareScore(m.id, m.tags) })),
     2,
   );
 
