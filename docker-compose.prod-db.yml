@@ -1,0 +1,21 @@
+# Run the app locally against the production database.
+# Create a .env.prod file with DATABASE_URL=<prod-url>, then run:
+#   docker compose -f docker-compose.prod-db.yml up
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.prod
+    develop:
+      watch:
+        - action: rebuild
+          path: ./src
+        - action: rebuild
+          path: ./prisma
+        - action: rebuild
+          path: package.json
+        - action: rebuild
+          path: yarn.lock
