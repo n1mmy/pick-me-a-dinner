@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: dinner
+      POSTGRES_PASSWORD: dinner
+      POSTGRES_DB: pick-me-a-dinner
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://dinner:dinner@db:5432/pick-me-a-dinner?schema=public
+    depends_on:
+      - db
+    develop:
+      watch:
+        - action: rebuild
+          path: ./src
+        - action: rebuild
+          path: ./prisma
+        - action: rebuild
+          path: package.json
+        - action: rebuild
+          path: yarn.lock
+
+volumes:
+  pgdata:
