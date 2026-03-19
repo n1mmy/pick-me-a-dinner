@@ -129,15 +129,29 @@ export function AddDinnerForm({
         </summary>
         <form
           action={type === "RESTAURANT" ? createRestaurantAndReturn : createMealAndReturn}
-          className="mt-3 flex gap-2"
+          className="mt-3 space-y-2"
         >
           <input type="hidden" name="returnDate" value={date} />
           <input
             name="name"
             required
-            placeholder={`${type === "RESTAURANT" ? "Restaurant" : "Meal"} name`}
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            placeholder={`${type === "RESTAURANT" ? "Restaurant" : "Meal"} name *`}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
+          {type === "RESTAURANT" && (
+            <>
+              <input
+                name="phoneNumber"
+                placeholder="Phone number"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              />
+              <input
+                name="orderUrl"
+                placeholder="Order URL"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              />
+            </>
+          )}
           <button
             type="submit"
             className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-900"
