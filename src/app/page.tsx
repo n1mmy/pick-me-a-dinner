@@ -59,10 +59,10 @@ export default async function Home({
       lastUsed.set(key, daysSince);
     }
   }
-  type Suggestion = { type: "RESTAURANT" | "HOMECOOKED"; id: string; name: string; orderUrl: string | null; phoneNumber: string | null; score: number; rand: number };
+  type Suggestion = { type: "RESTAURANT" | "HOMECOOKED"; id: string; name: string; orderUrl: string | null; phoneNumber: string | null; daysSinceLastOrder: number | null; score: number; rand: number };
   const allOptions: Suggestion[] = [
-    ...restaurants.map((r) => ({ type: "RESTAURANT" as const, id: r.id, name: r.name, orderUrl: r.orderUrl, phoneNumber: r.phoneNumber, score: lastUsed.get(r.id) ?? 21, rand: Math.random() })),
-    ...meals.map((m) => ({ type: "HOMECOOKED" as const, id: m.id, name: m.name, orderUrl: null, phoneNumber: null, score: lastUsed.get(m.id) ?? 21, rand: Math.random() })),
+    ...restaurants.map((r) => ({ type: "RESTAURANT" as const, id: r.id, name: r.name, orderUrl: r.orderUrl, phoneNumber: r.phoneNumber, daysSinceLastOrder: lastUsed.get(r.id) ?? null, score: lastUsed.get(r.id) ?? 21, rand: Math.random() })),
+    ...meals.map((m) => ({ type: "HOMECOOKED" as const, id: m.id, name: m.name, orderUrl: null, phoneNumber: null, daysSinceLastOrder: lastUsed.get(m.id) ?? null, score: lastUsed.get(m.id) ?? 21, rand: Math.random() })),
   ];
   const suggestions = allOptions
     .sort((a, b) => b.score - a.score || a.rand - b.rand)
@@ -146,7 +146,16 @@ export default async function Home({
                     >
                       <div>
                         <p className="font-medium text-sm">{s.name}</p>
-                        <p className="text-xs text-gray-400">{s.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}</p>
+                        <p className="text-xs text-gray-400">
+                          {s.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
+                          {s.daysSinceLastOrder === null
+                            ? " · never ordered"
+                            : s.daysSinceLastOrder === 0
+                            ? " · last ordered today"
+                            : s.daysSinceLastOrder === 1
+                            ? " · last ordered yesterday"
+                            : ` · last ordered ${s.daysSinceLastOrder} days ago`}
+                        </p>
                         {s.orderUrl && (
                           <p className="text-xs text-indigo-500 mt-0.5">{s.orderUrl}</p>
                         )}
