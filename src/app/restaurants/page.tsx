@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/db";
 import { createRestaurant, updateRestaurant, deleteRestaurant } from "@/app/actions/restaurants";
+import { SubmitButton } from "@/components/SubmitButton";
 
 export default async function RestaurantsPage() {
   const restaurants = await prisma.restaurant.findMany({
@@ -40,12 +41,9 @@ export default async function RestaurantsPage() {
           rows={2}
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
         />
-        <button
-          type="submit"
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
-        >
+        <SubmitButton className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
           Add
-        </button>
+        </SubmitButton>
       </form>
 
       {/* List */}
@@ -83,9 +81,9 @@ export default async function RestaurantsPage() {
                       await deleteRestaurant(r.id);
                     }}
                   >
-                    <button type="submit" className="text-xs text-red-400 hover:text-red-600">
+                    <SubmitButton className="text-xs text-red-400 hover:text-red-600">
                       Delete
-                    </button>
+                    </SubmitButton>
                   </form>
                 </div>
               </div>
@@ -121,12 +119,9 @@ export default async function RestaurantsPage() {
                     rows={2}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   />
-                  <button
-                    type="submit"
-                    className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
-                  >
+                  <SubmitButton className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
                     Save
-                  </button>
+                  </SubmitButton>
                 </form>
               </details>
             </li>

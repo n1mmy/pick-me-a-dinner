@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createDinner, updateDinner } from "@/app/actions/dinners";
 import { createRestaurantAndReturn } from "@/app/actions/restaurants";
 import { createMealAndReturn } from "@/app/actions/meals";
+import { SubmitButton } from "@/components/SubmitButton";
 
 type Restaurant = { id: string; name: string };
 type Meal = { id: string; name: string };
@@ -118,13 +119,12 @@ export function AddDinnerForm({
           />
         </div>
 
-        <button
-          type="submit"
+        <SubmitButton
           disabled={options.length === 0}
           className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-40"
         >
           Save dinner
-        </button>
+        </SubmitButton>
       </form>
 
       {/* Inline create */}
@@ -158,12 +158,11 @@ export function AddDinnerForm({
               />
             </>
           )}
-          <button
-            type="submit"
+          <SubmitButton
             className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-900"
           >
             Add
-          </button>
+          </SubmitButton>
         </form>
       </details>
     </div>
