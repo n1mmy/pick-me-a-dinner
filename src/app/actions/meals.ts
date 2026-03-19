@@ -31,6 +31,22 @@ export async function createMealAndReturn(formData: FormData) {
   redirect(`/add?date=${returnDate}&type=HOMECOOKED`);
 }
 
+export async function updateMeal(formData: FormData) {
+  const id = formData.get("id") as string;
+  const name = (formData.get("name") as string).trim();
+  if (!name) return;
+
+  await prisma.meal.update({
+    where: { id },
+    data: {
+      name,
+      notes: (formData.get("notes") as string)?.trim() || null,
+    },
+  });
+
+  revalidatePath("/meals");
+}
+
 export async function deleteMeal(id: string) {
   await prisma.meal.delete({ where: { id } });
   revalidatePath("/meals");
