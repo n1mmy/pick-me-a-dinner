@@ -60,7 +60,9 @@ export default async function RestaurantsPage() {
                   <p className="font-medium">{r.name}</p>
                   <p className="text-xs text-gray-400">
                     {r._count.dinners} dinner{r._count.dinners !== 1 ? "s" : ""}
-                    {r.phoneNumber && ` · ${r.phoneNumber}`}
+                    {r.phoneNumber && (
+                      <> · <a href={`tel:${r.phoneNumber}`} className="hover:underline">{r.phoneNumber}</a></>
+                    )}
                   </p>
                   {r.orderUrl && (
                     <a
