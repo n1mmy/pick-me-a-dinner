@@ -31,7 +31,6 @@ export default async function RestaurantsPage() {
           <input
             name="orderUrl"
             placeholder="Order URL"
-            type="url"
             className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
         </div>
