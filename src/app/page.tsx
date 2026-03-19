@@ -31,11 +31,41 @@ export default async function Home({
   const since = new Date(today);
   since.setUTCDate(since.getUTCDate() - days);
 
-  const recentDinners = await prisma.dinner.findMany({
-    where: { date: { gte: since } },
-    include: { restaurant: true, meal: true },
-    orderBy: { date: "desc" },
-  });
+  const scoringSince = new Date(today);
+  scoringSince.setUTCDate(scoringSince.getUTCDate() - 21);
+
+  const [recentDinners, restaurants, meals, scoringDinners] = await Promise.all([
+    prisma.dinner.findMany({
+      where: { date: { gte: since } },
+      include: { restaurant: true, meal: true },
+      orderBy: { date: "desc" },
+    }),
+    prisma.restaurant.findMany({ orderBy: { name: "asc" } }),
+    prisma.meal.findMany({ orderBy: { name: "asc" } }),
+    prisma.dinner.findMany({
+      where: { date: { gte: scoringSince } },
+      orderBy: { date: "desc" },
+    }),
+  ]);
+
+  // Score options by days since last use (capped at 21), pick top 3
+  const now = Date.now();
+  const lastUsed = new Map<string, number>();
+  for (const dinner of scoringDinners) {
+    const key = (dinner.restaurantId ?? dinner.mealId)!;
+    const daysSince = Math.floor((now - dinner.date.getTime()) / 86_400_000);
+    if (!lastUsed.has(key) || lastUsed.get(key)! > daysSince) {
+      lastUsed.set(key, daysSince);
+    }
+  }
+  type Suggestion = { type: "RESTAURANT" | "HOMECOOKED"; id: string; name: string; orderUrl: string | null; phoneNumber: string | null; score: number; rand: number };
+  const allOptions: Suggestion[] = [
+    ...restaurants.map((r) => ({ type: "RESTAURANT" as const, id: r.id, name: r.name, orderUrl: r.orderUrl, phoneNumber: r.phoneNumber, score: lastUsed.get(r.id) ?? 21, rand: Math.random() })),
+    ...meals.map((m) => ({ type: "HOMECOOKED" as const, id: m.id, name: m.name, orderUrl: null, phoneNumber: null, score: lastUsed.get(m.id) ?? 21, rand: Math.random() })),
+  ];
+  const suggestions = allOptions
+    .sort((a, b) => b.score - a.score || a.rand - b.rand)
+    .slice(0, 3);
 
   const todayStr = toDateStr(today);
 
@@ -104,23 +134,41 @@ export default async function Home({
             </div>
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
-            <p className="text-gray-500">No dinner set for tonight yet.</p>
+          <div className="flex flex-col gap-4">
+            {suggestions.length === 0 ? (
+              <p className="text-gray-500">No dinner set for tonight yet.</p>
+            ) : (
+              <ul className="space-y-2">
+                {suggestions.map((s) => (
+                  <li key={s.id}>
+                    <Link
+                      href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
+                      className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 hover:bg-gray-100 transition-colors"
+                    >
+                      <div>
+                        <p className="font-medium text-sm">{s.name}</p>
+                        <p className="text-xs text-gray-400">{s.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}</p>
+                        {s.orderUrl && (
+                          <p className="text-xs text-indigo-500 mt-0.5">{s.orderUrl}</p>
+                        )}
+                        {s.phoneNumber && (
+                          <p className="text-xs text-gray-400 mt-0.5">
+                            <a href={`tel:${s.phoneNumber}`} className="hover:underline">{s.phoneNumber}</a>
+                          </p>
+                        )}
+                      </div>
+                      <span className="text-sm text-indigo-600 font-medium shrink-0 ml-4">Choose →</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
             <div className="flex gap-3">
-              <form action={pickAndRedirect}>
-                <input type="hidden" name="date" value={todayStr} />
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700"
-                >
-                  Pick for me
-                </button>
-              </form>
               <Link
                 href={`/add?date=${todayStr}`}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50"
+                className="text-sm text-gray-500 hover:text-gray-700"
               >
-                Choose myself
+                Choose myself →
               </Link>
             </div>
           </div>
