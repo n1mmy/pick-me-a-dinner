@@ -86,7 +86,7 @@ export default async function HistoryPage({
               </div>
               <div className="flex gap-3 items-center">
                 <Link
-                  href={`/add?date=${toDateStr(dinner.date)}`}
+                  href={`/add?id=${dinner.id}`}
                   className="text-xs text-indigo-600 hover:underline"
                 >
                   Edit

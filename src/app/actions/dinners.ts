@@ -5,25 +5,38 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { DinnerType } from "@/generated/prisma/enums";
 
-export async function createOrUpdateDinner(formData: FormData) {
+export async function createDinner(formData: FormData) {
   const date = formData.get("date") as string;
   const type = formData.get("type") as DinnerType;
   const restaurantId = (formData.get("restaurantId") as string) || null;
   const mealId = (formData.get("mealId") as string) || null;
   const notes = (formData.get("notes") as string)?.trim() || null;
 
-  const parsedDate = new Date(date + "T00:00:00.000Z");
-
-  await prisma.dinner.upsert({
-    where: { date: parsedDate },
-    create: {
-      date: parsedDate,
+  await prisma.dinner.create({
+    data: {
+      date: new Date(date + "T00:00:00.000Z"),
       type,
       restaurantId: type === "RESTAURANT" ? restaurantId : null,
       mealId: type === "HOMECOOKED" ? mealId : null,
       notes,
     },
-    update: {
+  });
+
+  revalidatePath("/");
+  revalidatePath("/history");
+  redirect("/");
+}
+
+export async function updateDinner(formData: FormData) {
+  const id = formData.get("id") as string;
+  const type = formData.get("type") as DinnerType;
+  const restaurantId = (formData.get("restaurantId") as string) || null;
+  const mealId = (formData.get("mealId") as string) || null;
+  const notes = (formData.get("notes") as string)?.trim() || null;
+
+  await prisma.dinner.update({
+    where: { id },
+    data: {
       type,
       restaurantId: type === "RESTAURANT" ? restaurantId : null,
       mealId: type === "HOMECOOKED" ? mealId : null,

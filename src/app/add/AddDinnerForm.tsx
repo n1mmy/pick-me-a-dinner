@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createOrUpdateDinner } from "@/app/actions/dinners";
+import { createDinner, updateDinner } from "@/app/actions/dinners";
 import { createRestaurantAndReturn } from "@/app/actions/restaurants";
 import { createMealAndReturn } from "@/app/actions/meals";
 
@@ -20,6 +20,7 @@ function formatDateLabel(dateStr: string) {
 
 export function AddDinnerForm({
   date,
+  dinnerId,
   restaurants,
   meals,
   initialType,
@@ -27,6 +28,7 @@ export function AddDinnerForm({
   existingNotes,
 }: {
   date: string;
+  dinnerId: string | null;
   restaurants: Restaurant[];
   meals: Meal[];
   initialType: "RESTAURANT" | "HOMECOOKED";
@@ -47,8 +49,11 @@ export function AddDinnerForm({
         <p className="text-gray-500 text-sm mt-1">{formatDateLabel(date)}</p>
       </div>
 
-      <form action={createOrUpdateDinner} className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
-        <input type="hidden" name="date" value={date} />
+      <form action={dinnerId ? updateDinner : createDinner} className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+        {dinnerId
+          ? <input type="hidden" name="id" value={dinnerId} />
+          : <input type="hidden" name="date" value={date} />
+        }
         <input type="hidden" name="type" value={type} />
 
         {/* Type toggle */}

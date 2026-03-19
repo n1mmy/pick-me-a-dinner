@@ -40,5 +40,4 @@ model Dinner {
   restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
   meal         Meal?       @relation(fields: [mealId], references: [id])
 
-  @@unique([date])
 }
