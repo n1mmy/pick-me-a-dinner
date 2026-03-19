@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/db";
 import { createRestaurant, updateRestaurant, deleteRestaurant } from "@/app/actions/restaurants";
 import { SubmitButton } from "@/components/SubmitButton";
+import { Tags } from "@/components/Tags";
 
 export default async function RestaurantsPage() {
   const restaurants = await prisma.restaurant.findMany({
@@ -41,6 +42,11 @@ export default async function RestaurantsPage() {
           rows={2}
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
         />
+        <input
+          name="tags"
+          placeholder="Tags (comma-separated, e.g. pizza, italian)"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        />
         <SubmitButton className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
           Add
         </SubmitButton>
@@ -73,6 +79,7 @@ export default async function RestaurantsPage() {
                     </a>
                   )}
                   {r.notes && <p className="text-xs text-gray-400 mt-0.5">{r.notes}</p>}
+                  <Tags tags={r.tags} className="mt-1" />
                 </div>
                 <div className="flex gap-3 items-center">
                   <form
@@ -117,6 +124,12 @@ export default async function RestaurantsPage() {
                     defaultValue={r.notes ?? ""}
                     placeholder="Notes"
                     rows={2}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  />
+                  <input
+                    name="tags"
+                    defaultValue={r.tags.join(", ")}
+                    placeholder="Tags (comma-separated)"
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   />
                   <SubmitButton className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">

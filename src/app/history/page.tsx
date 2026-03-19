@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { deleteDinner } from "@/app/actions/dinners";
 import { SubmitButton } from "@/components/SubmitButton";
 import { LoadingLink } from "@/components/LoadingLink";
+import { Tags } from "@/components/Tags";
 
 const PAGE_SIZE = 30;
 
@@ -81,6 +82,7 @@ export default async function HistoryPage({
                 {dinner.notes && (
                   <p className="text-xs text-gray-400 mt-0.5">{dinner.notes}</p>
                 )}
+                <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
               </div>
               <div className="flex gap-3 items-center">
                 <LoadingLink

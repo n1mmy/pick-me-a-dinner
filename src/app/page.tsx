@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { pickAndRedirect, deleteDinner } from "@/app/actions/dinners";
 import { SubmitButton } from "@/components/SubmitButton";
 import { LoadingLink } from "@/components/LoadingLink";
+import { Tags } from "@/components/Tags";
 
 function toDateStr(d: Date) {
   return d.toISOString().split("T")[0];
@@ -32,9 +33,6 @@ export default async function Home({
   const since = new Date(today);
   since.setUTCDate(since.getUTCDate() - days);
 
-  const scoringSince = new Date(today);
-  scoringSince.setUTCDate(scoringSince.getUTCDate() - 21);
-
   const [recentDinners, restaurants, meals, scoringDinners] = await Promise.all([
     prisma.dinner.findMany({
       where: { date: { gte: since } },
@@ -43,32 +41,51 @@ export default async function Home({
     }),
     prisma.restaurant.findMany({ orderBy: { name: "asc" } }),
     prisma.meal.findMany({ orderBy: { name: "asc" } }),
-    prisma.dinner.findMany({
-      where: { date: { gte: scoringSince } },
-      orderBy: { date: "desc" },
-    }),
+    prisma.dinner.findMany({ orderBy: { date: "desc" } }),
   ]);
 
   // Score options by days since last use (capped at 21), pick top 3
   const now = Date.now();
   const lastUsed = new Map<string, number>();
+  // Build id→tags and tag→days-since-last-order maps
+  const entityTags = new Map<string, string[]>();
+  for (const r of restaurants) entityTags.set(r.id, r.tags);
+  for (const m of meals) entityTags.set(m.id, m.tags);
+
+  const tagLastUsed = new Map<string, number>();
   for (const dinner of scoringDinners) {
     const key = (dinner.restaurantId ?? dinner.mealId)!;
     const daysSince = Math.floor((now - dinner.date.getTime()) / 86_400_000);
     if (!lastUsed.has(key) || lastUsed.get(key)! > daysSince) {
       lastUsed.set(key, daysSince);
     }
+    for (const tag of entityTags.get(key) ?? []) {
+      if (!tagLastUsed.has(tag) || tagLastUsed.get(tag)! > daysSince) {
+        tagLastUsed.set(tag, daysSince);
+      }
+    }
   }
-  type Suggestion = { type: "RESTAURANT" | "HOMECOOKED"; id: string; name: string; orderUrl: string | null; phoneNumber: string | null; daysSinceLastOrder: number | null; score: number; rand: number };
-  function pickTop<T extends { score: number; rand: number }>(options: T[], n: number) {
-    return [...options].sort((a, b) => b.score - a.score || a.rand - b.rand).slice(0, n);
+
+  function tagAwareScore(id: string, tags: string[]): number {
+    const entityDays = lastUsed.get(id) ?? Infinity;
+    const tagMinDays = tags.length > 0
+      ? Math.min(...tags.map((tag) => tagLastUsed.get(tag) ?? Infinity))
+      : Infinity;
+    const base = Math.min(Math.min(entityDays, tagMinDays), 21);
+    return base + Math.random() * 3; // noise keeps similar scores randomised
+  }
+
+  type TagWithRecency = { tag: string; daysSince: number | null };
+  type Suggestion = { type: "RESTAURANT" | "HOMECOOKED"; id: string; name: string; tagsWithRecency: TagWithRecency[]; orderUrl: string | null; phoneNumber: string | null; daysSinceLastOrder: number | null; score: number };
+  function pickTop<T extends { score: number }>(options: T[], n: number) {
+    return [...options].sort((a, b) => b.score - a.score).slice(0, n);
   }
   const restaurantSuggestions = pickTop(
-    restaurants.map((r) => ({ type: "RESTAURANT" as const, id: r.id, name: r.name, orderUrl: r.orderUrl, phoneNumber: r.phoneNumber, daysSinceLastOrder: lastUsed.get(r.id) ?? null, score: lastUsed.get(r.id) ?? 21, rand: Math.random() })),
+    restaurants.map((r) => ({ type: "RESTAURANT" as const, id: r.id, name: r.name, tagsWithRecency: r.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })), orderUrl: r.orderUrl, phoneNumber: r.phoneNumber, daysSinceLastOrder: lastUsed.get(r.id) ?? null, score: tagAwareScore(r.id, r.tags) })),
     3,
   );
   const mealSuggestions = pickTop(
-    meals.map((m) => ({ type: "HOMECOOKED" as const, id: m.id, name: m.name, orderUrl: null, phoneNumber: null, daysSinceLastOrder: lastUsed.get(m.id) ?? null, score: lastUsed.get(m.id) ?? 21, rand: Math.random() })),
+    meals.map((m) => ({ type: "HOMECOOKED" as const, id: m.id, name: m.name, tagsWithRecency: m.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })), orderUrl: null, phoneNumber: null, daysSinceLastOrder: lastUsed.get(m.id) ?? null, score: tagAwareScore(m.id, m.tags) })),
     2,
   );
 
@@ -111,6 +128,7 @@ export default async function Home({
                   {dinner.notes && (
                     <p className="text-sm text-gray-500 mt-1">{dinner.notes}</p>
                   )}
+                  <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
                 </div>
                 <div className="flex gap-3 items-center shrink-0 ml-4">
                   <LoadingLink
@@ -175,6 +193,18 @@ export default async function Home({
                                   <a href={`tel:${s.phoneNumber}`} className="hover:underline">{s.phoneNumber}</a>
                                 </p>
                               )}
+                              {s.tagsWithRecency.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {s.tagsWithRecency.map(({ tag, daysSince }) => (
+                                    <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs font-medium">
+                                      {tag}
+                                      <span className="text-indigo-400 font-normal">
+                                        {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d ago`}
+                                      </span>
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                             <span className="text-sm text-indigo-600 font-medium shrink-0 ml-4">Choose →</span>
                           </LoadingLink>
@@ -204,6 +234,18 @@ export default async function Home({
                                   ? "last cooked yesterday"
                                   : `last cooked ${s.daysSinceLastOrder} days ago`}
                               </p>
+                              {s.tagsWithRecency.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {s.tagsWithRecency.map(({ tag, daysSince }) => (
+                                    <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs font-medium">
+                                      {tag}
+                                      <span className="text-indigo-400 font-normal">
+                                        {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d ago`}
+                                      </span>
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                             <span className="text-sm text-indigo-600 font-medium shrink-0 ml-4">Choose →</span>
                           </LoadingLink>
@@ -265,6 +307,7 @@ export default async function Home({
                         {dinner.notes && (
                           <p className="text-xs text-gray-400 mt-0.5">{dinner.notes}</p>
                         )}
+                        <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
                       </div>
                       <LoadingLink
                         href={`/add?id=${dinner.id}`}
