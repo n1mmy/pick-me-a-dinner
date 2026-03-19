@@ -57,6 +57,9 @@ export default async function Home() {
               <p className="text-sm text-gray-500">
                 {todayDinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
               </p>
+              {(todayDinner.restaurant?.notes ?? todayDinner.meal?.notes) && (
+                <p className="text-sm text-gray-400 mt-1">{todayDinner.restaurant?.notes ?? todayDinner.meal?.notes}</p>
+              )}
               {todayDinner.notes && (
                 <p className="text-sm text-gray-500 mt-1">{todayDinner.notes}</p>
               )}
@@ -102,7 +105,7 @@ export default async function Home() {
             return (
               <li
                 key={dateStr}
-                className="bg-white rounded-lg border border-gray-200 px-4 py-3 flex justify-between items-center"
+                className="bg-white rounded-lg border border-gray-200 px-4 py-3 flex justify-between items-start"
               >
                 {dinner ? (
                   <>
@@ -113,6 +116,12 @@ export default async function Home() {
                       <p className="text-xs text-gray-400">
                         {formatDate(day)} · {dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
                       </p>
+                      {(dinner.restaurant?.notes ?? dinner.meal?.notes) && (
+                        <p className="text-xs text-gray-400 mt-0.5">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
+                      )}
+                      {dinner.notes && (
+                        <p className="text-xs text-gray-400 mt-0.5">{dinner.notes}</p>
+                      )}
                     </div>
                     <Link
                       href={`/add?date=${dateStr}`}

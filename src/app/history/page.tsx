@@ -77,6 +77,9 @@ export default async function HistoryPage({
                 <p className="text-xs text-gray-400">
                   {formatDate(dinner.date)} · {dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
                 </p>
+                {(dinner.restaurant?.notes ?? dinner.meal?.notes) && (
+                  <p className="text-xs text-gray-400 mt-0.5">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
+                )}
                 {dinner.notes && (
                   <p className="text-xs text-gray-400 mt-0.5">{dinner.notes}</p>
                 )}
