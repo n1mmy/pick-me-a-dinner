@@ -33,9 +33,6 @@ export default async function Home({
   const since = new Date(today);
   since.setUTCDate(since.getUTCDate() - days);
 
-  const scoringSince = new Date(today);
-  scoringSince.setUTCDate(scoringSince.getUTCDate() - 21);
-
   const [recentDinners, restaurants, meals, scoringDinners] = await Promise.all([
     prisma.dinner.findMany({
       where: { date: { gte: since } },
@@ -44,10 +41,7 @@ export default async function Home({
     }),
     prisma.restaurant.findMany({ orderBy: { name: "asc" } }),
     prisma.meal.findMany({ orderBy: { name: "asc" } }),
-    prisma.dinner.findMany({
-      where: { date: { gte: scoringSince } },
-      orderBy: { date: "desc" },
-    }),
+    prisma.dinner.findMany({ orderBy: { date: "desc" } }),
   ]);
 
   // Score options by days since last use (capped at 21), pick top 3
