@@ -17,12 +17,19 @@ function formatDate(d: Date) {
   });
 }
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ days?: string }>;
+}) {
+  const { days: daysParam } = await searchParams;
+  const days = Math.max(14, parseInt(daysParam ?? "14", 10));
+
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
 
   const since = new Date(today);
-  since.setUTCDate(since.getUTCDate() - 7);
+  since.setUTCDate(since.getUTCDate() - days);
 
   const recentDinners = await prisma.dinner.findMany({
     where: { date: { gte: since } },
@@ -40,8 +47,8 @@ export default async function Home() {
   }
   const todayDinners = dinnersByDate[todayStr] ?? [];
 
-  // Build last 7 days (excluding today), most recent first
-  const pastDays = Array.from({ length: 7 }, (_, i) => {
+  // Build past days (excluding today), most recent first
+  const pastDays = Array.from({ length: days }, (_, i) => {
     const d = new Date(today);
     d.setUTCDate(d.getUTCDate() - (i + 1));
     return d;
@@ -122,7 +129,7 @@ export default async function Home() {
 
       {/* Recent */}
       <section>
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">Last 7 nights</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">Last {days} nights</h2>
         <ul className="space-y-2">
           {pastDays.map((day) => {
             const dateStr = toDateStr(day);
@@ -173,6 +180,15 @@ export default async function Home() {
             );
           })}
         </ul>
+        <div className="pt-3 text-center">
+          <Link
+            href={`/?days=${days + 14}`}
+            scroll={false}
+            className="text-sm text-gray-400 hover:text-gray-600"
+          >
+            Load more
+          </Link>
+        </div>
       </section>
     </div>
   );
