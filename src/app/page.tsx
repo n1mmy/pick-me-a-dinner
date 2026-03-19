@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { pickAndRedirect, deleteDinner } from "@/app/actions/dinners";
 import { SubmitButton } from "@/components/SubmitButton";
 import { LoadingLink } from "@/components/LoadingLink";
+import { Tags } from "@/components/Tags";
 
 function toDateStr(d: Date) {
   return d.toISOString().split("T")[0];
@@ -59,16 +60,16 @@ export default async function Home({
       lastUsed.set(key, daysSince);
     }
   }
-  type Suggestion = { type: "RESTAURANT" | "HOMECOOKED"; id: string; name: string; orderUrl: string | null; phoneNumber: string | null; daysSinceLastOrder: number | null; score: number; rand: number };
+  type Suggestion = { type: "RESTAURANT" | "HOMECOOKED"; id: string; name: string; tags: string[]; orderUrl: string | null; phoneNumber: string | null; daysSinceLastOrder: number | null; score: number; rand: number };
   function pickTop<T extends { score: number; rand: number }>(options: T[], n: number) {
     return [...options].sort((a, b) => b.score - a.score || a.rand - b.rand).slice(0, n);
   }
   const restaurantSuggestions = pickTop(
-    restaurants.map((r) => ({ type: "RESTAURANT" as const, id: r.id, name: r.name, orderUrl: r.orderUrl, phoneNumber: r.phoneNumber, daysSinceLastOrder: lastUsed.get(r.id) ?? null, score: lastUsed.get(r.id) ?? 21, rand: Math.random() })),
+    restaurants.map((r) => ({ type: "RESTAURANT" as const, id: r.id, name: r.name, tags: r.tags, orderUrl: r.orderUrl, phoneNumber: r.phoneNumber, daysSinceLastOrder: lastUsed.get(r.id) ?? null, score: lastUsed.get(r.id) ?? 21, rand: Math.random() })),
     3,
   );
   const mealSuggestions = pickTop(
-    meals.map((m) => ({ type: "HOMECOOKED" as const, id: m.id, name: m.name, orderUrl: null, phoneNumber: null, daysSinceLastOrder: lastUsed.get(m.id) ?? null, score: lastUsed.get(m.id) ?? 21, rand: Math.random() })),
+    meals.map((m) => ({ type: "HOMECOOKED" as const, id: m.id, name: m.name, tags: m.tags, orderUrl: null, phoneNumber: null, daysSinceLastOrder: lastUsed.get(m.id) ?? null, score: lastUsed.get(m.id) ?? 21, rand: Math.random() })),
     2,
   );
 
@@ -111,6 +112,7 @@ export default async function Home({
                   {dinner.notes && (
                     <p className="text-sm text-gray-500 mt-1">{dinner.notes}</p>
                   )}
+                  <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
                 </div>
                 <div className="flex gap-3 items-center shrink-0 ml-4">
                   <LoadingLink
@@ -175,6 +177,7 @@ export default async function Home({
                                   <a href={`tel:${s.phoneNumber}`} className="hover:underline">{s.phoneNumber}</a>
                                 </p>
                               )}
+                              <Tags tags={s.tags} className="mt-1" />
                             </div>
                             <span className="text-sm text-indigo-600 font-medium shrink-0 ml-4">Choose →</span>
                           </LoadingLink>
@@ -204,6 +207,7 @@ export default async function Home({
                                   ? "last cooked yesterday"
                                   : `last cooked ${s.daysSinceLastOrder} days ago`}
                               </p>
+                              <Tags tags={s.tags} className="mt-1" />
                             </div>
                             <span className="text-sm text-indigo-600 font-medium shrink-0 ml-4">Choose →</span>
                           </LoadingLink>
@@ -265,6 +269,7 @@ export default async function Home({
                         {dinner.notes && (
                           <p className="text-xs text-gray-400 mt-0.5">{dinner.notes}</p>
                         )}
+                        <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
                       </div>
                       <LoadingLink
                         href={`/add?id=${dinner.id}`}

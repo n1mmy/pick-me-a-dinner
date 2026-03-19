@@ -18,6 +18,7 @@ model Restaurant {
   orderUrl    String?
   phoneNumber String?
   notes       String?
+  tags        String[]
   createdAt   DateTime @default(now())
   dinners     Dinner[]
 }
@@ -26,6 +27,7 @@ model Meal {
   id        String   @id @default(cuid())
   name      String
   notes     String?
+  tags      String[]
   createdAt DateTime @default(now())
   dinners   Dinner[]
 }

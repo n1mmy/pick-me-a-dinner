@@ -4,6 +4,13 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 
+function parseTags(formData: FormData): string[] {
+  return ((formData.get("tags") as string) ?? "")
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+}
+
 export async function createRestaurant(formData: FormData) {
   const name = (formData.get("name") as string).trim();
   if (!name) return;
@@ -14,6 +21,7 @@ export async function createRestaurant(formData: FormData) {
       orderUrl: (formData.get("orderUrl") as string)?.trim() || null,
       phoneNumber: (formData.get("phoneNumber") as string)?.trim() || null,
       notes: (formData.get("notes") as string)?.trim() || null,
+      tags: parseTags(formData),
     },
   });
 
@@ -31,6 +39,7 @@ export async function createRestaurantAndReturn(formData: FormData) {
       name,
       orderUrl: (formData.get("orderUrl") as string)?.trim() || null,
       phoneNumber: (formData.get("phoneNumber") as string)?.trim() || null,
+      tags: parseTags(formData),
     },
   });
 
@@ -53,6 +62,7 @@ export async function updateRestaurant(formData: FormData) {
       orderUrl: (formData.get("orderUrl") as string)?.trim() || null,
       phoneNumber: (formData.get("phoneNumber") as string)?.trim() || null,
       notes: (formData.get("notes") as string)?.trim() || null,
+      tags: parseTags(formData),
     },
   });
 
