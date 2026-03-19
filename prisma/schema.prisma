@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum DinnerType {
+  RESTAURANT
+  HOMECOOKED
+}
+
+model Restaurant {
+  id          String   @id @default(cuid())
+  name        String
+  orderUrl    String?
+  phoneNumber String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  dinners     Dinner[]
+}
+
+model Meal {
+  id        String   @id @default(cuid())
+  name      String
+  notes     String?
+  createdAt DateTime @default(now())
+  dinners   Dinner[]
+}
+
+model Dinner {
+  id           String      @id @default(cuid())
+  date         DateTime    @db.Date
+  type         DinnerType
+  notes        String?
+  restaurantId String?
+  mealId       String?
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  meal         Meal?       @relation(fields: [mealId], references: [id])
+
+  @@unique([date])
+}
