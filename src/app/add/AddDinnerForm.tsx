@@ -9,6 +9,7 @@ import { SubmitButton } from "@/components/SubmitButton";
 type Restaurant = { id: string; name: string };
 type Meal = { id: string; name: string };
 
+const inputCls = "w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-400";
 
 export function AddDinnerForm({
   date,
@@ -38,22 +39,22 @@ export function AddDinnerForm({
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Set dinner</h1>
 
-      <form action={dinnerId ? updateDinner : createDinner} className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-4">
+      <form action={dinnerId ? updateDinner : createDinner} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 space-y-4">
         {dinnerId
           ? <input type="hidden" name="id" value={dinnerId} />
-          : <input type="date" name="date" defaultValue={date} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+          : <input type="date" name="date" defaultValue={date} required className={inputCls} />
         }
         <input type="hidden" name="type" value={type} />
 
         {/* Type toggle */}
-        <div className="flex rounded-lg border border-gray-200 overflow-hidden w-fit">
+        <div className="flex rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden w-fit">
           <button
             type="button"
             onClick={() => setType("RESTAURANT")}
             className={`px-4 py-2 text-sm font-medium ${
               type === "RESTAURANT"
                 ? "bg-indigo-600 text-white"
-                : "bg-white text-gray-600 hover:bg-gray-50"
+                : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
             }`}
           >
             Restaurant
@@ -61,10 +62,10 @@ export function AddDinnerForm({
           <button
             type="button"
             onClick={() => setType("HOMECOOKED")}
-            className={`px-4 py-2 text-sm font-medium border-l border-gray-200 ${
+            className={`px-4 py-2 text-sm font-medium border-l border-gray-200 dark:border-gray-600 ${
               type === "HOMECOOKED"
                 ? "bg-indigo-600 text-white"
-                : "bg-white text-gray-600 hover:bg-gray-50"
+                : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
             }`}
           >
             Homecooked
@@ -73,18 +74,18 @@ export function AddDinnerForm({
 
         {/* Picker */}
         {options.length === 0 ? (
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-gray-400 dark:text-gray-500">
             No {type === "RESTAURANT" ? "restaurants" : "meals"} yet. Add one below.
           </p>
         ) : (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {type === "RESTAURANT" ? "Restaurant" : "Meal"}
             </label>
             <select
               name={type === "RESTAURANT" ? "restaurantId" : "mealId"}
               defaultValue={defaultId}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className={inputCls}
             >
               {options.map((o) => (
                 <option key={o.id} value={o.id}>
@@ -97,13 +98,13 @@ export function AddDinnerForm({
 
         {/* Notes */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
           <textarea
             name="notes"
             rows={2}
             defaultValue={existingNotes ?? ""}
             placeholder="Optional notes"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className={inputCls}
           />
         </div>
 
@@ -116,8 +117,8 @@ export function AddDinnerForm({
       </form>
 
       {/* Inline create */}
-      <details className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-        <summary className="cursor-pointer text-sm font-medium text-gray-700">
+      <details className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
+        <summary className="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300">
           + Add new {type === "RESTAURANT" ? "restaurant" : "meal"}
         </summary>
         <form
@@ -130,24 +131,24 @@ export function AddDinnerForm({
             name="name"
             required
             placeholder={`${type === "RESTAURANT" ? "Restaurant" : "Meal"} name *`}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className={inputCls}
           />
           {type === "RESTAURANT" && (
             <>
               <input
                 name="phoneNumber"
                 placeholder="Phone number"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                className={inputCls}
               />
               <input
                 name="orderUrl"
                 placeholder="Order URL"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                className={inputCls}
               />
             </>
           )}
           <SubmitButton
-            className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-900 transition-colors"
+            className="px-4 py-2 bg-gray-800 dark:bg-gray-600 text-white rounded-lg text-sm font-medium hover:bg-gray-900 dark:hover:bg-gray-500 transition-colors"
           >
             Add
           </SubmitButton>

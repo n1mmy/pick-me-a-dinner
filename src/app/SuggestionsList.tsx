@@ -52,17 +52,17 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
     <div className="space-y-4">
       {(visibleRestaurants.length > 0 || (isFetching && allRestaurants.filter((s) => !rejectedIds.includes(s.id)).length === 0)) && (
         <div>
-          <p className="text-xs font-medium text-gray-400 mb-1">Restaurants</p>
+          <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mb-1">Restaurants</p>
           {visibleRestaurants.length > 0 ? (
             <ul className="space-y-2">
               {visibleRestaurants.map((s) => (
-                <li key={s.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 hover:bg-indigo-50 border border-transparent hover:border-indigo-100 transition-all">
+                <li key={s.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 rounded-lg px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-800 transition-all">
                   <LoadingLink
                     href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
                     className="flex-1 min-w-0"
                   >
                     <p className="font-medium text-sm">{s.name}</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
                       {s.daysSinceLastOrder === null
                         ? "never ordered"
                         : s.daysSinceLastOrder === 0
@@ -74,9 +74,9 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                     {s.tagsWithRecency.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
                         {s.tagsWithRecency.map(({ tag, daysSince }) => (
-                          <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs font-medium">
+                          <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 rounded text-xs font-medium">
                             {tag}
-                            <span className="text-indigo-400 font-normal">
+                            <span className="text-indigo-400 dark:text-indigo-500 font-normal">
                               {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d ago`}
                             </span>
                           </span>
@@ -86,20 +86,20 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                   </LoadingLink>
                   <div className="flex items-center gap-3 shrink-0 ml-4">
                     {s.phoneNumber && (
-                      <a href={`tel:${s.phoneNumber}`} className="text-xs text-gray-500 hover:underline">Call</a>
+                      <a href={`tel:${s.phoneNumber}`} className="text-xs text-gray-500 dark:text-gray-400 hover:underline">Call</a>
                     )}
                     {s.orderUrl && (
-                      <a href={s.orderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-500 hover:underline">
+                      <a href={s.orderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-500 dark:text-indigo-400 hover:underline">
                         Order ↗
                       </a>
                     )}
                     <button
                       onClick={() => reject(s.id)}
-                      className="text-xs text-gray-400 hover:text-gray-600 cursor-pointer"
+                      className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
                     >
                       No thanks
                     </button>
-                    <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="text-sm text-indigo-600 font-medium">
+                    <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">
                       Choose →
                     </LoadingLink>
                   </div>
@@ -113,17 +113,17 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
       )}
       {(visibleMeals.length > 0 || (isFetching && allMeals.filter((s) => !rejectedIds.includes(s.id)).length === 0)) && (
         <div>
-          <p className="text-xs font-medium text-gray-400 mb-1">Homecooked</p>
+          <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mb-1">Homecooked</p>
           {visibleMeals.length > 0 ? (
             <ul className="space-y-2">
               {visibleMeals.map((s) => (
-                <li key={s.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 hover:bg-indigo-50 border border-transparent hover:border-indigo-100 transition-all">
+                <li key={s.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 rounded-lg px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-800 transition-all">
                   <LoadingLink
                     href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
                     className="flex-1 min-w-0"
                   >
                     <p className="font-medium text-sm">{s.name}</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
                       {s.daysSinceLastOrder === null
                         ? "never cooked"
                         : s.daysSinceLastOrder === 0
@@ -135,9 +135,9 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                     {s.tagsWithRecency.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
                         {s.tagsWithRecency.map(({ tag, daysSince }) => (
-                          <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs font-medium">
+                          <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 rounded text-xs font-medium">
                             {tag}
-                            <span className="text-indigo-400 font-normal">
+                            <span className="text-indigo-400 dark:text-indigo-500 font-normal">
                               {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d ago`}
                             </span>
                           </span>
@@ -148,11 +148,11 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                   <div className="flex items-center gap-3 shrink-0 ml-4">
                     <button
                       onClick={() => reject(s.id)}
-                      className="text-xs text-gray-400 hover:text-gray-600 cursor-pointer"
+                      className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
                     >
                       No thanks
                     </button>
-                    <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="text-sm text-indigo-600 font-medium">
+                    <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">
                       Choose →
                     </LoadingLink>
                   </div>
