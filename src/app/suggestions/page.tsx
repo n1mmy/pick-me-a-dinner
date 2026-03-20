@@ -39,8 +39,17 @@ export default async function SuggestionsPage() {
     return base + Math.random() * 3;
   }
 
-  function pickTop<T extends { score: number }>(options: T[], n: number) {
-    return [...options].sort((a, b) => b.score - a.score).slice(0, n);
+  function pickTop<T extends { score: number; tagsWithRecency: { tag: string }[] }>(options: T[], n: number): T[] {
+    const sorted = [...options].sort((a, b) => b.score - a.score);
+    const tagCount = new Map<string, number>();
+    const result: T[] = [];
+    for (const option of sorted) {
+      if (result.length >= n) break;
+      if (option.tagsWithRecency.some(({ tag }) => (tagCount.get(tag) ?? 0) >= 2)) continue;
+      result.push(option);
+      for (const { tag } of option.tagsWithRecency) tagCount.set(tag, (tagCount.get(tag) ?? 0) + 1);
+    }
+    return result;
   }
 
   type TagWithRecency = { tag: string; daysSince: number | null };
