@@ -131,6 +131,16 @@ export default async function Home({
                   <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
                 </div>
                 <div className="flex gap-3 items-center shrink-0 ml-4">
+                  {dinner.restaurant?.orderUrl && (
+                    <a
+                      href={dinner.restaurant.orderUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-indigo-500 hover:underline"
+                    >
+                      Order ↗
+                    </a>
+                  )}
                   <LoadingLink
                     href={`/add?id=${dinner.id}`}
                     className="text-sm text-indigo-600 hover:underline"
