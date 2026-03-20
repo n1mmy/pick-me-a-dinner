@@ -140,15 +140,11 @@ export default async function Home({
                   <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
                 </div>
                 <div className="flex gap-3 items-center shrink-0 ml-4">
+                  {dinner.restaurant?.phoneNumber && (
+                    <a href={`tel:${dinner.restaurant.phoneNumber}`} className="text-sm text-gray-500 hover:underline">Call</a>
+                  )}
                   {dinner.restaurant?.orderUrl && (
-                    <a
-                      href={dinner.restaurant.orderUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-indigo-500 hover:underline"
-                    >
-                      Order ↗
-                    </a>
+                    <a href={dinner.restaurant.orderUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-indigo-500 hover:underline">Order ↗</a>
                   )}
                   <LoadingLink
                     href={`/add?id=${dinner.id}`}
@@ -197,11 +193,6 @@ export default async function Home({
                                 ? "last ordered yesterday"
                                 : `last ordered ${s.daysSinceLastOrder} days ago`}
                             </p>
-                            {s.phoneNumber && (
-                              <p className="text-xs text-gray-400 mt-0.5">
-                                <a href={`tel:${s.phoneNumber}`} className="hover:underline">{s.phoneNumber}</a>
-                              </p>
-                            )}
                             {s.tagsWithRecency.length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {s.tagsWithRecency.map(({ tag, daysSince }) => (
@@ -216,6 +207,9 @@ export default async function Home({
                             )}
                           </LoadingLink>
                           <div className="flex items-center gap-3 shrink-0 ml-4">
+                            {s.phoneNumber && (
+                              <a href={`tel:${s.phoneNumber}`} className="text-xs text-gray-500 hover:underline">Call</a>
+                            )}
                             {s.orderUrl && (
                               <a href={s.orderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-500 hover:underline">
                                 Order ↗

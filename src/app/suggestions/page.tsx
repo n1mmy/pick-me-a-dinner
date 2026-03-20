@@ -99,11 +99,6 @@ export default async function SuggestionsPage() {
             >
               <p className="font-medium text-sm">{s.name}</p>
               <p className="text-xs text-gray-400">{daysSinceLabel(s.daysSinceLastOrder, verb)}</p>
-              {s.phoneNumber && (
-                <p className="text-xs text-gray-400 mt-0.5">
-                  <a href={`tel:${s.phoneNumber}`} className="hover:underline">{s.phoneNumber}</a>
-                </p>
-              )}
               {s.tagsWithRecency.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-1">
                   {s.tagsWithRecency.map(({ tag, daysSince }) => (
@@ -118,6 +113,9 @@ export default async function SuggestionsPage() {
               )}
             </LoadingLink>
             <div className="flex items-center gap-3 shrink-0 ml-4">
+              {s.phoneNumber && (
+                <a href={`tel:${s.phoneNumber}`} className="text-xs text-gray-500 hover:underline">Call</a>
+              )}
               {s.orderUrl && (
                 <a href={s.orderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-500 hover:underline">
                   Order ↗
