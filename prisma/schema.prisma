@@ -19,6 +19,7 @@ model Restaurant {
   phoneNumber String?
   notes       String?
   tags        String[]
+  hidden      Boolean  @default(false)
   createdAt   DateTime @default(now())
   dinners     Dinner[]
 }
@@ -28,6 +29,7 @@ model Meal {
   name      String
   notes     String?
   tags      String[]
+  hidden    Boolean  @default(false)
   createdAt DateTime @default(now())
   dinners   Dinner[]
 }

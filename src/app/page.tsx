@@ -39,8 +39,8 @@ export default async function Home({
       include: { restaurant: true, meal: true },
       orderBy: { date: "desc" },
     }),
-    prisma.restaurant.findMany({ orderBy: { name: "asc" } }),
-    prisma.meal.findMany({ orderBy: { name: "asc" } }),
+    prisma.restaurant.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
+    prisma.meal.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
     prisma.dinner.findMany({ orderBy: { date: "desc" } }),
   ]);
 
