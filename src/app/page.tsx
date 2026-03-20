@@ -169,45 +169,49 @@ export default async function Home({
                     <p className="text-xs font-medium text-gray-400 mb-1">Restaurants</p>
                     <ul className="space-y-2">
                       {restaurantSuggestions.map((s) => (
-                        <li key={s.id}>
+                        <li key={s.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 hover:bg-gray-100 transition-colors">
                           <LoadingLink
                             href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
-                            className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 hover:bg-gray-100 transition-colors"
+                            className="flex-1 min-w-0"
                           >
-                            <div>
-                              <p className="font-medium text-sm">{s.name}</p>
-                              <p className="text-xs text-gray-400">
-                                {s.daysSinceLastOrder === null
-                                  ? "never ordered"
-                                  : s.daysSinceLastOrder === 0
-                                  ? "last ordered today"
-                                  : s.daysSinceLastOrder === 1
-                                  ? "last ordered yesterday"
-                                  : `last ordered ${s.daysSinceLastOrder} days ago`}
+                            <p className="font-medium text-sm">{s.name}</p>
+                            <p className="text-xs text-gray-400">
+                              {s.daysSinceLastOrder === null
+                                ? "never ordered"
+                                : s.daysSinceLastOrder === 0
+                                ? "last ordered today"
+                                : s.daysSinceLastOrder === 1
+                                ? "last ordered yesterday"
+                                : `last ordered ${s.daysSinceLastOrder} days ago`}
+                            </p>
+                            {s.phoneNumber && (
+                              <p className="text-xs text-gray-400 mt-0.5">
+                                <a href={`tel:${s.phoneNumber}`} className="hover:underline">{s.phoneNumber}</a>
                               </p>
-                              {s.orderUrl && (
-                                <p className="text-xs text-indigo-500 mt-0.5">{s.orderUrl}</p>
-                              )}
-                              {s.phoneNumber && (
-                                <p className="text-xs text-gray-400 mt-0.5">
-                                  <a href={`tel:${s.phoneNumber}`} className="hover:underline">{s.phoneNumber}</a>
-                                </p>
-                              )}
-                              {s.tagsWithRecency.length > 0 && (
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {s.tagsWithRecency.map(({ tag, daysSince }) => (
-                                    <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs font-medium">
-                                      {tag}
-                                      <span className="text-indigo-400 font-normal">
-                                        {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d ago`}
-                                      </span>
+                            )}
+                            {s.tagsWithRecency.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {s.tagsWithRecency.map(({ tag, daysSince }) => (
+                                  <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs font-medium">
+                                    {tag}
+                                    <span className="text-indigo-400 font-normal">
+                                      {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d ago`}
                                     </span>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                            <span className="text-sm text-indigo-600 font-medium shrink-0 ml-4">Choose →</span>
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                           </LoadingLink>
+                          <div className="flex items-center gap-3 shrink-0 ml-4">
+                            {s.orderUrl && (
+                              <a href={s.orderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-500 hover:underline">
+                                Order ↗
+                              </a>
+                            )}
+                            <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="text-sm text-indigo-600 font-medium">
+                              Choose →
+                            </LoadingLink>
+                          </div>
                         </li>
                       ))}
                     </ul>
