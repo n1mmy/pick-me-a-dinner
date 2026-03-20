@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/db";
-import { deleteDinner } from "@/app/actions/dinners";
+import { deleteDinner, type Suggestion } from "@/app/actions/dinners";
 import { SubmitButton } from "@/components/SubmitButton";
 import { LoadingLink } from "@/components/LoadingLink";
 import { Tags } from "@/components/Tags";
@@ -76,8 +76,6 @@ export default async function Home({
     return base + Math.random() * 3; // noise keeps similar scores randomised
   }
 
-  type TagWithRecency = { tag: string; daysSince: number | null };
-  type Suggestion = { type: "RESTAURANT" | "HOMECOOKED"; id: string; name: string; tagsWithRecency: TagWithRecency[]; orderUrl: string | null; phoneNumber: string | null; daysSinceLastOrder: number | null; score: number };
   function pickTop<T extends { score: number; tagsWithRecency: { tag: string }[] }>(options: T[], n: number): T[] {
     const sorted = [...options].sort((a, b) => b.score - a.score);
     const tagCount = new Map<string, number>();
