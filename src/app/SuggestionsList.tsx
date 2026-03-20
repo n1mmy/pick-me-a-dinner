@@ -1,0 +1,169 @@
+"use client";
+
+import { useState } from "react";
+import { LoadingLink } from "@/components/LoadingLink";
+import { fetchMoreSuggestions, type Suggestion } from "@/app/actions/dinners";
+
+interface Props {
+  restaurantCandidates: Suggestion[];
+  mealCandidates: Suggestion[];
+  todayStr: string;
+}
+
+export function SuggestionsList({ restaurantCandidates: initialRestaurants, mealCandidates: initialMeals, todayStr }: Props) {
+  const [allRestaurants, setAllRestaurants] = useState<Suggestion[]>(initialRestaurants);
+  const [allMeals, setAllMeals] = useState<Suggestion[]>(initialMeals);
+  const [rejectedIds, setRejectedIds] = useState<string[]>([]);
+  const [isFetching, setIsFetching] = useState(false);
+
+  const reject = async (id: string) => {
+    const newRejected = [...rejectedIds, id];
+    setRejectedIds(newRejected);
+
+    const remainingR = allRestaurants.filter((s) => !newRejected.includes(s.id)).length;
+    const remainingM = allMeals.filter((s) => !newRejected.includes(s.id)).length;
+
+    if (remainingR === 0 || remainingM === 0) {
+      setIsFetching(true);
+      const allKnownIds = [...allRestaurants, ...allMeals].map((s) => s.id);
+      const more = await fetchMoreSuggestions(allKnownIds);
+      setAllRestaurants((prev) => [...prev, ...more.restaurantCandidates]);
+      setAllMeals((prev) => [...prev, ...more.mealCandidates]);
+      setIsFetching(false);
+    }
+  };
+
+  const visibleRestaurants = allRestaurants.filter((s) => !rejectedIds.includes(s.id)).slice(0, 3);
+  const visibleMeals = allMeals.filter((s) => !rejectedIds.includes(s.id)).slice(0, 2);
+
+  if (!isFetching && visibleRestaurants.length === 0 && visibleMeals.length === 0) {
+    return (
+      <p className="text-sm text-gray-400 py-2">
+        No more suggestions —{" "}
+        <LoadingLink href={`/add?date=${todayStr}`} className="text-indigo-500 hover:underline">
+          choose yourself
+        </LoadingLink>
+        .
+      </p>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {(visibleRestaurants.length > 0 || (isFetching && allRestaurants.filter((s) => !rejectedIds.includes(s.id)).length === 0)) && (
+        <div>
+          <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mb-1">Restaurants</p>
+          {visibleRestaurants.length > 0 ? (
+            <ul className="space-y-2">
+              {visibleRestaurants.map((s) => (
+                <li key={s.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 rounded-lg px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-800 transition-all">
+                  <LoadingLink
+                    href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
+                    className="flex-1 min-w-0"
+                  >
+                    <p className="font-medium text-sm">{s.name}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                      {s.daysSinceLastOrder === null
+                        ? "never ordered"
+                        : s.daysSinceLastOrder === 0
+                        ? "last ordered today"
+                        : s.daysSinceLastOrder === 1
+                        ? "last ordered yesterday"
+                        : `last ordered ${s.daysSinceLastOrder} days ago`}
+                    </p>
+                    {s.tagsWithRecency.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {s.tagsWithRecency.map(({ tag, daysSince }) => (
+                          <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 rounded text-xs font-medium">
+                            {tag}
+                            <span className="text-indigo-400 dark:text-indigo-500 font-normal">
+                              {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d ago`}
+                            </span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </LoadingLink>
+                  <div className="flex items-center gap-3 shrink-0 ml-4">
+                    {s.phoneNumber && (
+                      <a href={`tel:${s.phoneNumber}`} className="text-xs text-gray-500 dark:text-gray-400 hover:underline">Call</a>
+                    )}
+                    {s.orderUrl && (
+                      <a href={s.orderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-500 dark:text-indigo-400 hover:underline">
+                        Order ↗
+                      </a>
+                    )}
+                    <button
+                      onClick={() => reject(s.id)}
+                      className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
+                    >
+                      No thanks
+                    </button>
+                    <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">
+                      Choose →
+                    </LoadingLink>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-xs text-gray-400 animate-pulse py-1">Finding more…</p>
+          )}
+        </div>
+      )}
+      {(visibleMeals.length > 0 || (isFetching && allMeals.filter((s) => !rejectedIds.includes(s.id)).length === 0)) && (
+        <div>
+          <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mb-1">Homecooked</p>
+          {visibleMeals.length > 0 ? (
+            <ul className="space-y-2">
+              {visibleMeals.map((s) => (
+                <li key={s.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 rounded-lg px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-800 transition-all">
+                  <LoadingLink
+                    href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
+                    className="flex-1 min-w-0"
+                  >
+                    <p className="font-medium text-sm">{s.name}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                      {s.daysSinceLastOrder === null
+                        ? "never cooked"
+                        : s.daysSinceLastOrder === 0
+                        ? "last cooked today"
+                        : s.daysSinceLastOrder === 1
+                        ? "last cooked yesterday"
+                        : `last cooked ${s.daysSinceLastOrder} days ago`}
+                    </p>
+                    {s.tagsWithRecency.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {s.tagsWithRecency.map(({ tag, daysSince }) => (
+                          <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 rounded text-xs font-medium">
+                            {tag}
+                            <span className="text-indigo-400 dark:text-indigo-500 font-normal">
+                              {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d ago`}
+                            </span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </LoadingLink>
+                  <div className="flex items-center gap-3 shrink-0 ml-4">
+                    <button
+                      onClick={() => reject(s.id)}
+                      className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
+                    >
+                      No thanks
+                    </button>
+                    <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">
+                      Choose →
+                    </LoadingLink>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-xs text-gray-400 animate-pulse py-1">Finding more…</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

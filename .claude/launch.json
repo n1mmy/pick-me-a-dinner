@@ -1,0 +1,15 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "pick-me-a-dinner",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["dev"],
+      "port": 3000,
+      "autoPort": true,
+      "env": {
+        "DATABASE_URL": "postgresql://dinner:dinner@localhost:5432/pick-me-a-dinner?schema=public"
+      }
+    }
+  ]
+}

@@ -52,42 +52,42 @@ export default async function HistoryPage({
             type="date"
             name="date"
             defaultValue={new Date().toISOString().split("T")[0]}
-            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
-          <SubmitButton className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
+          <SubmitButton className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
             + Add
           </SubmitButton>
         </form>
       </div>
 
       {dinners.length === 0 ? (
-        <p className="text-gray-400">No dinners recorded yet.</p>
+        <p className="text-gray-400 dark:text-gray-500">No dinners recorded yet.</p>
       ) : (
         <ul className="space-y-2">
           {dinners.map((dinner) => (
             <li
               key={dinner.id}
-              className="bg-white rounded-lg border border-gray-200 px-4 py-3 flex justify-between items-center"
+              className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm px-4 py-3 flex justify-between items-center"
             >
               <div>
                 <p className="font-medium">
                   {dinner.restaurant?.name ?? dinner.meal?.name}
                 </p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-400 dark:text-gray-500">
                   {formatDate(dinner.date)} · {dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
                 </p>
                 {(dinner.restaurant?.notes ?? dinner.meal?.notes) && (
-                  <p className="text-xs text-gray-400 mt-0.5">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
                 )}
                 {dinner.notes && (
-                  <p className="text-xs text-gray-400 mt-0.5">{dinner.notes}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{dinner.notes}</p>
                 )}
                 <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
               </div>
               <div className="flex gap-3 items-center">
                 <LoadingLink
                   href={`/add?id=${dinner.id}`}
-                  className="text-xs text-indigo-600 hover:underline"
+                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
                 >
                   Edit
                 </LoadingLink>
@@ -112,18 +112,18 @@ export default async function HistoryPage({
           {page > 1 && (
             <LoadingLink
               href={`/history?page=${page - 1}`}
-              className="px-3 py-1.5 border border-gray-300 rounded text-sm hover:bg-gray-50"
+              className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               ← Previous
             </LoadingLink>
           )}
-          <span className="px-3 py-1.5 text-sm text-gray-400">
+          <span className="px-3 py-1.5 text-sm text-gray-400 dark:text-gray-500">
             Page {page} of {totalPages}
           </span>
           {page < totalPages && (
             <LoadingLink
               href={`/history?page=${page + 1}`}
-              className="px-3 py-1.5 border border-gray-300 rounded text-sm hover:bg-gray-50"
+              className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               Next →
             </LoadingLink>

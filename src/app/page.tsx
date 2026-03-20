@@ -1,10 +1,11 @@
 export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/db";
-import { deleteDinner } from "@/app/actions/dinners";
+import { deleteDinner, type Suggestion } from "@/app/actions/dinners";
 import { SubmitButton } from "@/components/SubmitButton";
 import { LoadingLink } from "@/components/LoadingLink";
 import { Tags } from "@/components/Tags";
+import { SuggestionsList } from "@/app/SuggestionsList";
 
 function toDateStr(d: Date) {
   return d.toISOString().split("T")[0];
@@ -75,8 +76,6 @@ export default async function Home({
     return base + Math.random() * 3; // noise keeps similar scores randomised
   }
 
-  type TagWithRecency = { tag: string; daysSince: number | null };
-  type Suggestion = { type: "RESTAURANT" | "HOMECOOKED"; id: string; name: string; tagsWithRecency: TagWithRecency[]; orderUrl: string | null; phoneNumber: string | null; daysSinceLastOrder: number | null; score: number };
   function pickTop<T extends { score: number; tagsWithRecency: { tag: string }[] }>(options: T[], n: number): T[] {
     const sorted = [...options].sort((a, b) => b.score - a.score);
     const tagCount = new Map<string, number>();
@@ -89,13 +88,13 @@ export default async function Home({
     }
     return result;
   }
-  const restaurantSuggestions = pickTop(
+  const restaurantCandidates = pickTop(
     restaurants.map((r) => ({ type: "RESTAURANT" as const, id: r.id, name: r.name, tagsWithRecency: r.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })), orderUrl: r.orderUrl, phoneNumber: r.phoneNumber, daysSinceLastOrder: lastUsed.get(r.id) ?? null, score: tagAwareScore(r.id, r.tags) })),
-    3,
+    8,
   );
-  const mealSuggestions = pickTop(
+  const mealCandidates = pickTop(
     meals.map((m) => ({ type: "HOMECOOKED" as const, id: m.id, name: m.name, tagsWithRecency: m.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })), orderUrl: null, phoneNumber: null, daysSinceLastOrder: lastUsed.get(m.id) ?? null, score: tagAwareScore(m.id, m.tags) })),
-    2,
+    5,
   );
 
   const todayStr = toDateStr(today);
@@ -118,8 +117,11 @@ export default async function Home({
   return (
     <div className="space-y-6">
       {/* Tonight */}
-      <section className="bg-white rounded-xl border border-gray-200 p-5">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">Tonight</h2>
+      <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+        <div className="bg-gradient-to-r from-indigo-50 to-violet-50 dark:from-indigo-950 dark:to-violet-950 border-b border-indigo-100 dark:border-indigo-900 px-5 py-3">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-indigo-400 dark:text-indigo-300">Tonight</h2>
+        </div>
+        <div className="p-5">
         {todayDinners.length > 0 ? (
           <div className="space-y-3">
             {todayDinners.map((dinner) => (
@@ -128,20 +130,20 @@ export default async function Home({
                   <p className="text-xl font-semibold">
                     {dinner.restaurant?.name ?? dinner.meal?.name}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     {dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
                   </p>
                   {(dinner.restaurant?.notes ?? dinner.meal?.notes) && (
-                    <p className="text-sm text-gray-400 mt-1">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
+                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
                   )}
                   {dinner.notes && (
-                    <p className="text-sm text-gray-500 mt-1">{dinner.notes}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{dinner.notes}</p>
                   )}
                   <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
                 </div>
                 <div className="flex gap-3 items-center shrink-0 ml-4">
                   {dinner.restaurant?.phoneNumber && (
-                    <a href={`tel:${dinner.restaurant.phoneNumber}`} className="text-sm text-gray-500 hover:underline">Call</a>
+                    <a href={`tel:${dinner.restaurant.phoneNumber}`} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">Call</a>
                   )}
                   {dinner.restaurant?.orderUrl && (
                     <a href={dinner.restaurant.orderUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-indigo-500 hover:underline">Order ↗</a>
@@ -158,10 +160,10 @@ export default async function Home({
                 </div>
               </div>
             ))}
-            <div className="flex gap-3 pt-1 border-t border-gray-100">
+            <div className="flex gap-3 pt-1 border-t border-gray-100 dark:border-gray-700">
               <LoadingLink
                 href={`/add?date=${todayStr}`}
-                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50"
+                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700"
               >
                 Add another
               </LoadingLink>
@@ -169,119 +171,31 @@ export default async function Home({
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {restaurantSuggestions.length === 0 && mealSuggestions.length === 0 ? (
+            {restaurantCandidates.length === 0 && mealCandidates.length === 0 ? (
               <p className="text-gray-500">No dinner set for tonight yet.</p>
             ) : (
-              <div className="space-y-4">
-                {restaurantSuggestions.length > 0 && (
-                  <div>
-                    <p className="text-xs font-medium text-gray-400 mb-1">Restaurants</p>
-                    <ul className="space-y-2">
-                      {restaurantSuggestions.map((s) => (
-                        <li key={s.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 hover:bg-gray-100 transition-colors">
-                          <LoadingLink
-                            href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
-                            className="flex-1 min-w-0"
-                          >
-                            <p className="font-medium text-sm">{s.name}</p>
-                            <p className="text-xs text-gray-400">
-                              {s.daysSinceLastOrder === null
-                                ? "never ordered"
-                                : s.daysSinceLastOrder === 0
-                                ? "last ordered today"
-                                : s.daysSinceLastOrder === 1
-                                ? "last ordered yesterday"
-                                : `last ordered ${s.daysSinceLastOrder} days ago`}
-                            </p>
-                            {s.tagsWithRecency.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {s.tagsWithRecency.map(({ tag, daysSince }) => (
-                                  <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs font-medium">
-                                    {tag}
-                                    <span className="text-indigo-400 font-normal">
-                                      {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d ago`}
-                                    </span>
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                          </LoadingLink>
-                          <div className="flex items-center gap-3 shrink-0 ml-4">
-                            {s.phoneNumber && (
-                              <a href={`tel:${s.phoneNumber}`} className="text-xs text-gray-500 hover:underline">Call</a>
-                            )}
-                            {s.orderUrl && (
-                              <a href={s.orderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-500 hover:underline">
-                                Order ↗
-                              </a>
-                            )}
-                            <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="text-sm text-indigo-600 font-medium">
-                              Choose →
-                            </LoadingLink>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {mealSuggestions.length > 0 && (
-                  <div>
-                    <p className="text-xs font-medium text-gray-400 mb-1">Homecooked</p>
-                    <ul className="space-y-2">
-                      {mealSuggestions.map((s) => (
-                        <li key={s.id}>
-                          <LoadingLink
-                            href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
-                            className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 hover:bg-gray-100 transition-colors"
-                          >
-                            <div>
-                              <p className="font-medium text-sm">{s.name}</p>
-                              <p className="text-xs text-gray-400">
-                                {s.daysSinceLastOrder === null
-                                  ? "never cooked"
-                                  : s.daysSinceLastOrder === 0
-                                  ? "last cooked today"
-                                  : s.daysSinceLastOrder === 1
-                                  ? "last cooked yesterday"
-                                  : `last cooked ${s.daysSinceLastOrder} days ago`}
-                              </p>
-                              {s.tagsWithRecency.length > 0 && (
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {s.tagsWithRecency.map(({ tag, daysSince }) => (
-                                    <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs font-medium">
-                                      {tag}
-                                      <span className="text-indigo-400 font-normal">
-                                        {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d ago`}
-                                      </span>
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                            <span className="text-sm text-indigo-600 font-medium shrink-0 ml-4">Choose →</span>
-                          </LoadingLink>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
+              <SuggestionsList
+                restaurantCandidates={restaurantCandidates}
+                mealCandidates={mealCandidates}
+                todayStr={todayStr}
+              />
             )}
             <div className="flex gap-3">
               <LoadingLink
                 href={`/add?date=${todayStr}`}
-                className="text-sm text-gray-500 hover:text-gray-700"
+                className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
               >
                 Choose myself →
               </LoadingLink>
             </div>
           </div>
         )}
+        </div>
       </section>
 
       {/* Recent */}
       <section>
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">Last {days} nights</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-3">Last {days} nights</h2>
         <ul className="space-y-2">
           {pastDays.map((day) => {
             const dateStr = toDateStr(day);
@@ -289,19 +203,19 @@ export default async function Home({
             return (
               <li
                 key={dateStr}
-                className="bg-white rounded-lg border border-gray-200 px-4 py-3 space-y-2"
+                className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm px-4 py-3 space-y-2"
               >
                 <div className="flex justify-between items-center">
-                  <p className="text-xs text-gray-400 font-medium">{formatDate(day)}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">{formatDate(day)}</p>
                   <LoadingLink
                     href={`/add?date=${dateStr}`}
-                    className="text-xs text-indigo-500 hover:text-indigo-700"
+                    className="text-xs text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                   >
                     + Add
                   </LoadingLink>
                 </div>
                 {dinners.length === 0 ? (
-                  <p className="text-sm text-gray-300">No dinner recorded</p>
+                  <p className="text-sm text-gray-300 dark:text-gray-600">No dinner recorded</p>
                 ) : (
                   dinners.map((dinner) => (
                     <div key={dinner.id} className="flex justify-between items-start">
@@ -309,20 +223,20 @@ export default async function Home({
                         <p className="font-medium text-sm">
                           {dinner.restaurant?.name ?? dinner.meal?.name}
                         </p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-gray-400 dark:text-gray-500">
                           {dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
                         </p>
                         {(dinner.restaurant?.notes ?? dinner.meal?.notes) && (
-                          <p className="text-xs text-gray-400 mt-0.5">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
                         )}
                         {dinner.notes && (
-                          <p className="text-xs text-gray-400 mt-0.5">{dinner.notes}</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{dinner.notes}</p>
                         )}
                         <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
                       </div>
                       <LoadingLink
                         href={`/add?id=${dinner.id}`}
-                        className="text-xs text-gray-400 hover:text-indigo-600 shrink-0 ml-4"
+                        className="text-xs text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 shrink-0 ml-4"
                       >
                         Edit
                       </LoadingLink>
@@ -337,7 +251,7 @@ export default async function Home({
           <LoadingLink
             href={`/?days=${days + 14}`}
             scroll={false}
-            className="text-sm text-gray-400 hover:text-gray-600"
+            className="text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
           >
             Load more
           </LoadingLink>
