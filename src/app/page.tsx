@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/db";
-import { pickAndRedirect, deleteDinner } from "@/app/actions/dinners";
+import { deleteDinner } from "@/app/actions/dinners";
 import { SubmitButton } from "@/components/SubmitButton";
 import { LoadingLink } from "@/components/LoadingLink";
 import { Tags } from "@/components/Tags";
@@ -154,12 +154,6 @@ export default async function Home({
               </div>
             ))}
             <div className="flex gap-3 pt-1 border-t border-gray-100">
-              <form action={pickAndRedirect}>
-                <input type="hidden" name="date" value={todayStr} />
-                <SubmitButton className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
-                  Pick another
-                </SubmitButton>
-              </form>
               <LoadingLink
                 href={`/add?date=${todayStr}`}
                 className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50"
