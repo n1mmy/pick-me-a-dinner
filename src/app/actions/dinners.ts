@@ -66,8 +66,8 @@ export async function pickAndRedirect(formData: FormData) {
       where: { date: { gte: since } },
       orderBy: { date: "desc" },
     }),
-    prisma.restaurant.findMany({ orderBy: { name: "asc" } }),
-    prisma.meal.findMany({ orderBy: { name: "asc" } }),
+    prisma.restaurant.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
+    prisma.meal.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
   ]);
 
   const now = Date.now();

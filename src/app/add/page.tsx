@@ -13,8 +13,8 @@ export default async function AddPage({
   const todayStr = new Date().toISOString().split("T")[0];
 
   const [restaurants, meals] = await Promise.all([
-    prisma.restaurant.findMany({ orderBy: { name: "asc" } }),
-    prisma.meal.findMany({ orderBy: { name: "asc" } }),
+    prisma.restaurant.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
+    prisma.meal.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
   ]);
 
   // Edit mode: existing dinner by id

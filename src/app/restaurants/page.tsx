@@ -1,16 +1,34 @@
 export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/db";
-import { createRestaurant, updateRestaurant, deleteRestaurant } from "@/app/actions/restaurants";
+import { createRestaurant, updateRestaurant, deleteRestaurant, hideRestaurant, unhideRestaurant } from "@/app/actions/restaurants";
 import { SubmitButton } from "@/components/SubmitButton";
 import { Tags } from "@/components/Tags";
 import { CollapsingForm } from "@/components/CollapsingForm";
+import Link from "next/link";
 
-export default async function RestaurantsPage() {
-  const restaurants = await prisma.restaurant.findMany({
-    orderBy: { name: "asc" },
-    include: { _count: { select: { dinners: true } } },
-  });
+export default async function RestaurantsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ showHidden?: string }>;
+}) {
+  const { showHidden } = await searchParams;
+  const showingHidden = showHidden === "1";
+
+  const [restaurants, hiddenRestaurants] = await Promise.all([
+    prisma.restaurant.findMany({
+      where: { hidden: false },
+      orderBy: { name: "asc" },
+      include: { _count: { select: { dinners: true } } },
+    }),
+    showingHidden
+      ? prisma.restaurant.findMany({
+          where: { hidden: true },
+          orderBy: { name: "asc" },
+          include: { _count: { select: { dinners: true } } },
+        })
+      : Promise.resolve([]),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -121,15 +139,62 @@ export default async function RestaurantsPage() {
                       Save
                     </SubmitButton>
                   </CollapsingForm>
-                  <form action={deleteRestaurant.bind(null, r.id)}>
-                    <SubmitButton className="text-xs text-red-400 hover:text-red-600">
-                      Delete
-                    </SubmitButton>
-                  </form>
+                  {r._count.dinners > 0 ? (
+                    <form action={hideRestaurant.bind(null, r.id)}>
+                      <SubmitButton className="text-xs text-gray-400 hover:text-gray-600">
+                        Hide
+                      </SubmitButton>
+                    </form>
+                  ) : (
+                    <form action={deleteRestaurant.bind(null, r.id)}>
+                      <SubmitButton className="text-xs text-red-400 hover:text-red-600">
+                        Delete
+                      </SubmitButton>
+                    </form>
+                  )}
                 </div>
             </details>
           ))}
         </div>
+      )}
+
+      {/* Show hidden toggle */}
+      <div className="text-center">
+        <Link
+          href={showingHidden ? "/restaurants" : "/restaurants?showHidden=1"}
+          scroll={false}
+          className="text-xs text-gray-400 hover:text-gray-600"
+        >
+          {showingHidden ? "Hide hidden restaurants" : "Show hidden restaurants"}
+        </Link>
+      </div>
+
+      {/* Hidden restaurants */}
+      {showingHidden && hiddenRestaurants.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400">Hidden</h2>
+          <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+            {hiddenRestaurants.map((r) => (
+              <div key={r.id} className="flex items-center justify-between px-4 py-2.5">
+                <div className="flex-1 min-w-0">
+                  <span className="font-medium text-sm text-gray-400">{r.name}</span>
+                  <Tags tags={r.tags} className="mt-0.5" />
+                </div>
+                <div className="flex items-center gap-3 shrink-0 text-xs">
+                  <span className="text-gray-300 tabular-nums">{r._count.dinners}×</span>
+                  <form action={unhideRestaurant.bind(null, r.id)}>
+                    <SubmitButton className="text-xs text-indigo-500 hover:text-indigo-700">
+                      Unhide
+                    </SubmitButton>
+                  </form>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {showingHidden && hiddenRestaurants.length === 0 && (
+        <p className="text-gray-400 text-sm text-center">No hidden restaurants.</p>
       )}
     </div>
   );

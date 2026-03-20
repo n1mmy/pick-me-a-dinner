@@ -9,8 +9,8 @@ export default async function SuggestionsPage() {
   const todayStr = today.toISOString().split("T")[0];
 
   const [restaurants, meals, scoringDinners] = await Promise.all([
-    prisma.restaurant.findMany({ orderBy: { name: "asc" } }),
-    prisma.meal.findMany({ orderBy: { name: "asc" } }),
+    prisma.restaurant.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
+    prisma.meal.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
     prisma.dinner.findMany({ orderBy: { date: "desc" } }),
   ]);
 

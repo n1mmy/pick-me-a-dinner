@@ -1,15 +1,33 @@
 export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/db";
-import { createMeal, updateMeal, deleteMeal } from "@/app/actions/meals";
+import { createMeal, updateMeal, deleteMeal, hideMeal, unhideMeal } from "@/app/actions/meals";
 import { SubmitButton } from "@/components/SubmitButton";
 import { Tags } from "@/components/Tags";
+import Link from "next/link";
 
-export default async function MealsPage() {
-  const meals = await prisma.meal.findMany({
-    orderBy: { name: "asc" },
-    include: { _count: { select: { dinners: true } } },
-  });
+export default async function MealsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ showHidden?: string }>;
+}) {
+  const { showHidden } = await searchParams;
+  const showingHidden = showHidden === "1";
+
+  const [meals, hiddenMeals] = await Promise.all([
+    prisma.meal.findMany({
+      where: { hidden: false },
+      orderBy: { name: "asc" },
+      include: { _count: { select: { dinners: true } } },
+    }),
+    showingHidden
+      ? prisma.meal.findMany({
+          where: { hidden: true },
+          orderBy: { name: "asc" },
+          include: { _count: { select: { dinners: true } } },
+        })
+      : Promise.resolve([]),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -56,16 +74,24 @@ export default async function MealsPage() {
                   {m.notes && <p className="text-xs text-gray-400 mt-0.5">{m.notes}</p>}
                   <Tags tags={m.tags} className="mt-1" />
                 </div>
-                <form
-                  action={async () => {
-                    "use server";
-                    await deleteMeal(m.id);
-                  }}
-                >
-                  <SubmitButton className="text-xs text-red-400 hover:text-red-600">
-                    Delete
-                  </SubmitButton>
-                </form>
+                {m._count.dinners > 0 ? (
+                  <form action={hideMeal.bind(null, m.id)}>
+                    <SubmitButton className="text-xs text-gray-400 hover:text-gray-600">
+                      Hide
+                    </SubmitButton>
+                  </form>
+                ) : (
+                  <form
+                    action={async () => {
+                      "use server";
+                      await deleteMeal(m.id);
+                    }}
+                  >
+                    <SubmitButton className="text-xs text-red-400 hover:text-red-600">
+                      Delete
+                    </SubmitButton>
+                  </form>
+                )}
               </div>
               <details>
                 <summary className="cursor-pointer text-xs text-indigo-500 hover:text-indigo-700">Edit</summary>
@@ -99,6 +125,43 @@ export default async function MealsPage() {
             </li>
           ))}
         </ul>
+      )}
+
+      {/* Show hidden toggle */}
+      <div className="text-center">
+        <Link
+          href={showingHidden ? "/meals" : "/meals?showHidden=1"}
+          scroll={false}
+          className="text-xs text-gray-400 hover:text-gray-600"
+        >
+          {showingHidden ? "Hide hidden meals" : "Show hidden meals"}
+        </Link>
+      </div>
+
+      {/* Hidden meals */}
+      {showingHidden && hiddenMeals.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400">Hidden</h2>
+          <ul className="space-y-2">
+            {hiddenMeals.map((m) => (
+              <li key={m.id} className="bg-white rounded-lg border border-gray-200 px-4 py-3 flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-sm text-gray-400">{m.name}</p>
+                  <p className="text-xs text-gray-300">{m._count.dinners} dinner{m._count.dinners !== 1 ? "s" : ""}</p>
+                  <Tags tags={m.tags} className="mt-1" />
+                </div>
+                <form action={unhideMeal.bind(null, m.id)}>
+                  <SubmitButton className="text-xs text-indigo-500 hover:text-indigo-700">
+                    Unhide
+                  </SubmitButton>
+                </form>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {showingHidden && hiddenMeals.length === 0 && (
+        <p className="text-gray-400 text-sm text-center">No hidden meals.</p>
       )}
     </div>
   );

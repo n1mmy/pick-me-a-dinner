@@ -73,3 +73,13 @@ export async function deleteRestaurant(id: string) {
   await prisma.restaurant.delete({ where: { id } });
   revalidatePath("/restaurants");
 }
+
+export async function hideRestaurant(id: string) {
+  await prisma.restaurant.update({ where: { id }, data: { hidden: true } });
+  revalidatePath("/restaurants");
+}
+
+export async function unhideRestaurant(id: string) {
+  await prisma.restaurant.update({ where: { id }, data: { hidden: false } });
+  revalidatePath("/restaurants");
+}
