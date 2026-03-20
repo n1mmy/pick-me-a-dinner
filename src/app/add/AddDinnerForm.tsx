@@ -9,15 +9,6 @@ import { SubmitButton } from "@/components/SubmitButton";
 type Restaurant = { id: string; name: string };
 type Meal = { id: string; name: string };
 
-function formatDateLabel(dateStr: string) {
-  const d = new Date(dateStr + "T00:00:00.000Z");
-  return d.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    timeZone: "UTC",
-  });
-}
 
 export function AddDinnerForm({
   date,
@@ -45,15 +36,12 @@ export function AddDinnerForm({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Set dinner</h1>
-        <p className="text-gray-500 text-sm mt-1">{formatDateLabel(date)}</p>
-      </div>
+      <h1 className="text-2xl font-semibold">Set dinner</h1>
 
       <form action={dinnerId ? updateDinner : createDinner} className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
         {dinnerId
           ? <input type="hidden" name="id" value={dinnerId} />
-          : <input type="hidden" name="date" value={date} />
+          : <input type="date" name="date" defaultValue={date} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
         }
         <input type="hidden" name="type" value={type} />
 

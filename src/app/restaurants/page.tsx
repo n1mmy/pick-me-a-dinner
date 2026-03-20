@@ -64,19 +64,16 @@ export default async function RestaurantsPage() {
                   <p className="font-medium">{r.name}</p>
                   <p className="text-xs text-gray-400">
                     {r._count.dinners} dinner{r._count.dinners !== 1 ? "s" : ""}
-                    {r.phoneNumber && (
-                      <> · <a href={`tel:${r.phoneNumber}`} className="hover:underline">{r.phoneNumber}</a></>
-                    )}
                   </p>
-                  {r.orderUrl && (
-                    <a
-                      href={r.orderUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-indigo-500 hover:underline"
-                    >
-                      Order online ↗
-                    </a>
+                  {(r.phoneNumber || r.orderUrl) && (
+                    <div className="flex gap-3 mt-0.5">
+                      {r.phoneNumber && (
+                        <a href={`tel:${r.phoneNumber}`} className="text-xs text-gray-500 hover:underline">Call</a>
+                      )}
+                      {r.orderUrl && (
+                        <a href={r.orderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-500 hover:underline">Order online ↗</a>
+                      )}
+                    </div>
                   )}
                   {r.notes && <p className="text-xs text-gray-400 mt-0.5">{r.notes}</p>}
                   <Tags tags={r.tags} className="mt-1" />

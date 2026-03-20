@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/db";
-import { pickAndRedirect, deleteDinner } from "@/app/actions/dinners";
+import { deleteDinner } from "@/app/actions/dinners";
 import { SubmitButton } from "@/components/SubmitButton";
 import { LoadingLink } from "@/components/LoadingLink";
 import { Tags } from "@/components/Tags";
@@ -77,8 +77,17 @@ export default async function Home({
 
   type TagWithRecency = { tag: string; daysSince: number | null };
   type Suggestion = { type: "RESTAURANT" | "HOMECOOKED"; id: string; name: string; tagsWithRecency: TagWithRecency[]; orderUrl: string | null; phoneNumber: string | null; daysSinceLastOrder: number | null; score: number };
-  function pickTop<T extends { score: number }>(options: T[], n: number) {
-    return [...options].sort((a, b) => b.score - a.score).slice(0, n);
+  function pickTop<T extends { score: number; tagsWithRecency: { tag: string }[] }>(options: T[], n: number): T[] {
+    const sorted = [...options].sort((a, b) => b.score - a.score);
+    const tagCount = new Map<string, number>();
+    const result: T[] = [];
+    for (const option of sorted) {
+      if (result.length >= n) break;
+      if (option.tagsWithRecency.some(({ tag }) => (tagCount.get(tag) ?? 0) >= 2)) continue;
+      result.push(option);
+      for (const { tag } of option.tagsWithRecency) tagCount.set(tag, (tagCount.get(tag) ?? 0) + 1);
+    }
+    return result;
   }
   const restaurantSuggestions = pickTop(
     restaurants.map((r) => ({ type: "RESTAURANT" as const, id: r.id, name: r.name, tagsWithRecency: r.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })), orderUrl: r.orderUrl, phoneNumber: r.phoneNumber, daysSinceLastOrder: lastUsed.get(r.id) ?? null, score: tagAwareScore(r.id, r.tags) })),
@@ -131,6 +140,12 @@ export default async function Home({
                   <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
                 </div>
                 <div className="flex gap-3 items-center shrink-0 ml-4">
+                  {dinner.restaurant?.phoneNumber && (
+                    <a href={`tel:${dinner.restaurant.phoneNumber}`} className="text-sm text-gray-500 hover:underline">Call</a>
+                  )}
+                  {dinner.restaurant?.orderUrl && (
+                    <a href={dinner.restaurant.orderUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-indigo-500 hover:underline">Order ↗</a>
+                  )}
                   <LoadingLink
                     href={`/add?id=${dinner.id}`}
                     className="text-sm text-indigo-600 hover:underline"
@@ -144,12 +159,6 @@ export default async function Home({
               </div>
             ))}
             <div className="flex gap-3 pt-1 border-t border-gray-100">
-              <form action={pickAndRedirect}>
-                <input type="hidden" name="date" value={todayStr} />
-                <SubmitButton className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
-                  Pick another
-                </SubmitButton>
-              </form>
               <LoadingLink
                 href={`/add?date=${todayStr}`}
                 className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50"
@@ -184,11 +193,6 @@ export default async function Home({
                                 ? "last ordered yesterday"
                                 : `last ordered ${s.daysSinceLastOrder} days ago`}
                             </p>
-                            {s.phoneNumber && (
-                              <p className="text-xs text-gray-400 mt-0.5">
-                                <a href={`tel:${s.phoneNumber}`} className="hover:underline">{s.phoneNumber}</a>
-                              </p>
-                            )}
                             {s.tagsWithRecency.length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {s.tagsWithRecency.map(({ tag, daysSince }) => (
@@ -203,6 +207,9 @@ export default async function Home({
                             )}
                           </LoadingLink>
                           <div className="flex items-center gap-3 shrink-0 ml-4">
+                            {s.phoneNumber && (
+                              <a href={`tel:${s.phoneNumber}`} className="text-xs text-gray-500 hover:underline">Call</a>
+                            )}
                             {s.orderUrl && (
                               <a href={s.orderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-500 hover:underline">
                                 Order ↗
