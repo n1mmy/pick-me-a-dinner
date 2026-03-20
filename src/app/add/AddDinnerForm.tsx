@@ -38,7 +38,7 @@ export function AddDinnerForm({
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Set dinner</h1>
 
-      <form action={dinnerId ? updateDinner : createDinner} className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+      <form action={dinnerId ? updateDinner : createDinner} className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-4">
         {dinnerId
           ? <input type="hidden" name="id" value={dinnerId} />
           : <input type="date" name="date" defaultValue={date} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
@@ -109,14 +109,14 @@ export function AddDinnerForm({
 
         <SubmitButton
           disabled={options.length === 0}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-40"
+          className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors disabled:opacity-40"
         >
           Save dinner
         </SubmitButton>
       </form>
 
       {/* Inline create */}
-      <details className="bg-white rounded-xl border border-gray-200 p-5">
+      <details className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
         <summary className="cursor-pointer text-sm font-medium text-gray-700">
           + Add new {type === "RESTAURANT" ? "restaurant" : "meal"}
         </summary>
@@ -147,7 +147,7 @@ export function AddDinnerForm({
             </>
           )}
           <SubmitButton
-            className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-900"
+            className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-900 transition-colors"
           >
             Add
           </SubmitButton>

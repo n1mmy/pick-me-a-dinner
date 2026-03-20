@@ -118,8 +118,11 @@ export default async function Home({
   return (
     <div className="space-y-6">
       {/* Tonight */}
-      <section className="bg-white rounded-xl border border-gray-200 p-5">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">Tonight</h2>
+      <section className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-gradient-to-r from-indigo-50 to-violet-50 border-b border-indigo-100 px-5 py-3">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-indigo-400">Tonight</h2>
+        </div>
+        <div className="p-5">
         {todayDinners.length > 0 ? (
           <div className="space-y-3">
             {todayDinners.map((dinner) => (
@@ -178,7 +181,7 @@ export default async function Home({
                     <p className="text-xs font-medium text-gray-400 mb-1">Restaurants</p>
                     <ul className="space-y-2">
                       {restaurantSuggestions.map((s) => (
-                        <li key={s.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 hover:bg-gray-100 transition-colors">
+                        <li key={s.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 hover:bg-indigo-50 border border-transparent hover:border-indigo-100 transition-all">
                           <LoadingLink
                             href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
                             className="flex-1 min-w-0"
@@ -232,7 +235,7 @@ export default async function Home({
                         <li key={s.id}>
                           <LoadingLink
                             href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
-                            className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 hover:bg-gray-100 transition-colors"
+                            className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 hover:bg-indigo-50 border border-transparent hover:border-indigo-100 transition-all"
                           >
                             <div>
                               <p className="font-medium text-sm">{s.name}</p>
@@ -277,6 +280,7 @@ export default async function Home({
             </div>
           </div>
         )}
+        </div>
       </section>
 
       {/* Recent */}
@@ -289,7 +293,7 @@ export default async function Home({
             return (
               <li
                 key={dateStr}
-                className="bg-white rounded-lg border border-gray-200 px-4 py-3 space-y-2"
+                className="bg-white rounded-lg border border-gray-200 shadow-sm px-4 py-3 space-y-2"
               >
                 <div className="flex justify-between items-center">
                   <p className="text-xs text-gray-400 font-medium">{formatDate(day)}</p>

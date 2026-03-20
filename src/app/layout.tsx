@@ -14,16 +14,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${geist.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-gray-50 text-gray-900 font-sans">
-        <nav className="bg-white border-b border-gray-200 px-4 py-3">
+        <nav className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm px-4 py-3">
           <div className="max-w-2xl mx-auto flex items-center gap-6">
-            <Link href="/" className="font-semibold text-lg text-indigo-600 hover:text-indigo-800">
+            <Link href="/" className="font-bold text-lg text-indigo-600 hover:text-indigo-700 transition-colors">
               🍽 Pick Me a Dinner
             </Link>
-            <div className="flex gap-4 text-sm text-gray-600">
-              <Link href="/history" className="hover:text-gray-900">History</Link>
-              <Link href="/suggestions" className="hover:text-gray-900">Suggestions</Link>
-              <Link href="/restaurants" className="hover:text-gray-900">Restaurants</Link>
-              <Link href="/meals" className="hover:text-gray-900">Meals</Link>
+            <div className="flex gap-1 text-sm text-gray-500">
+              <Link href="/history" className="px-2.5 py-1 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors">History</Link>
+              <Link href="/suggestions" className="px-2.5 py-1 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors">Suggestions</Link>
+              <Link href="/restaurants" className="px-2.5 py-1 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors">Restaurants</Link>
+              <Link href="/meals" className="px-2.5 py-1 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors">Meals</Link>
             </div>
           </div>
         </nav>

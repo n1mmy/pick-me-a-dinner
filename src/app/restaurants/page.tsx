@@ -35,7 +35,7 @@ export default async function RestaurantsPage({
       <h1 className="text-2xl font-semibold">Restaurants</h1>
 
       {/* Add form */}
-      <form action={createRestaurant} className="bg-white rounded-xl border border-gray-200 p-5 space-y-3">
+      <form action={createRestaurant} className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-3">
         <h2 className="font-medium text-gray-700">Add restaurant</h2>
         <input
           name="name"
@@ -66,7 +66,7 @@ export default async function RestaurantsPage({
           placeholder="Tags (comma-separated, e.g. pizza, italian)"
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
         />
-        <SubmitButton className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
+        <SubmitButton className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
           Add
         </SubmitButton>
       </form>
@@ -75,7 +75,7 @@ export default async function RestaurantsPage({
       {restaurants.length === 0 ? (
         <p className="text-gray-400 text-sm">No restaurants yet.</p>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm divide-y divide-gray-100">
           {restaurants.map((r) => (
             <details key={r.id} className="group">
                 {/* Compact row as summary — clicking name/Edit toggles the form */}
@@ -135,7 +135,7 @@ export default async function RestaurantsPage({
                       placeholder="Tags (comma-separated)"
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
                     />
-                    <SubmitButton className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
+                    <SubmitButton className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
                       Save
                     </SubmitButton>
                   </CollapsingForm>
@@ -173,7 +173,7 @@ export default async function RestaurantsPage({
       {showingHidden && hiddenRestaurants.length > 0 && (
         <div className="space-y-2">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400">Hidden</h2>
-          <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm divide-y divide-gray-100">
             {hiddenRestaurants.map((r) => (
               <div key={r.id} className="flex items-center justify-between px-4 py-2.5">
                 <div className="flex-1 min-w-0">
