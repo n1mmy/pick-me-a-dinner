@@ -54,7 +54,7 @@ export default async function HistoryPage({
             defaultValue={new Date().toISOString().split("T")[0]}
             className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
-          <SubmitButton className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
+          <SubmitButton className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
             + Add
           </SubmitButton>
         </form>
@@ -67,7 +67,7 @@ export default async function HistoryPage({
           {dinners.map((dinner) => (
             <li
               key={dinner.id}
-              className="bg-white rounded-lg border border-gray-200 px-4 py-3 flex justify-between items-center"
+              className="bg-white rounded-lg border border-gray-200 shadow-sm px-4 py-3 flex justify-between items-center"
             >
               <div>
                 <p className="font-medium">
