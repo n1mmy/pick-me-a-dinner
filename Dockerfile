@@ -3,13 +3,13 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+COPY package.json package-lock.json ./
 COPY prisma ./prisma
-RUN yarn install --ignore-engines
+RUN npm install --ignore-engines
 
 COPY . .
-RUN yarn prisma generate
-RUN yarn build
+RUN npx prisma generate
+RUN npm run build
 
 # Production stage
 FROM node:20-alpine AS runner

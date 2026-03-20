@@ -18,4 +18,4 @@ services:
         - action: rebuild
           path: package.json
         - action: rebuild
-          path: yarn.lock
+          path: package-lock.json

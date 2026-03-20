@@ -9,10 +9,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-yarn dev              # start dev server (localhost:3000)
-yarn build            # production build
-yarn db:migrate       # create and apply a new migration (requires DATABASE_URL)
-yarn db:generate      # regenerate Prisma client after schema changes
+npm run dev           # start dev server (localhost:3000)
+npm run build         # production build
+npm run db:migrate    # create and apply a new migration (requires DATABASE_URL)
+npm run db:generate   # regenerate Prisma client after schema changes
 ```
 
 Local dev with Docker (app + postgres):
@@ -22,7 +22,7 @@ docker-compose up
 
 Run migrations manually:
 ```bash
-yarn prisma migrate deploy
+npx prisma migrate deploy
 ```
 
 ## Architecture
