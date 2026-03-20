@@ -5,6 +5,7 @@ import { deleteDinner } from "@/app/actions/dinners";
 import { SubmitButton } from "@/components/SubmitButton";
 import { LoadingLink } from "@/components/LoadingLink";
 import { Tags } from "@/components/Tags";
+import { SuggestionsList } from "@/app/SuggestionsList";
 
 function toDateStr(d: Date) {
   return d.toISOString().split("T")[0];
@@ -89,13 +90,13 @@ export default async function Home({
     }
     return result;
   }
-  const restaurantSuggestions = pickTop(
+  const restaurantCandidates = pickTop(
     restaurants.map((r) => ({ type: "RESTAURANT" as const, id: r.id, name: r.name, tagsWithRecency: r.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })), orderUrl: r.orderUrl, phoneNumber: r.phoneNumber, daysSinceLastOrder: lastUsed.get(r.id) ?? null, score: tagAwareScore(r.id, r.tags) })),
-    3,
+    8,
   );
-  const mealSuggestions = pickTop(
+  const mealCandidates = pickTop(
     meals.map((m) => ({ type: "HOMECOOKED" as const, id: m.id, name: m.name, tagsWithRecency: m.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })), orderUrl: null, phoneNumber: null, daysSinceLastOrder: lastUsed.get(m.id) ?? null, score: tagAwareScore(m.id, m.tags) })),
-    2,
+    5,
   );
 
   const todayStr = toDateStr(today);
@@ -172,103 +173,14 @@ export default async function Home({
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {restaurantSuggestions.length === 0 && mealSuggestions.length === 0 ? (
+            {restaurantCandidates.length === 0 && mealCandidates.length === 0 ? (
               <p className="text-gray-500">No dinner set for tonight yet.</p>
             ) : (
-              <div className="space-y-4">
-                {restaurantSuggestions.length > 0 && (
-                  <div>
-                    <p className="text-xs font-medium text-gray-400 mb-1">Restaurants</p>
-                    <ul className="space-y-2">
-                      {restaurantSuggestions.map((s) => (
-                        <li key={s.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 hover:bg-indigo-50 border border-transparent hover:border-indigo-100 transition-all">
-                          <LoadingLink
-                            href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
-                            className="flex-1 min-w-0"
-                          >
-                            <p className="font-medium text-sm">{s.name}</p>
-                            <p className="text-xs text-gray-400">
-                              {s.daysSinceLastOrder === null
-                                ? "never ordered"
-                                : s.daysSinceLastOrder === 0
-                                ? "last ordered today"
-                                : s.daysSinceLastOrder === 1
-                                ? "last ordered yesterday"
-                                : `last ordered ${s.daysSinceLastOrder} days ago`}
-                            </p>
-                            {s.tagsWithRecency.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {s.tagsWithRecency.map(({ tag, daysSince }) => (
-                                  <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs font-medium">
-                                    {tag}
-                                    <span className="text-indigo-400 font-normal">
-                                      {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d ago`}
-                                    </span>
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                          </LoadingLink>
-                          <div className="flex items-center gap-3 shrink-0 ml-4">
-                            {s.phoneNumber && (
-                              <a href={`tel:${s.phoneNumber}`} className="text-xs text-gray-500 hover:underline">Call</a>
-                            )}
-                            {s.orderUrl && (
-                              <a href={s.orderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-500 hover:underline">
-                                Order ↗
-                              </a>
-                            )}
-                            <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="text-sm text-indigo-600 font-medium">
-                              Choose →
-                            </LoadingLink>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {mealSuggestions.length > 0 && (
-                  <div>
-                    <p className="text-xs font-medium text-gray-400 mb-1">Homecooked</p>
-                    <ul className="space-y-2">
-                      {mealSuggestions.map((s) => (
-                        <li key={s.id}>
-                          <LoadingLink
-                            href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
-                            className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 hover:bg-indigo-50 border border-transparent hover:border-indigo-100 transition-all"
-                          >
-                            <div>
-                              <p className="font-medium text-sm">{s.name}</p>
-                              <p className="text-xs text-gray-400">
-                                {s.daysSinceLastOrder === null
-                                  ? "never cooked"
-                                  : s.daysSinceLastOrder === 0
-                                  ? "last cooked today"
-                                  : s.daysSinceLastOrder === 1
-                                  ? "last cooked yesterday"
-                                  : `last cooked ${s.daysSinceLastOrder} days ago`}
-                              </p>
-                              {s.tagsWithRecency.length > 0 && (
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {s.tagsWithRecency.map(({ tag, daysSince }) => (
-                                    <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-xs font-medium">
-                                      {tag}
-                                      <span className="text-indigo-400 font-normal">
-                                        {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d ago`}
-                                      </span>
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                            <span className="text-sm text-indigo-600 font-medium shrink-0 ml-4">Choose →</span>
-                          </LoadingLink>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
+              <SuggestionsList
+                restaurantCandidates={restaurantCandidates}
+                mealCandidates={mealCandidates}
+                todayStr={todayStr}
+              />
             )}
             <div className="flex gap-3">
               <LoadingLink
