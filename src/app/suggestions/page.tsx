@@ -58,7 +58,7 @@ export default async function SuggestionsPage() {
       tagsWithRecency: r.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })),
       score: tagAwareScore(r.id, r.tags),
     })),
-    3,
+    5,
   );
 
   const mealSuggestions = pickTop<Suggestion>(
@@ -69,7 +69,7 @@ export default async function SuggestionsPage() {
       tagsWithRecency: m.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })),
       score: tagAwareScore(m.id, m.tags),
     })),
-    2,
+    3,
   );
 
   function daysSinceLabel(n: number | null, verb: "ordered" | "cooked") {
