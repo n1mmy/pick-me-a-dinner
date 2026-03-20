@@ -44,6 +44,7 @@ export default async function RestaurantsPage({
         <div className="grid grid-cols-2 gap-3">
           <input name="phoneNumber" placeholder="Phone number" className={halfInputCls} />
           <input name="orderUrl" placeholder="Order URL" className={halfInputCls} />
+          <input name="menuUrl" placeholder="Menu URL" className={`${halfInputCls} col-span-2`} />
         </div>
         <textarea name="notes" placeholder="Notes" rows={2} className={inputCls} />
         <input name="tags" placeholder="Tags (comma-separated, e.g. pizza, italian)" className={inputCls} />
@@ -73,6 +74,9 @@ export default async function RestaurantsPage({
                     {r.phoneNumber && (
                       <a href={`tel:${r.phoneNumber}`} className="text-gray-500 dark:text-gray-400 hover:underline">Call</a>
                     )}
+                    {r.menuUrl && (
+                      <a href={r.menuUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-500 dark:text-indigo-400 hover:underline">Menu ↗</a>
+                    )}
                     {r.orderUrl && (
                       <a href={r.orderUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-500 dark:text-indigo-400 hover:underline">Order ↗</a>
                     )}
@@ -85,6 +89,7 @@ export default async function RestaurantsPage({
                     <div className="grid grid-cols-2 gap-2">
                       <input name="phoneNumber" defaultValue={r.phoneNumber ?? ""} placeholder="Phone number" className={halfInputCls} />
                       <input name="orderUrl" defaultValue={r.orderUrl ?? ""} placeholder="Order URL" className={halfInputCls} />
+                      <input name="menuUrl" defaultValue={r.menuUrl ?? ""} placeholder="Menu URL" className={`${halfInputCls} col-span-2`} />
                     </div>
                     <textarea name="notes" defaultValue={r.notes ?? ""} placeholder="Notes" rows={2} className={inputCls} />
                     <input name="tags" defaultValue={r.tags.join(", ")} placeholder="Tags (comma-separated)" className={inputCls} />
