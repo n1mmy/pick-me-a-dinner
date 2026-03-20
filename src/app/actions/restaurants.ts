@@ -3,13 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
-
-function parseTags(formData: FormData): string[] {
-  return ((formData.get("tags") as string) ?? "")
-    .split(",")
-    .map((t) => t.trim())
-    .filter(Boolean);
-}
+import { parseTags } from "@/lib/utils";
 
 export async function createRestaurant(formData: FormData) {
   const name = (formData.get("name") as string).trim();

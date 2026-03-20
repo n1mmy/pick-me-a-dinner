@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { DinnerType } from "@/generated/prisma/enums";
+import { computeLastUsed, tagAwareScore, pickTop, pickBest } from "@/lib/scoring";
 
 export type TagWithRecency = { tag: string; daysSince: number | null };
 export type Suggestion = {
@@ -26,40 +27,11 @@ export async function fetchMoreSuggestions(
     prisma.meal.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
   ]);
 
-  const now = Date.now();
-  const lastUsed = new Map<string, number>();
   const entityTags = new Map<string, string[]>();
   for (const r of restaurants) entityTags.set(r.id, r.tags);
   for (const m of meals) entityTags.set(m.id, m.tags);
 
-  const tagLastUsed = new Map<string, number>();
-  for (const dinner of scoringDinners) {
-    const key = (dinner.restaurantId ?? dinner.mealId)!;
-    const daysSince = Math.floor((now - dinner.date.getTime()) / 86_400_000);
-    if (!lastUsed.has(key) || lastUsed.get(key)! > daysSince) lastUsed.set(key, daysSince);
-    for (const tag of entityTags.get(key) ?? []) {
-      if (!tagLastUsed.has(tag) || tagLastUsed.get(tag)! > daysSince) tagLastUsed.set(tag, daysSince);
-    }
-  }
-
-  function tagAwareScore(id: string, tags: string[]): number {
-    const entityDays = lastUsed.get(id) ?? Infinity;
-    const tagMinDays = tags.length > 0 ? Math.min(...tags.map((t) => tagLastUsed.get(t) ?? Infinity)) : Infinity;
-    return Math.min(Math.min(entityDays, tagMinDays), 21) + Math.random() * 3;
-  }
-
-  function pickTop<T extends { score: number; tagsWithRecency: { tag: string }[] }>(options: T[], n: number): T[] {
-    const sorted = [...options].sort((a, b) => b.score - a.score);
-    const tagCount = new Map<string, number>();
-    const result: T[] = [];
-    for (const option of sorted) {
-      if (result.length >= n) break;
-      if (option.tagsWithRecency.some(({ tag }) => (tagCount.get(tag) ?? 0) >= 2)) continue;
-      result.push(option);
-      for (const { tag } of option.tagsWithRecency) tagCount.set(tag, (tagCount.get(tag) ?? 0) + 1);
-    }
-    return result;
-  }
+  const { lastUsed, tagLastUsed } = computeLastUsed(scoringDinners, entityTags);
 
   const restaurantCandidates = pickTop(
     restaurants
@@ -72,7 +44,7 @@ export async function fetchMoreSuggestions(
         orderUrl: r.orderUrl,
         phoneNumber: r.phoneNumber,
         daysSinceLastOrder: lastUsed.get(r.id) ?? null,
-        score: tagAwareScore(r.id, r.tags),
+        score: tagAwareScore(r.id, r.tags, lastUsed, tagLastUsed),
       })),
     8,
   );
@@ -88,7 +60,7 @@ export async function fetchMoreSuggestions(
         orderUrl: null,
         phoneNumber: null,
         daysSinceLastOrder: lastUsed.get(m.id) ?? null,
-        score: tagAwareScore(m.id, m.tags),
+        score: tagAwareScore(m.id, m.tags, lastUsed, tagLastUsed),
       })),
     5,
   );
@@ -161,37 +133,29 @@ export async function pickAndRedirect(formData: FormData) {
     prisma.meal.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
   ]);
 
-  const now = Date.now();
-  const lastUsed = new Map<string, number>();
-  for (const dinner of recentDinners) {
-    const key = (dinner.restaurantId ?? dinner.mealId)!;
-    const daysSince = Math.floor((now - dinner.date.getTime()) / 86_400_000);
-    if (!lastUsed.has(key) || lastUsed.get(key)! > daysSince) {
-      lastUsed.set(key, daysSince);
-    }
-  }
+  const entityTags = new Map<string, string[]>();
+  for (const r of restaurants) entityTags.set(r.id, r.tags);
+  for (const m of meals) entityTags.set(m.id, m.tags);
+  const { lastUsed } = computeLastUsed(recentDinners, entityTags);
 
   type Option = { type: DinnerType; id: string; score: number };
   const options: Option[] = [
     ...restaurants.map((r) => ({
       type: "RESTAURANT" as DinnerType,
       id: r.id,
-      score: lastUsed.get(r.id) ?? 21,
+      score: Math.min(lastUsed.get(r.id) ?? 21, 21),
     })),
     ...meals.map((m) => ({
       type: "HOMECOOKED" as DinnerType,
       id: m.id,
-      score: lastUsed.get(m.id) ?? 21,
+      score: Math.min(lastUsed.get(m.id) ?? 21, 21),
     })),
   ];
 
-  if (options.length === 0) {
+  const pick = pickBest(options);
+  if (!pick) {
     redirect(`/add?date=${date}`);
   }
-
-  const maxScore = Math.max(...options.map((o) => o.score));
-  const best = options.filter((o) => o.score === maxScore);
-  const pick = best[Math.floor(Math.random() * best.length)];
 
   redirect(`/add?date=${date}&suggestedId=${pick.id}&type=${pick.type}`);
 }
