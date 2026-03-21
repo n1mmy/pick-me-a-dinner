@@ -38,9 +38,9 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
 
   if (!isFetching && visibleRestaurants.length === 0 && visibleMeals.length === 0) {
     return (
-      <p className="text-sm text-gray-400 py-2">
+      <p className="text-sm text-muted py-2">
         No more suggestions —{" "}
-        <LoadingLink href={`/add?date=${todayStr}`} className="text-indigo-500 hover:underline">
+        <LoadingLink href={`/add?date=${todayStr}`} className="text-pink hover:text-fg transition-colors">
           choose yourself
         </LoadingLink>
         .
@@ -49,20 +49,20 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {(visibleRestaurants.length > 0 || (isFetching && allRestaurants.filter((s) => !rejectedIds.includes(s.id)).length === 0)) && (
         <div>
-          <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mb-1">Restaurants</p>
+          <p className="font-[family-name:var(--font-unica)] text-sm text-muted mb-3">Restaurants</p>
           {visibleRestaurants.length > 0 ? (
-            <ul className="space-y-2">
+            <ul>
               {visibleRestaurants.map((s) => (
-                <li key={s.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 rounded-lg px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-800 transition-all">
+                <li key={s.id} className="border-b border-dashed border-muted/30 py-3 flex items-center justify-between group hover:bg-surface/50 -mx-2 px-2 rounded transition-colors duration-150">
                   <LoadingLink
                     href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
                     className="flex-1 min-w-0"
                   >
-                    <p className="font-medium text-sm">{s.name}</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                    <p className="text-sm text-fg group-hover:text-fg transition-colors">{s.name}</p>
+                    <p className="text-xs text-muted">
                       {s.daysSinceLastOrder === null
                         ? "never ordered"
                         : s.daysSinceLastOrder === 0
@@ -72,12 +72,12 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                         : `last ordered ${s.daysSinceLastOrder} days ago`}
                     </p>
                     {s.tagsWithRecency.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1">
+                      <div className="flex flex-wrap gap-1.5 mt-1.5">
                         {s.tagsWithRecency.map(({ tag, daysSince }) => (
-                          <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 rounded text-xs font-medium">
-                            {tag}
-                            <span className="text-indigo-400 dark:text-indigo-500 font-normal">
-                              {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d ago`}
+                          <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-teal/15 text-teal rounded text-xs">
+                            #{tag}
+                            <span className="text-muted text-[10px]">
+                              {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d`}
                             </span>
                           </span>
                         ))}
@@ -86,44 +86,44 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                   </LoadingLink>
                   <div className="flex items-center gap-3 shrink-0 ml-4">
                     {s.phoneNumber && (
-                      <a href={`tel:${s.phoneNumber}`} className="text-xs text-gray-500 dark:text-gray-400 hover:underline">Call</a>
+                      <a href={`tel:${s.phoneNumber}`} className="text-xs text-muted hover:text-pink transition-colors">Call</a>
                     )}
                     {s.orderUrl && (
-                      <a href={s.orderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-500 dark:text-indigo-400 hover:underline">
+                      <a href={s.orderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-teal hover:text-fg transition-colors">
                         Order ↗
                       </a>
                     )}
                     <button
                       onClick={() => reject(s.id)}
-                      className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
+                      className="text-xs text-muted/60 hover:text-pink cursor-pointer transition-colors"
                     >
-                      No thanks
+                      Nah
                     </button>
-                    <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">
-                      Choose →
+                    <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="text-sm text-pink hover:text-fg font-[family-name:var(--font-unica)] transition-colors">
+                      Pick →
                     </LoadingLink>
                   </div>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-xs text-gray-400 animate-pulse py-1">Finding more…</p>
+            <p className="text-xs text-muted animate-pulse py-1">Finding more…</p>
           )}
         </div>
       )}
       {(visibleMeals.length > 0 || (isFetching && allMeals.filter((s) => !rejectedIds.includes(s.id)).length === 0)) && (
         <div>
-          <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mb-1">Homecooked</p>
+          <p className="font-[family-name:var(--font-unica)] text-sm text-muted mb-3">Homecooked</p>
           {visibleMeals.length > 0 ? (
-            <ul className="space-y-2">
+            <ul>
               {visibleMeals.map((s) => (
-                <li key={s.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 rounded-lg px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-800 transition-all">
+                <li key={s.id} className="border-b border-dashed border-muted/30 py-3 flex items-center justify-between group hover:bg-surface/50 -mx-2 px-2 rounded transition-colors duration-150">
                   <LoadingLink
                     href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
                     className="flex-1 min-w-0"
                   >
-                    <p className="font-medium text-sm">{s.name}</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                    <p className="text-sm text-fg group-hover:text-fg transition-colors">{s.name}</p>
+                    <p className="text-xs text-muted">
                       {s.daysSinceLastOrder === null
                         ? "never cooked"
                         : s.daysSinceLastOrder === 0
@@ -133,12 +133,12 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                         : `last cooked ${s.daysSinceLastOrder} days ago`}
                     </p>
                     {s.tagsWithRecency.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1">
+                      <div className="flex flex-wrap gap-1.5 mt-1.5">
                         {s.tagsWithRecency.map(({ tag, daysSince }) => (
-                          <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 rounded text-xs font-medium">
-                            {tag}
-                            <span className="text-indigo-400 dark:text-indigo-500 font-normal">
-                              {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d ago`}
+                          <span key={tag} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-teal/15 text-teal rounded text-xs">
+                            #{tag}
+                            <span className="text-muted text-[10px]">
+                              {daysSince === null ? "never" : daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince}d`}
                             </span>
                           </span>
                         ))}
@@ -148,19 +148,19 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                   <div className="flex items-center gap-3 shrink-0 ml-4">
                     <button
                       onClick={() => reject(s.id)}
-                      className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
+                      className="text-xs text-muted/60 hover:text-pink cursor-pointer transition-colors"
                     >
-                      No thanks
+                      Nah
                     </button>
-                    <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">
-                      Choose →
+                    <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="text-sm text-pink hover:text-fg font-[family-name:var(--font-unica)] transition-colors">
+                      Pick →
                     </LoadingLink>
                   </div>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-xs text-gray-400 animate-pulse py-1">Finding more…</p>
+            <p className="text-xs text-muted animate-pulse py-1">Finding more…</p>
           )}
         </div>
       )}

@@ -8,10 +8,6 @@ import { Tags } from "@/components/Tags";
 
 const PAGE_SIZE = 30;
 
-function toDateStr(d: Date) {
-  return d.toISOString().split("T")[0];
-}
-
 function formatDate(d: Date) {
   return d.toLocaleDateString("en-US", {
     weekday: "short",
@@ -44,86 +40,84 @@ export default async function HistoryPage({
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Dinner history</h1>
+        <div>
+          <h1 className="font-[family-name:var(--font-unica)] text-2xl text-fg">Dinner history</h1>
+          <hr className="border-0 border-b-[3px] border-dashed border-pink w-2/3 mt-1" />
+        </div>
         <form method="get" action="/add" className="flex items-center gap-2">
           <input
             type="date"
             name="date"
             defaultValue={new Date().toISOString().split("T")[0]}
-            className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="border border-muted/40 rounded px-3 py-1.5 text-sm bg-surface text-fg focus:outline-none focus:ring-1 focus:ring-teal"
           />
-          <SubmitButton className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+          <SubmitButton className="px-3 py-1.5 bg-teal text-white rounded text-sm font-[family-name:var(--font-unica)] hover:opacity-80 transition-opacity cursor-pointer">
             + Add
           </SubmitButton>
         </form>
       </div>
 
       {dinners.length === 0 ? (
-        <p className="text-gray-400 dark:text-gray-500">No dinners recorded yet.</p>
+        <p className="text-muted">No dinners recorded yet.</p>
       ) : (
-        <ul className="space-y-2">
+        <div>
           {dinners.map((dinner) => (
-            <li
+            <div
               key={dinner.id}
-              className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm px-4 py-3 flex justify-between items-center"
+              className="border-b border-dashed border-muted/30 py-3 flex justify-between items-start"
             >
               <div>
-                <p className="font-medium">
+                <p className="text-sm text-fg">
                   {dinner.restaurant?.name ?? dinner.meal?.name}
                 </p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">
-                  {formatDate(dinner.date)} · {dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
+                <p className="text-xs text-muted">
+                  <span className="font-[family-name:var(--font-unica)]">{formatDate(dinner.date)}</span> · {dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
                 </p>
                 {(dinner.restaurant?.notes ?? dinner.meal?.notes) && (
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
+                  <p className="text-xs text-muted mt-0.5 italic">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
                 )}
                 {dinner.notes && (
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{dinner.notes}</p>
+                  <p className="text-xs text-fg/60 mt-0.5">{dinner.notes}</p>
                 )}
                 <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
               </div>
-              <div className="flex gap-3 items-center">
+              <div className="flex gap-3 items-center shrink-0 ml-4">
                 <LoadingLink
                   href={`/add?id=${dinner.id}`}
-                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
+                  className="text-xs text-teal hover:text-pink transition-colors"
                 >
                   Edit
                 </LoadingLink>
-                <form
-                  action={async () => {
-                    "use server";
-                    await deleteDinner(dinner.id);
-                  }}
-                >
-                  <SubmitButton className="text-xs text-red-400 hover:text-red-600">
+                <form action={async () => { "use server"; await deleteDinner(dinner.id); }}>
+                  <SubmitButton className="text-xs text-pink/60 hover:text-pink transition-colors cursor-pointer">
                     Delete
                   </SubmitButton>
                 </form>
               </div>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
 
       {totalPages > 1 && (
-        <div className="flex gap-2 pt-2">
+        <div className="flex gap-2 pt-2 items-center">
           {page > 1 && (
             <LoadingLink
               href={`/history?page=${page - 1}`}
-              className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-3 py-1.5 border border-dashed border-muted/40 rounded text-sm text-muted hover:text-pink hover:border-pink/40 transition-colors"
             >
               ← Previous
             </LoadingLink>
           )}
-          <span className="px-3 py-1.5 text-sm text-gray-400 dark:text-gray-500">
+          <span className="px-3 py-1.5 text-sm text-muted">
             Page {page} of {totalPages}
           </span>
           {page < totalPages && (
             <LoadingLink
               href={`/history?page=${page + 1}`}
-              className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-3 py-1.5 border border-dashed border-muted/40 rounded text-sm text-muted hover:text-pink hover:border-pink/40 transition-colors"
             >
               Next →
             </LoadingLink>
