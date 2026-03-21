@@ -8,10 +8,10 @@ export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
     environment: "node",
-    setupFiles: ["src/tests/setup.ts"],
     globals: true,
     env: { NODE_ENV: "test" },
     fileParallelism: false,
+    include: ["**/*.test.ts", "**/*.unit.test.ts", "**/*.db.test.ts"],
     exclude: ["**/.claude/**", "**/node_modules/**"],
   },
 });
