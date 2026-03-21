@@ -23,6 +23,8 @@ model Restaurant {
   hidden      Boolean  @default(false)
   createdAt   DateTime @default(now())
   dinners     Dinner[]
+
+  @@index([hidden])
 }
 
 model Meal {
@@ -33,6 +35,8 @@ model Meal {
   hidden    Boolean  @default(false)
   createdAt DateTime @default(now())
   dinners   Dinner[]
+
+  @@index([hidden])
 }
 
 model Dinner {
@@ -45,4 +49,6 @@ model Dinner {
   restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
   meal         Meal?       @relation(fields: [mealId], references: [id])
 
+  @@index([restaurantId])
+  @@index([mealId])
 }

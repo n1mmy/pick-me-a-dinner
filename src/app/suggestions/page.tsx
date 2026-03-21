@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/db";
-import { computeLastUsed, tagAwareScore, pickTop } from "@/lib/scoring";
+import { buildEntityTags, computeLastUsed, tagAwareScore, pickTop } from "@/lib/scoring";
 import type { Suggestion } from "@/app/actions/dinners";
 import { SuggestionsPageList } from "./SuggestionsPageList";
 
@@ -13,13 +13,13 @@ export default async function SuggestionsPage() {
   const [restaurants, meals, scoringDinners] = await Promise.all([
     prisma.restaurant.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
     prisma.meal.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
-    prisma.dinner.findMany({ orderBy: { date: "desc" } }),
+    prisma.dinner.findMany({
+      where: { date: { gte: new Date(Date.now() - 90 * 86_400_000) } },
+      orderBy: { date: "desc" },
+    }),
   ]);
 
-  const entityTags = new Map<string, string[]>();
-  for (const r of restaurants) entityTags.set(r.id, r.tags);
-  for (const m of meals) entityTags.set(m.id, m.tags);
-
+  const entityTags = buildEntityTags(restaurants, meals);
   const { lastUsed, tagLastUsed } = computeLastUsed(scoringDinners, entityTags);
 
   const restaurantSuggestions = pickTop<Suggestion>(

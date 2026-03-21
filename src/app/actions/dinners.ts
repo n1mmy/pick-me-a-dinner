@@ -12,7 +12,7 @@ import {
   idSchema,
   parseFormData,
 } from "@/lib/validation";
-import { computeLastUsed, tagAwareScore, pickTop, pickBest } from "@/lib/scoring";
+import { buildEntityTags, computeLastUsed, tagAwareScore, pickTop, pickBest } from "@/lib/scoring";
 
 export type TagWithRecency = { tag: string; daysSince: number | null };
 export type Suggestion = {
@@ -32,15 +32,15 @@ export async function fetchMoreSuggestions(
   z.array(z.string()).parse(excludedIds);
 
   const [scoringDinners, restaurants, meals] = await Promise.all([
-    prisma.dinner.findMany({ orderBy: { date: "desc" } }),
+    prisma.dinner.findMany({
+      where: { date: { gte: new Date(Date.now() - 90 * 86_400_000) } },
+      orderBy: { date: "desc" },
+    }),
     prisma.restaurant.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
     prisma.meal.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
   ]);
 
-  const entityTags = new Map<string, string[]>();
-  for (const r of restaurants) entityTags.set(r.id, r.tags);
-  for (const m of meals) entityTags.set(m.id, m.tags);
-
+  const entityTags = buildEntityTags(restaurants, meals);
   const { lastUsed, tagLastUsed } = computeLastUsed(scoringDinners, entityTags);
 
   const restaurantCandidates = pickTop(
@@ -142,10 +142,7 @@ export async function pickAndRedirect(formData: FormData) {
     prisma.meal.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
   ]);
 
-  const entityTags = new Map<string, string[]>();
-  for (const r of restaurants) entityTags.set(r.id, r.tags);
-  for (const m of meals) entityTags.set(m.id, m.tags);
-  const { lastUsed } = computeLastUsed(recentDinners, entityTags);
+  const { lastUsed } = computeLastUsed(recentDinners, buildEntityTags(restaurants, meals));
 
   type Option = { type: DinnerType; id: string; score: number };
   const options: Option[] = [
