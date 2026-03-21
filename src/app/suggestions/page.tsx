@@ -14,6 +14,7 @@ export default async function SuggestionsPage() {
     prisma.dinner.findMany({ orderBy: { date: "desc" } }),
   ]);
 
+  // eslint-disable-next-line react-hooks/purity
   const now = Date.now();
   const lastUsed = new Map<string, number>();
   const entityTags = new Map<string, string[]>();
@@ -36,6 +37,7 @@ export default async function SuggestionsPage() {
       ? Math.min(...tags.map((tag) => tagLastUsed.get(tag) ?? Infinity))
       : Infinity;
     const base = Math.min(Math.min(entityDays, tagMinDays), 21);
+    // eslint-disable-next-line react-hooks/purity
     return base + Math.random() * 3;
   }
 
