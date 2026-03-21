@@ -2,6 +2,8 @@ export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/db";
 import { deleteDinner } from "@/app/actions/dinners";
+import type { Suggestion } from "@/app/actions/dinners";
+import { computeLastUsed, tagAwareScore, pickTop } from "@/lib/scoring";
 import { SubmitButton } from "@/components/SubmitButton";
 import { LoadingLink } from "@/components/LoadingLink";
 import { Tags } from "@/components/Tags";
@@ -45,53 +47,36 @@ export default async function Home({
     prisma.dinner.findMany({ orderBy: { date: "desc" } }),
   ]);
 
-  const now = Date.now();
-  const lastUsed = new Map<string, number>();
   const entityTags = new Map<string, string[]>();
   for (const r of restaurants) entityTags.set(r.id, r.tags);
   for (const m of meals) entityTags.set(m.id, m.tags);
 
-  const tagLastUsed = new Map<string, number>();
-  for (const dinner of scoringDinners) {
-    const key = (dinner.restaurantId ?? dinner.mealId)!;
-    const daysSince = Math.floor((now - dinner.date.getTime()) / 86_400_000);
-    if (!lastUsed.has(key) || lastUsed.get(key)! > daysSince) {
-      lastUsed.set(key, daysSince);
-    }
-    for (const tag of entityTags.get(key) ?? []) {
-      if (!tagLastUsed.has(tag) || tagLastUsed.get(tag)! > daysSince) {
-        tagLastUsed.set(tag, daysSince);
-      }
-    }
-  }
+  const { lastUsed, tagLastUsed } = computeLastUsed(scoringDinners, entityTags);
 
-  function tagAwareScore(id: string, tags: string[]): number {
-    const entityDays = lastUsed.get(id) ?? Infinity;
-    const tagMinDays = tags.length > 0
-      ? Math.min(...tags.map((tag) => tagLastUsed.get(tag) ?? Infinity))
-      : Infinity;
-    const base = Math.min(Math.min(entityDays, tagMinDays), 21);
-    return base + Math.random() * 3;
-  }
-
-  function pickTop<T extends { score: number; tagsWithRecency: { tag: string }[] }>(options: T[], n: number): T[] {
-    const sorted = [...options].sort((a, b) => b.score - a.score);
-    const tagCount = new Map<string, number>();
-    const result: T[] = [];
-    for (const option of sorted) {
-      if (result.length >= n) break;
-      if (option.tagsWithRecency.some(({ tag }) => (tagCount.get(tag) ?? 0) >= 2)) continue;
-      result.push(option);
-      for (const { tag } of option.tagsWithRecency) tagCount.set(tag, (tagCount.get(tag) ?? 0) + 1);
-    }
-    return result;
-  }
-  const restaurantCandidates = pickTop(
-    restaurants.map((r) => ({ type: "RESTAURANT" as const, id: r.id, name: r.name, tagsWithRecency: r.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })), orderUrl: r.orderUrl, phoneNumber: r.phoneNumber, daysSinceLastOrder: lastUsed.get(r.id) ?? null, score: tagAwareScore(r.id, r.tags) })),
+  const restaurantCandidates = pickTop<Suggestion>(
+    restaurants.map((r) => ({
+      type: "RESTAURANT" as const,
+      id: r.id,
+      name: r.name,
+      tagsWithRecency: r.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })),
+      orderUrl: r.orderUrl,
+      phoneNumber: r.phoneNumber,
+      daysSinceLastOrder: lastUsed.get(r.id) ?? null,
+      score: tagAwareScore(r.id, r.tags, lastUsed, tagLastUsed),
+    })),
     8,
   );
-  const mealCandidates = pickTop(
-    meals.map((m) => ({ type: "HOMECOOKED" as const, id: m.id, name: m.name, tagsWithRecency: m.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })), orderUrl: null, phoneNumber: null, daysSinceLastOrder: lastUsed.get(m.id) ?? null, score: tagAwareScore(m.id, m.tags) })),
+  const mealCandidates = pickTop<Suggestion>(
+    meals.map((m) => ({
+      type: "HOMECOOKED" as const,
+      id: m.id,
+      name: m.name,
+      tagsWithRecency: m.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })),
+      orderUrl: null,
+      phoneNumber: null,
+      daysSinceLastOrder: lastUsed.get(m.id) ?? null,
+      score: tagAwareScore(m.id, m.tags, lastUsed, tagLastUsed),
+    })),
     5,
   );
 

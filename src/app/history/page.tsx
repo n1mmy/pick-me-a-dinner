@@ -53,9 +53,9 @@ export default async function HistoryPage({
             defaultValue={new Date().toISOString().split("T")[0]}
             className="border border-muted/40 rounded px-3 py-1.5 text-sm bg-surface text-fg focus:outline-none focus:ring-1 focus:ring-teal"
           />
-          <SubmitButton className="px-3 py-1.5 bg-teal text-white rounded text-sm font-[family-name:var(--font-unica)] hover:opacity-80 transition-opacity cursor-pointer">
+          <button type="submit" className="px-3 py-1.5 bg-teal text-white rounded text-sm font-[family-name:var(--font-unica)] hover:opacity-80 transition-opacity cursor-pointer">
             + Add
-          </SubmitButton>
+          </button>
         </form>
       </div>
 

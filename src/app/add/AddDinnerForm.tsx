@@ -86,6 +86,7 @@ export function AddDinnerForm({
               {type === "RESTAURANT" ? "Restaurant" : "Meal"}
             </label>
             <select
+              key={type}
               name={type === "RESTAURANT" ? "restaurantId" : "mealId"}
               defaultValue={defaultId}
               className={inputCls}
