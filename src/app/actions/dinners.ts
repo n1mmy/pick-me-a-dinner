@@ -24,6 +24,8 @@ export type Suggestion = {
   phoneNumber: string | null;
   daysSinceLastOrder: number | null;
   score: number;
+  entityNotes: string | null;
+  lastNotes: string | null;
 };
 
 export async function fetchMoreSuggestions(
@@ -43,6 +45,14 @@ export async function fetchMoreSuggestions(
 
   const { lastUsed, tagLastUsed } = computeLastUsed(scoringDinners, entityTags);
 
+  const lastNotesMap = new Map<string, string>();
+  for (const d of scoringDinners) {
+    const entityId = d.restaurantId ?? d.mealId;
+    if (entityId && !lastNotesMap.has(entityId) && d.notes) {
+      lastNotesMap.set(entityId, d.notes);
+    }
+  }
+
   const restaurantCandidates = pickTop(
     restaurants
       .filter((r) => !excludedIds.includes(r.id))
@@ -55,6 +65,8 @@ export async function fetchMoreSuggestions(
         phoneNumber: r.phoneNumber,
         daysSinceLastOrder: lastUsed.get(r.id) ?? null,
         score: tagAwareScore(r.id, r.tags, lastUsed, tagLastUsed),
+        entityNotes: r.notes ?? null,
+        lastNotes: lastNotesMap.get(r.id) ?? null,
       })),
     8,
   );
@@ -71,6 +83,8 @@ export async function fetchMoreSuggestions(
         phoneNumber: null,
         daysSinceLastOrder: lastUsed.get(m.id) ?? null,
         score: tagAwareScore(m.id, m.tags, lastUsed, tagLastUsed),
+        entityNotes: m.notes ?? null,
+        lastNotes: lastNotesMap.get(m.id) ?? null,
       })),
     5,
   );

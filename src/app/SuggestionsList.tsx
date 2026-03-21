@@ -71,6 +71,12 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                         ? "last ordered yesterday"
                         : `last ordered ${s.daysSinceLastOrder} days ago`}
                     </p>
+                    {s.entityNotes && (
+                      <p className="text-xs text-muted mt-1 italic">{s.entityNotes}</p>
+                    )}
+                    {s.lastNotes && (
+                      <p className="text-xs text-muted/70 mt-1 italic">&ldquo;{s.lastNotes}&rdquo;</p>
+                    )}
                     {s.tagsWithRecency.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-1.5">
                         {s.tagsWithRecency.map(({ tag, daysSince }) => (
@@ -134,6 +140,12 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                         ? "last cooked yesterday"
                         : `last cooked ${s.daysSinceLastOrder} days ago`}
                     </p>
+                    {s.entityNotes && (
+                      <p className="text-xs text-muted mt-1 italic">{s.entityNotes}</p>
+                    )}
+                    {s.lastNotes && (
+                      <p className="text-xs text-muted/70 mt-1 italic">&ldquo;{s.lastNotes}&rdquo;</p>
+                    )}
                     {s.tagsWithRecency.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-1.5">
                         {s.tagsWithRecency.map(({ tag, daysSince }) => (

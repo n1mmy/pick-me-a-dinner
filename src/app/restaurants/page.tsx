@@ -5,6 +5,7 @@ import { createRestaurant, updateRestaurant, deleteRestaurant, hideRestaurant, u
 import { SubmitButton } from "@/components/SubmitButton";
 import { Tags } from "@/components/Tags";
 import { CollapsingForm } from "@/components/CollapsingForm";
+import { LoadingLink } from "@/components/LoadingLink";
 import Link from "next/link";
 
 const inputCls = "w-full border border-muted/40 rounded px-3 py-2 text-sm bg-surface text-fg placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-teal";
@@ -17,12 +18,16 @@ export default async function RestaurantsPage({
 }) {
   const { showHidden } = await searchParams;
   const showingHidden = showHidden === "1";
+  const todayStr = new Date().toISOString().split("T")[0];
 
   const [restaurants, hiddenRestaurants] = await Promise.all([
     prisma.restaurant.findMany({
       where: { hidden: false },
       orderBy: { name: "asc" },
-      include: { _count: { select: { dinners: true } } },
+      include: {
+        _count: { select: { dinners: true } },
+        dinners: { where: { notes: { not: null } }, orderBy: { date: "desc" }, take: 1, select: { notes: true } },
+      },
     }),
     showingHidden
       ? prisma.restaurant.findMany({
@@ -73,6 +78,7 @@ export default async function RestaurantsPage({
                   </div>
                   <Tags tags={r.tags} className="mt-0.5" />
                   {r.notes && <p className="text-xs text-muted mt-0.5 truncate italic">{r.notes}</p>}
+                  {r.dinners[0]?.notes && <p className="text-xs text-muted/70 mt-0.5 truncate italic">&ldquo;{r.dinners[0].notes}&rdquo;</p>}
                 </div>
                 <div className="flex items-center gap-3 shrink-0 text-xs">
                   <span className="text-muted tabular-nums">{r._count.dinners}×</span>
@@ -85,6 +91,9 @@ export default async function RestaurantsPage({
                   {r.orderUrl && (
                     <a href={r.orderUrl} target="_blank" rel="noopener noreferrer" className="text-teal hover:text-fg transition-colors">Order ↗</a>
                   )}
+                  <LoadingLink href={`/add?date=${todayStr}&suggestedId=${r.id}&type=RESTAURANT`} className="px-2 py-0.5 border border-pink text-pink rounded font-[family-name:var(--font-unica)] hover:bg-pink hover:text-bg transition-colors">
+                    Pick →
+                  </LoadingLink>
                 </div>
               </summary>
               <div className="pb-3 space-y-2">
