@@ -27,10 +27,16 @@ describe("createRestaurant", () => {
     expect(r?.name).toBe("Noma");
   });
 
-  it("does nothing if name is empty", async () => {
-    await createRestaurant(fd({ name: "   " }));
-    const count = await prisma.restaurant.count();
-    expect(count).toBe(0);
+  it("throws if name is empty", async () => {
+    await expect(createRestaurant(fd({ name: "   " }))).rejects.toThrow();
+    expect(await prisma.restaurant.count()).toBe(0);
+  });
+
+  it("throws on invalid orderUrl", async () => {
+    await expect(
+      createRestaurant(fd({ name: "Noma", orderUrl: "not-a-url" }))
+    ).rejects.toThrow();
+    expect(await prisma.restaurant.count()).toBe(0);
   });
 
   it("stores optional fields", async () => {
@@ -65,11 +71,18 @@ describe("updateRestaurant", () => {
     expect(updated?.notes).toBe("updated");
   });
 
-  it("does nothing if name is empty", async () => {
+  it("throws if name is empty", async () => {
     const r = await prisma.restaurant.create({ data: { name: "Keep Me", tags: [] } });
-    await updateRestaurant(fd({ id: r.id, name: "" }));
+    await expect(updateRestaurant(fd({ id: r.id, name: "" }))).rejects.toThrow();
     const unchanged = await prisma.restaurant.findUnique({ where: { id: r.id } });
     expect(unchanged?.name).toBe("Keep Me");
+  });
+
+  it("throws on invalid orderUrl", async () => {
+    const r = await prisma.restaurant.create({ data: { name: "Place", tags: [] } });
+    await expect(
+      updateRestaurant(fd({ id: r.id, name: "Place", orderUrl: "bad-url" }))
+    ).rejects.toThrow();
   });
 
   it("clears optional fields when omitted", async () => {

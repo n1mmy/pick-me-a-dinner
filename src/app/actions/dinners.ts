@@ -1,9 +1,17 @@
 "use server";
 
+import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { DinnerType } from "@/generated/prisma/enums";
+import {
+  createDinnerSchema,
+  updateDinnerSchema,
+  pickAndRedirectSchema,
+  idSchema,
+  parseFormData,
+} from "@/lib/validation";
 import { computeLastUsed, tagAwareScore, pickTop, pickBest } from "@/lib/scoring";
 
 export type TagWithRecency = { tag: string; daysSince: number | null };
@@ -21,6 +29,8 @@ export type Suggestion = {
 export async function fetchMoreSuggestions(
   excludedIds: string[]
 ): Promise<{ restaurantCandidates: Suggestion[]; mealCandidates: Suggestion[] }> {
+  z.array(z.string()).parse(excludedIds);
+
   const [scoringDinners, restaurants, meals] = await Promise.all([
     prisma.dinner.findMany({ orderBy: { date: "desc" } }),
     prisma.restaurant.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
@@ -69,16 +79,15 @@ export async function fetchMoreSuggestions(
 }
 
 export async function createDinner(formData: FormData) {
-  const date = formData.get("date") as string;
-  const type = formData.get("type") as DinnerType;
-  const restaurantId = (formData.get("restaurantId") as string) || null;
-  const mealId = (formData.get("mealId") as string) || null;
-  const notes = (formData.get("notes") as string)?.trim() || null;
+  const { date, type, restaurantId, mealId, notes } = parseFormData(
+    createDinnerSchema,
+    formData
+  );
 
   await prisma.dinner.create({
     data: {
       date: new Date(date + "T00:00:00.000Z"),
-      type,
+      type: type as DinnerType,
       restaurantId: type === "RESTAURANT" ? restaurantId : null,
       mealId: type === "HOMECOOKED" ? mealId : null,
       notes,
@@ -91,16 +100,15 @@ export async function createDinner(formData: FormData) {
 }
 
 export async function updateDinner(formData: FormData) {
-  const id = formData.get("id") as string;
-  const type = formData.get("type") as DinnerType;
-  const restaurantId = (formData.get("restaurantId") as string) || null;
-  const mealId = (formData.get("mealId") as string) || null;
-  const notes = (formData.get("notes") as string)?.trim() || null;
+  const { id, type, restaurantId, mealId, notes } = parseFormData(
+    updateDinnerSchema,
+    formData
+  );
 
   await prisma.dinner.update({
     where: { id },
     data: {
-      type,
+      type: type as DinnerType,
       restaurantId: type === "RESTAURANT" ? restaurantId : null,
       mealId: type === "HOMECOOKED" ? mealId : null,
       notes,
@@ -113,13 +121,14 @@ export async function updateDinner(formData: FormData) {
 }
 
 export async function deleteDinner(id: string) {
+  idSchema.parse(id);
   await prisma.dinner.delete({ where: { id } });
   revalidatePath("/");
   revalidatePath("/history");
 }
 
 export async function pickAndRedirect(formData: FormData) {
-  const date = formData.get("date") as string;
+  const { date } = parseFormData(pickAndRedirectSchema, formData);
 
   const since = new Date();
   since.setDate(since.getDate() - 21);

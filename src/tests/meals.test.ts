@@ -21,8 +21,8 @@ describe("createMeal", () => {
     expect(m?.name).toBe("Pasta");
   });
 
-  it("does nothing if name is empty", async () => {
-    await createMeal(fd({ name: "" }));
+  it("throws if name is empty", async () => {
+    await expect(createMeal(fd({ name: "" }))).rejects.toThrow();
     expect(await prisma.meal.count()).toBe(0);
   });
 
@@ -43,9 +43,9 @@ describe("updateMeal", () => {
     expect(updated?.notes).toBe("updated");
   });
 
-  it("does nothing if name is empty", async () => {
+  it("throws if name is empty", async () => {
     const m = await prisma.meal.create({ data: { name: "Keep Me", tags: [] } });
-    await updateMeal(fd({ id: m.id, name: "" }));
+    await expect(updateMeal(fd({ id: m.id, name: "" }))).rejects.toThrow();
     const unchanged = await prisma.meal.findUnique({ where: { id: m.id } });
     expect(unchanged?.name).toBe("Keep Me");
   });

@@ -53,6 +53,14 @@ describe("createDinner", () => {
     expect(d?.restaurantId).toBeNull();
     expect(d?.mealId).toBe(m.id);
   });
+
+  it("throws on invalid date format", async () => {
+    const r = await makeRestaurant();
+    await expect(
+      createDinner(fd({ date: "20260320", type: "RESTAURANT", restaurantId: r.id }))
+    ).rejects.toThrow();
+    expect(await prisma.dinner.count()).toBe(0);
+  });
 });
 
 describe("updateDinner", () => {
