@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/db";
 import { createMeal, updateMeal, deleteMeal, hideMeal, unhideMeal } from "@/app/actions/meals";
 import { SubmitButton } from "@/components/SubmitButton";
+import { DeleteButton } from "@/components/DeleteButton";
 import { Tags } from "@/components/Tags";
 import { CollapsingForm } from "@/components/CollapsingForm";
 import Link from "next/link";
@@ -89,11 +90,9 @@ export default async function MealsPage({
                     </SubmitButton>
                   </form>
                 ) : (
-                  <form action={deleteMeal.bind(null, m.id)}>
-                    <SubmitButton className="text-xs text-pink/60 hover:text-pink transition-colors cursor-pointer">
-                      Delete
-                    </SubmitButton>
-                  </form>
+                  <DeleteButton action={deleteMeal.bind(null, m.id)} className="text-xs text-pink/60 hover:text-pink transition-colors cursor-pointer">
+                    Delete
+                  </DeleteButton>
                 )}
               </div>
             </details>
