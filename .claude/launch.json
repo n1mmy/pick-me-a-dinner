@@ -10,6 +10,15 @@
       "env": {
         "DATABASE_URL": "postgresql://dinner:dinner@localhost:5432/pick-me-a-dinner?schema=public"
       }
+    },
+    {
+      "name": "local-build",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "npm run build && npm run start"],
+      "port": 3000,
+      "env": {
+        "DATABASE_URL": "postgresql://dinner:dinner@localhost:5432/pick-me-a-dinner?schema=public"
+      }
     }
   ]
 }
