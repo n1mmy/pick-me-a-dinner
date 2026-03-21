@@ -98,24 +98,26 @@ export default async function CalendarPage({
           const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(dayNum).padStart(2, "0")}`;
           const dinner = dinnerByDate.get(dateStr);
           const isToday = dateStr === today;
-          const href = `/add`;
+          const entityId = dinner?.restaurantId ?? dinner?.mealId;
+          const href = dinner && entityId
+            ? `/add?date=${today}&suggestedId=${entityId}&type=${dinner.type}`
+            : null;
           const name = dinner?.restaurant?.name ?? dinner?.meal?.name;
           const isRestaurant = dinner?.type === "RESTAURANT";
           const tags = dinner?.restaurant?.tags ?? dinner?.meal?.tags ?? [];
 
-          return (
-            <Link
-              key={i}
-              href={href}
-              className={[
-                "aspect-square p-1 rounded border border-dashed flex flex-col transition-colors overflow-hidden",
-                isToday
-                  ? "border-teal/60 bg-teal/10 hover:border-teal"
-                  : dinner
-                  ? "border-muted/30 hover:border-pink/50 hover:bg-pink/5"
-                  : "border-muted/20 hover:border-muted/40",
-              ].join(" ")}
-            >
+          const cellClass = [
+            "aspect-square p-1 rounded border border-dashed flex flex-col transition-colors overflow-hidden",
+            isToday
+              ? "border-teal/60 bg-teal/10"
+              : dinner
+              ? "border-muted/30"
+              : "border-muted/20",
+            href ? "cursor-pointer hover:border-pink/50 hover:bg-pink/5" : "",
+          ].join(" ");
+
+          const cellContent = (
+            <>
               <span
                 className={[
                   "text-xs leading-none",
@@ -145,13 +147,23 @@ export default async function CalendarPage({
                   ))}
                 </div>
               )}
+            </>
+          );
+
+          return href ? (
+            <Link key={i} href={href} className={cellClass}>
+              {cellContent}
             </Link>
+          ) : (
+            <div key={i} className={cellClass}>
+              {cellContent}
+            </div>
           );
         })}
       </div>
 
       <p className="text-xs text-muted">
-        <span className="text-pink">Pink</span> = restaurant · <span className="text-teal">Teal</span>{" "}= homecooked · click any day to add tonight&apos;s dinner
+        <span className="text-pink">Pink</span> = restaurant · <span className="text-teal">Teal</span>{" "}= homecooked · click a day to add another dinner with the same option
       </p>
     </div>
   );
