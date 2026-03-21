@@ -3,7 +3,7 @@
 ## Prompt for automated execution
 
 ```
-Run the manual test plan in manual-test-plan.md. Use preview_start to start the dev server, then work through each section systematically using the preview tools (preview_snapshot, preview_click, preview_fill, preview_inspect, preview_screenshot, preview_resize).
+Run the manual test plan in manual-test-plan.md. Use preview_start to start a production build (npm run build && npm run start), then work through each section systematically using the preview tools (preview_snapshot, preview_click, preview_fill, preview_inspect, preview_screenshot, preview_resize).
 
 Create any necessary test data via the UI as you go (e.g. add restaurants and meals before testing hide/delete, add dinners before testing the home and history pages).
 
@@ -19,7 +19,7 @@ Skip steps that require real database state you can't set up (e.g. scoring/sugge
 
 ## Prerequisites
 
-- App running locally (`npm run dev` or `docker-compose up`)
+- App running locally (`npm run build && npm run start` or `docker-compose up`)
 - Database migrated and accessible
 - Start with an empty or known database state for predictable results
 
