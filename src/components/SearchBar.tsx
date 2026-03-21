@@ -33,6 +33,7 @@ export function SearchBar({ placeholder, defaultValue }: { placeholder: string; 
 
   useEffect(() => {
     if (!didSearchRef.current) return;
+    didSearchRef.current = false;
     window.scrollTo(0, scrollRef.current);
   }, [searchParams]);
 
