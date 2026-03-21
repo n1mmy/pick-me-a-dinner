@@ -6,9 +6,7 @@ import type { Suggestion } from "@/app/actions/dinners";
 import { SuggestionsPageList } from "./SuggestionsPageList";
 
 export default async function SuggestionsPage() {
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
-  const todayStr = today.toISOString().split("T")[0];
+  const todayStr = new Date().toISOString().split("T")[0];
 
   const [restaurants, meals, scoringDinners] = await Promise.all([
     prisma.restaurant.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
