@@ -53,6 +53,14 @@ export default async function Home({
 
   const { lastUsed, tagLastUsed } = computeLastUsed(scoringDinners, entityTags);
 
+  const lastNotesMap = new Map<string, string>();
+  for (const d of scoringDinners) {
+    const entityId = d.restaurantId ?? d.mealId;
+    if (entityId && !lastNotesMap.has(entityId) && d.notes) {
+      lastNotesMap.set(entityId, d.notes);
+    }
+  }
+
   const restaurantCandidates = pickTop<Suggestion>(
     restaurants.map((r) => ({
       type: "RESTAURANT" as const,
@@ -63,6 +71,8 @@ export default async function Home({
       phoneNumber: r.phoneNumber,
       daysSinceLastOrder: lastUsed.get(r.id) ?? null,
       score: tagAwareScore(r.id, r.tags, lastUsed, tagLastUsed),
+      entityNotes: r.notes ?? null,
+      lastNotes: lastNotesMap.get(r.id) ?? null,
     })),
     8,
   );
@@ -76,6 +86,8 @@ export default async function Home({
       phoneNumber: null,
       daysSinceLastOrder: lastUsed.get(m.id) ?? null,
       score: tagAwareScore(m.id, m.tags, lastUsed, tagLastUsed),
+      entityNotes: m.notes ?? null,
+      lastNotes: lastNotesMap.get(m.id) ?? null,
     })),
     5,
   );

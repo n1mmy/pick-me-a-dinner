@@ -22,6 +22,14 @@ export default async function SuggestionsPage() {
 
   const { lastUsed, tagLastUsed } = computeLastUsed(scoringDinners, entityTags);
 
+  const lastNotesMap = new Map<string, string>();
+  for (const d of scoringDinners) {
+    const entityId = d.restaurantId ?? d.mealId;
+    if (entityId && !lastNotesMap.has(entityId) && d.notes) {
+      lastNotesMap.set(entityId, d.notes);
+    }
+  }
+
   const restaurantSuggestions = pickTop<Suggestion>(
     restaurants.map((r) => ({
       id: r.id, name: r.name, type: "RESTAURANT" as const,
@@ -29,6 +37,8 @@ export default async function SuggestionsPage() {
       daysSinceLastOrder: lastUsed.get(r.id) ?? null,
       tagsWithRecency: r.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })),
       score: tagAwareScore(r.id, r.tags, lastUsed, tagLastUsed),
+      entityNotes: r.notes ?? null,
+      lastNotes: lastNotesMap.get(r.id) ?? null,
     })),
     8,
   );
@@ -40,6 +50,8 @@ export default async function SuggestionsPage() {
       daysSinceLastOrder: lastUsed.get(m.id) ?? null,
       tagsWithRecency: m.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })),
       score: tagAwareScore(m.id, m.tags, lastUsed, tagLastUsed),
+      entityNotes: m.notes ?? null,
+      lastNotes: lastNotesMap.get(m.id) ?? null,
     })),
     5,
   );

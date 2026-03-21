@@ -5,6 +5,7 @@ import { createMeal, updateMeal, deleteMeal, hideMeal, unhideMeal } from "@/app/
 import { SubmitButton } from "@/components/SubmitButton";
 import { Tags } from "@/components/Tags";
 import { CollapsingForm } from "@/components/CollapsingForm";
+import { LoadingLink } from "@/components/LoadingLink";
 import Link from "next/link";
 
 const inputCls = "w-full border border-muted/40 rounded px-3 py-2 text-sm bg-surface text-fg placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-teal";
@@ -16,12 +17,16 @@ export default async function MealsPage({
 }) {
   const { showHidden } = await searchParams;
   const showingHidden = showHidden === "1";
+  const todayStr = new Date().toISOString().split("T")[0];
 
   const [meals, hiddenMeals] = await Promise.all([
     prisma.meal.findMany({
       where: { hidden: false },
       orderBy: { name: "asc" },
-      include: { _count: { select: { dinners: true } } },
+      include: {
+        _count: { select: { dinners: true } },
+        dinners: { where: { notes: { not: null } }, orderBy: { date: "desc" }, take: 1, select: { notes: true } },
+      },
     }),
     showingHidden
       ? prisma.meal.findMany({
@@ -67,9 +72,13 @@ export default async function MealsPage({
                   </div>
                   <Tags tags={m.tags} className="mt-0.5" />
                   {m.notes && <p className="text-xs text-muted mt-0.5 truncate italic">{m.notes}</p>}
+                  {m.dinners[0]?.notes && <p className="text-xs text-muted/70 mt-0.5 truncate italic">"{m.dinners[0].notes}"</p>}
                 </div>
                 <div className="flex items-center gap-3 shrink-0 text-xs">
                   <span className="text-muted tabular-nums">{m._count.dinners}×</span>
+                  <LoadingLink href={`/add?date=${todayStr}&suggestedId=${m.id}&type=HOMECOOKED`} className="px-2 py-0.5 border border-pink text-pink rounded font-[family-name:var(--font-unica)] hover:bg-pink hover:text-bg transition-colors">
+                    Pick →
+                  </LoadingLink>
                 </div>
               </summary>
               <div className="pb-3 space-y-2">

@@ -25,6 +25,7 @@ export default async function HistoryPage({
 }) {
   const { page: pageParam } = await searchParams;
   const page = Math.max(1, parseInt(pageParam ?? "1", 10));
+  const todayStr = new Date().toISOString().split("T")[0];
   const skip = (page - 1) * PAGE_SIZE;
 
   const [dinners, total] = await Promise.all([
@@ -84,6 +85,12 @@ export default async function HistoryPage({
                 <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
               </div>
               <div className="flex gap-3 items-center shrink-0 ml-4">
+                <LoadingLink
+                  href={`/add?date=${todayStr}&suggestedId=${dinner.restaurantId ?? dinner.mealId}&type=${dinner.type}`}
+                  className="px-2 py-0.5 border border-pink text-pink rounded text-xs font-[family-name:var(--font-unica)] hover:bg-pink hover:text-bg transition-colors"
+                >
+                  Pick →
+                </LoadingLink>
                 <LoadingLink
                   href={`/add?id=${dinner.id}`}
                   className="text-xs text-teal hover:text-pink transition-colors"
