@@ -14,7 +14,7 @@
 /* Light mode */
 @media (prefers-color-scheme: light) {
   :root {
-    --bg: #f4efe8;
+    --bg: #ffffff;
     --surface: #e8e1d5;
     --fg: #1c1a18;
     --muted: #706b63;
