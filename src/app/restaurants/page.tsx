@@ -6,6 +6,7 @@ import { SubmitButton } from "@/components/SubmitButton";
 import { DeleteButton } from "@/components/DeleteButton";
 import { Tags } from "@/components/Tags";
 import { CollapsingForm } from "@/components/CollapsingForm";
+import { ExpandingAddForm } from "@/components/ExpandingAddForm";
 import { LoadingLink } from "@/components/LoadingLink";
 import Link from "next/link";
 
@@ -47,9 +48,13 @@ export default async function RestaurantsPage({
       </div>
 
       {/* Add form */}
-      <form action={createRestaurant} className="border border-dashed border-muted/30 rounded p-5 space-y-3">
-        <h2 className="font-[family-name:var(--font-unica)] text-sm text-muted">Add restaurant</h2>
-        <input name="name" required placeholder="Name *" className={inputCls} />
+      <ExpandingAddForm
+        action={createRestaurant}
+        label="Add restaurant"
+        namePlaceholder="Name *"
+        nameInputClassName={inputCls}
+        className="border border-dashed border-muted/30 rounded p-5 space-y-3"
+      >
         <div className="grid grid-cols-2 gap-3">
           <input name="phoneNumber" placeholder="Phone number" className={halfInputCls} />
           <input name="orderUrl" placeholder="Order URL" className={halfInputCls} />
@@ -60,7 +65,7 @@ export default async function RestaurantsPage({
         <SubmitButton className="px-4 py-2 bg-teal text-white rounded text-sm font-[family-name:var(--font-unica)] hover:opacity-80 transition-opacity cursor-pointer">
           Add
         </SubmitButton>
-      </form>
+      </ExpandingAddForm>
 
       {/* List */}
       {restaurants.length === 0 ? (
