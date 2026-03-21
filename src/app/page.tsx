@@ -152,7 +152,7 @@ export default async function Home({
                 todayStr={todayStr}
               />
             )}
-            <LoadingLink href={`/add?date=${todayStr}`} className="text-sm text-muted hover:text-pink transition-colors">
+            <LoadingLink href={`/add?date=${todayStr}`} className="self-start inline-block px-3 py-1 border border-pink text-pink rounded text-sm font-[family-name:var(--font-unica)] hover:bg-pink hover:text-bg transition-colors">
               Choose myself →
             </LoadingLink>
           </div>
