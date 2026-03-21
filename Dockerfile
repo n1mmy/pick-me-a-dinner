@@ -5,8 +5,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
-RUN npm install --ignore-engines
-
+RUN npm install
 COPY . .
 RUN npx prisma generate
 RUN npm run build
@@ -25,7 +24,7 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 # Install only the prisma CLI for migrate deploy; Next.js runtime deps are bundled in standalone
 COPY package.json package-lock.json ./
-RUN npm install --ignore-engines --omit=dev prisma
+RUN npm install --omit=dev prisma
 
 EXPOSE 3000
 

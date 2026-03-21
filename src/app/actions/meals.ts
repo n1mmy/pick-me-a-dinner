@@ -14,9 +14,13 @@ import {
 export async function createMeal(formData: FormData) {
   const { name, notes, tags } = parseFormData(createMealSchema, formData);
 
-  await prisma.meal.create({
-    data: { name, notes, tags },
-  });
+  try {
+    await prisma.meal.create({
+      data: { name, notes, tags },
+    });
+  } catch {
+    throw new Error("Failed to save meal. Please try again.");
+  }
 
   revalidatePath("/meals");
 }
@@ -27,9 +31,14 @@ export async function createMealAndReturn(formData: FormData) {
     formData
   );
 
-  const meal = await prisma.meal.create({
-    data: { name, notes, tags },
-  });
+  let meal;
+  try {
+    meal = await prisma.meal.create({
+      data: { name, notes, tags },
+    });
+  } catch {
+    throw new Error("Failed to save meal. Please try again.");
+  }
 
   revalidatePath("/meals");
   if (returnDinnerId) {
@@ -43,10 +52,14 @@ export async function createMealAndReturn(formData: FormData) {
 export async function updateMeal(formData: FormData) {
   const { id, name, notes, tags } = parseFormData(updateMealSchema, formData);
 
-  await prisma.meal.update({
-    where: { id },
-    data: { name, notes, tags },
-  });
+  try {
+    await prisma.meal.update({
+      where: { id },
+      data: { name, notes, tags },
+    });
+  } catch {
+    throw new Error("Failed to update meal. Please try again.");
+  }
 
   revalidatePath("/meals");
 }

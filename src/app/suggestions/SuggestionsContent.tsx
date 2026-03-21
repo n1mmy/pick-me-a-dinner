@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { LoadingLink } from "@/components/LoadingLink";
 import { fetchMoreSuggestions, type Suggestion } from "@/app/actions/dinners";
 
@@ -26,6 +26,8 @@ export function SuggestionsContent({
   const [allMeals, setAllMeals] = useState<Suggestion[]>(initialMeals);
   const [rejectedIds, setRejectedIds] = useState<string[]>([]);
   const [isFetching, setIsFetching] = useState(false);
+  const mountedRef = useRef(true);
+  useEffect(() => () => { mountedRef.current = false; }, []);
 
   const reject = async (id: string) => {
     const newRejected = [...rejectedIds, id];
@@ -38,6 +40,7 @@ export function SuggestionsContent({
       setIsFetching(true);
       const allKnownIds = [...allRestaurants, ...allMeals].map((s) => s.id);
       const more = await fetchMoreSuggestions(allKnownIds);
+      if (!mountedRef.current) return;
       setAllRestaurants((prev) => [...prev, ...more.restaurantCandidates]);
       setAllMeals((prev) => [...prev, ...more.mealCandidates]);
       setIsFetching(false);
