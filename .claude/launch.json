@@ -8,8 +8,7 @@
       "port": 3000,
       "autoPort": true,
       "env": {
-        "DATABASE_URL": "postgresql://dinner:dinner@localhost:5432/pick-me-a-dinner?schema=public",
-        "PATH": "/Users/nim/Sync/pick-me-a-dinner/node_modules/.bin:/usr/local/bin:/usr/bin:/bin"
+        "DATABASE_URL": "postgresql://dinner:dinner@localhost:5432/pick-me-a-dinner?schema=public"
       }
     }
   ]
