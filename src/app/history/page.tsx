@@ -80,7 +80,7 @@ export default async function HistoryPage({
                   <p className="text-xs text-muted mt-1 italic">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
                 )}
                 {dinner.notes && (
-                  <p className="text-xs text-muted/70 mt-1 italic">"{dinner.notes}"</p>
+                  <p className="text-xs text-muted/70 mt-1 italic">&ldquo;{dinner.notes}&rdquo;</p>
                 )}
                 <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
               </div>

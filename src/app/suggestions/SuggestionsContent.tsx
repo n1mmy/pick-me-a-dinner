@@ -66,7 +66,7 @@ export function SuggestionsContent({
                       <p className="text-xs text-muted mt-1 italic">{s.entityNotes}</p>
                     )}
                     {s.lastNotes && (
-                      <p className="text-xs text-muted/70 mt-1 italic">"{s.lastNotes}"</p>
+                      <p className="text-xs text-muted/70 mt-1 italic">&ldquo;{s.lastNotes}&rdquo;</p>
                     )}
                     {s.tagsWithRecency.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-1.5">
@@ -128,7 +128,7 @@ export function SuggestionsContent({
                       <p className="text-xs text-muted mt-1 italic">{s.entityNotes}</p>
                     )}
                     {s.lastNotes && (
-                      <p className="text-xs text-muted/70 mt-1 italic">"{s.lastNotes}"</p>
+                      <p className="text-xs text-muted/70 mt-1 italic">&ldquo;{s.lastNotes}&rdquo;</p>
                     )}
                     {s.tagsWithRecency.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-1.5">

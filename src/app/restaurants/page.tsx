@@ -78,7 +78,7 @@ export default async function RestaurantsPage({
                   </div>
                   <Tags tags={r.tags} className="mt-0.5" />
                   {r.notes && <p className="text-xs text-muted mt-0.5 truncate italic">{r.notes}</p>}
-                  {r.dinners[0]?.notes && <p className="text-xs text-muted/70 mt-0.5 truncate italic">"{r.dinners[0].notes}"</p>}
+                  {r.dinners[0]?.notes && <p className="text-xs text-muted/70 mt-0.5 truncate italic">&ldquo;{r.dinners[0].notes}&rdquo;</p>}
                 </div>
                 <div className="flex items-center gap-3 shrink-0 text-xs">
                   <span className="text-muted tabular-nums">{r._count.dinners}×</span>

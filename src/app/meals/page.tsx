@@ -72,7 +72,7 @@ export default async function MealsPage({
                   </div>
                   <Tags tags={m.tags} className="mt-0.5" />
                   {m.notes && <p className="text-xs text-muted mt-0.5 truncate italic">{m.notes}</p>}
-                  {m.dinners[0]?.notes && <p className="text-xs text-muted/70 mt-0.5 truncate italic">"{m.dinners[0].notes}"</p>}
+                  {m.dinners[0]?.notes && <p className="text-xs text-muted/70 mt-0.5 truncate italic">&ldquo;{m.dinners[0].notes}&rdquo;</p>}
                 </div>
                 <div className="flex items-center gap-3 shrink-0 text-xs">
                   <span className="text-muted tabular-nums">{m._count.dinners}×</span>
