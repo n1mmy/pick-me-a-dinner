@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
+import "./setup.db";
 import { prisma } from "@/lib/db";
 
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
