@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { LoadingLink } from "@/components/LoadingLink";
 import type { Suggestion } from "@/app/actions/dinners";
+import { fetchMoreSuggestions } from "@/app/actions/dinners";
+
 
 function daysSinceLabel(n: number | null, verb: "ordered" | "cooked") {
   if (n === null) return `never ${verb}`;
@@ -12,16 +14,39 @@ function daysSinceLabel(n: number | null, verb: "ordered" | "cooked") {
 }
 
 export function SuggestionsPageList({
-  suggestions,
+  suggestions: initialSuggestions,
   verb,
   todayStr,
+  type,
 }: {
   suggestions: Suggestion[];
   verb: "ordered" | "cooked";
   todayStr: string;
+  type: "RESTAURANT" | "HOMECOOKED";
 }) {
+  const [allSuggestions, setAllSuggestions] = useState<Suggestion[]>(initialSuggestions);
   const [rejectedIds, setRejectedIds] = useState<string[]>([]);
-  const visible = suggestions.filter((s) => !rejectedIds.includes(s.id));
+  const fetchingRef = useRef(false);
+
+  const visible = allSuggestions.filter((s) => !rejectedIds.includes(s.id));
+
+  function handleNah(id: string) {
+    const newRejectedIds = [...rejectedIds, id];
+    setRejectedIds(newRejectedIds);
+
+    const newVisible = allSuggestions.filter((s) => !newRejectedIds.includes(s.id));
+    if (newVisible.length < initialSuggestions.length && !fetchingRef.current) {
+      fetchingRef.current = true;
+      const excludedIds = allSuggestions.map((s) => s.id);
+      fetchMoreSuggestions(excludedIds).then((result) => {
+        const newItems = type === "RESTAURANT" ? result.restaurantCandidates : result.mealCandidates;
+        if (newItems.length > 0) {
+          setAllSuggestions((prev) => [...prev, ...newItems]);
+        }
+        fetchingRef.current = false;
+      });
+    }
+  }
 
   if (visible.length === 0) return null;
 
@@ -62,7 +87,7 @@ export function SuggestionsPageList({
                 Pick →
               </LoadingLink>
               <button
-                onClick={() => setRejectedIds((prev) => [...prev, s.id])}
+                onClick={() => handleNah(s.id)}
                 className="text-xs text-muted/60 hover:text-pink cursor-pointer transition-colors"
               >
                 Nah
