@@ -101,13 +101,14 @@ export default async function CalendarPage({
           const href = dinner ? `/add?id=${dinner.id}` : `/add?date=${dateStr}`;
           const name = dinner?.restaurant?.name ?? dinner?.meal?.name;
           const isRestaurant = dinner?.type === "RESTAURANT";
+          const tags = dinner?.restaurant?.tags ?? dinner?.meal?.tags ?? [];
 
           return (
             <Link
               key={i}
               href={href}
               className={[
-                "aspect-square p-1 rounded border border-dashed flex flex-col transition-colors",
+                "aspect-square p-1 rounded border border-dashed flex flex-col transition-colors overflow-hidden",
                 isToday
                   ? "border-teal/60 bg-teal/10 hover:border-teal"
                   : dinner
@@ -134,6 +135,15 @@ export default async function CalendarPage({
                 >
                   {name}
                 </span>
+              )}
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-0.5 mt-0.5 overflow-hidden">
+                  {tags.map((tag) => (
+                    <span key={tag} className="text-[8px] leading-none px-1 py-0.5 rounded bg-teal/15 text-teal shrink-0">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               )}
             </Link>
           );
