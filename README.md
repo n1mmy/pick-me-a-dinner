@@ -10,6 +10,7 @@ A family dinner tracker that helps you decide what to eat tonight. Tracks past d
 - **Restaurants** — manage a list of restaurants with order URLs, phone numbers, notes, and tags
 - **Homecooked meals** — manage a list of meals you make at home, with tags
 - **Full history** — paginated history of all past dinners
+- **Calendar view** — browse what was ordered each month
 
 ## Stack
 

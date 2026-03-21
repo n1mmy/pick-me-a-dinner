@@ -12,7 +12,7 @@
 
 | Step | Action | Look for |
 |------|--------|----------|
-| 1.1 | Load the app at `/` | Nav bar shows logo "PickMeADinner" and links: History, Restaurants, Meals, Suggestions |
+| 1.1 | Load the app at `/` | Nav bar shows logo "PickMeADinner" and links: History, Calendar, Restaurants, Meals, Suggestions |
 | 1.2 | Click each nav link | Correct page loads; active link is visually distinguished |
 | 1.3 | Click the logo | Returns to home page |
 | 1.4 | Resize browser to mobile width (<640px) | Nav links stack below the logo instead of sitting inline |
@@ -190,7 +190,23 @@
 
 ---
 
-## 9. Suggestions Page (`/suggestions`)
+## 9. Calendar Page (`/calendar`)
+
+| Step | Action | Look for |
+|------|--------|----------|
+| 9.1 | Navigate to `/calendar` | "Calendar" heading; monthly grid for the current month; prev/next arrows |
+| 9.2 | Days with a dinner recorded | Dinner name shown in the cell; pink text for restaurants, teal for homecooked |
+| 9.3 | Days with tags | Tags shown as small teal chips below the name; chips clip at the cell boundary without overflow |
+| 9.4 | Today's date | Cell has a teal dashed border and teal day number |
+| 9.5 | Click the "←" arrow | Previous month loads; URL updates to `?month=YYYY-MM` |
+| 9.6 | Click the "→" arrow | Next month loads |
+| 9.7 | Navigate to a month with no dinners | Grid shows only day numbers; all cells are empty |
+| 9.8 | Click any day cell | Redirects to `/add` (for tonight, not the clicked date) |
+| 9.9 | Check the legend at the bottom | "Pink = restaurant · Teal = homecooked · click any day to add tonight's dinner" |
+
+---
+
+## 10. Suggestions Page (`/suggestions`)
 
 | Step | Action | Look for |
 |------|--------|----------|
@@ -205,7 +221,7 @@
 
 ---
 
-## 10. Scoring & Suggestion Quality
+## 11. Scoring & Suggestion Quality
 
 | Step | Action | Look for |
 |------|--------|----------|
@@ -217,7 +233,7 @@
 
 ---
 
-## 11. Cross-Cutting Concerns
+## 12. Cross-Cutting Concerns
 
 | Step | Action | Look for |
 |------|--------|----------|
