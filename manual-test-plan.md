@@ -1,5 +1,15 @@
 # Manual Test Plan — Pick Me A Dinner
 
+## Prompt for automated execution
+
+```
+Run the manual test plan in manual-test-plan.md. Use preview_start to start the dev server, then work through each section systematically using the preview tools (preview_snapshot, preview_click, preview_fill, preview_inspect, preview_screenshot, preview_resize).
+
+Create any necessary test data via the UI as you go (e.g. add restaurants and meals before testing hide/delete, add dinners before testing the home and history pages).
+
+For each test step, verify the expected behavior and report pass/fail. Skip steps that require real database state you can't set up (e.g. scoring/suggestion quality over many days). Report a summary at the end grouped by section, listing any failures or unexpected behavior.
+```
+
 ## Prerequisites
 
 - App running locally (`npm run dev` or `docker-compose up`)
