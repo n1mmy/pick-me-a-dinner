@@ -84,26 +84,26 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                       </div>
                     )}
                   </LoadingLink>
-                  <div className="flex flex-col items-end gap-0.5 shrink-0 ml-4">
-                    <div className="flex items-center gap-3">
-                      {s.phoneNumber && (
-                        <a href={`tel:${s.phoneNumber}`} className="text-xs text-muted hover:text-pink transition-colors">Call</a>
-                      )}
-                      {s.orderUrl && (
-                        <a href={s.orderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-teal hover:text-fg transition-colors">
-                          Order ↗
-                        </a>
-                      )}
+                  <div className="flex items-start gap-3 shrink-0 ml-4">
+                    {s.phoneNumber && (
+                      <a href={`tel:${s.phoneNumber}`} className="text-xs text-muted hover:text-pink transition-colors mt-[7px]">Call</a>
+                    )}
+                    {s.orderUrl && (
+                      <a href={s.orderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-teal hover:text-fg transition-colors mt-[7px]">
+                        Order ↗
+                      </a>
+                    )}
+                    <div className="flex flex-col items-center gap-1.5">
                       <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="inline-block px-3 py-1 border border-pink text-pink rounded text-sm font-[family-name:var(--font-unica)] hover:bg-pink hover:text-bg transition-colors">
                         Pick →
                       </LoadingLink>
+                      <button
+                        onClick={() => reject(s.id)}
+                        className="text-xs text-muted/60 hover:text-pink cursor-pointer transition-colors"
+                      >
+                        Nah
+                      </button>
                     </div>
-                    <button
-                      onClick={() => reject(s.id)}
-                      className="text-xs text-muted/60 hover:text-pink cursor-pointer transition-colors"
-                    >
-                      Nah
-                    </button>
                   </div>
                 </li>
               ))}
@@ -147,18 +147,18 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                       </div>
                     )}
                   </LoadingLink>
-                  <div className="flex flex-col items-end gap-0.5 shrink-0 ml-4">
-                    <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 shrink-0 ml-4">
+                    <div className="flex flex-col items-center gap-1.5">
                       <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="inline-block px-3 py-1 border border-pink text-pink rounded text-sm font-[family-name:var(--font-unica)] hover:bg-pink hover:text-bg transition-colors">
                         Pick →
                       </LoadingLink>
+                      <button
+                        onClick={() => reject(s.id)}
+                        className="text-xs text-muted/60 hover:text-pink cursor-pointer transition-colors"
+                      >
+                        Nah
+                      </button>
                     </div>
-                    <button
-                      onClick={() => reject(s.id)}
-                      className="text-xs text-muted/60 hover:text-pink cursor-pointer transition-colors"
-                    >
-                      Nah
-                    </button>
                   </div>
                 </li>
               ))}
