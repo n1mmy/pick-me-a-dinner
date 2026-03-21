@@ -51,10 +51,10 @@ export async function updateMeal(formData: FormData) {
   revalidatePath("/meals");
 }
 
-export async function deleteMeal(id: string) {
+export async function deleteMeal(id: string): Promise<{ error: string } | undefined> {
   idSchema.parse(id);
   const count = await prisma.dinner.count({ where: { mealId: id } });
-  if (count > 0) throw new Error("Cannot delete a meal that has dinner history");
+  if (count > 0) return { error: "Cannot delete a meal that has dinner history" };
   await prisma.meal.delete({ where: { id } });
   revalidatePath("/meals");
 }

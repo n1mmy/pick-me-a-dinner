@@ -1,3 +1,13 @@
+export function buildEntityTags(
+  restaurants: { id: string; tags: string[] }[],
+  meals: { id: string; tags: string[] }[]
+): Map<string, string[]> {
+  const entityTags = new Map<string, string[]>();
+  for (const r of restaurants) entityTags.set(r.id, r.tags);
+  for (const m of meals) entityTags.set(m.id, m.tags);
+  return entityTags;
+}
+
 export type ScoredOption = {
   score: number;
   tagsWithRecency: { tag: string }[];

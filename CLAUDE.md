@@ -34,7 +34,7 @@ npx prisma migrate deploy
 **Data model** (`prisma/schema.prisma`):
 - `Restaurant` — name, orderUrl, phoneNumber, notes
 - `Meal` — homecooked meal with name and notes
-- `Dinner` — one per date (unique constraint), references either a Restaurant or a Meal, with a `DinnerType` enum (RESTAURANT | HOMECOOKED)
+- `Dinner` — multiple allowed per date, references either a Restaurant or a Meal, with a `DinnerType` enum (RESTAURANT | HOMECOOKED)
 
 **Pages** (all `force-dynamic` server components):
 - `/` — home: tonight's dinner + last 7 nights + "Pick for me" button

@@ -1,7 +1,10 @@
 export const dynamic = "force-dynamic";
 
+import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { AddDinnerForm } from "./AddDinnerForm";
+
+const dinnerType = z.enum(["RESTAURANT", "HOMECOOKED"]);
 
 export default async function AddPage({
   searchParams,
@@ -21,7 +24,7 @@ export default async function AddPage({
   if (id) {
     const dinner = await prisma.dinner.findUnique({ where: { id } });
     const resolvedDate = dinner ? dinner.date.toISOString().split("T")[0] : todayStr;
-    const initialType = (type as "RESTAURANT" | "HOMECOOKED") ?? dinner?.type ?? "RESTAURANT";
+    const initialType = dinnerType.catch("RESTAURANT").parse(type ?? dinner?.type ?? "RESTAURANT");
     const initialSelectedId = suggestedId ?? dinner?.restaurantId ?? dinner?.mealId ?? null;
 
     return (
@@ -46,7 +49,7 @@ export default async function AddPage({
       dinnerId={null}
       restaurants={restaurants}
       meals={meals}
-      initialType={(type as "RESTAURANT" | "HOMECOOKED") ?? "RESTAURANT"}
+      initialType={dinnerType.catch("RESTAURANT").parse(type ?? "RESTAURANT")}
       initialSelectedId={suggestedId ?? null}
       existingNotes={null}
     />
