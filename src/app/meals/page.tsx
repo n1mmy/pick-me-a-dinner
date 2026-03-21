@@ -7,7 +7,7 @@ import { Tags } from "@/components/Tags";
 import { CollapsingForm } from "@/components/CollapsingForm";
 import Link from "next/link";
 
-const inputCls = "w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-400";
+const inputCls = "w-full border border-muted/40 rounded px-3 py-2 text-sm bg-surface text-fg placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-teal";
 
 export default async function MealsPage({
   searchParams,
@@ -34,58 +34,63 @@ export default async function MealsPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Homecooked meals</h1>
+      <div>
+        <h1 className="font-[family-name:var(--font-unica)] text-2xl text-fg">Homecooked meals</h1>
+        <hr className="border-0 border-b-[3px] border-dashed border-pink w-1/4 mt-1" />
+      </div>
 
       {/* Add form */}
-      <form action={createMeal} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 space-y-3">
-        <h2 className="font-medium text-gray-700 dark:text-gray-300">Add meal</h2>
+      <form action={createMeal} className="border border-dashed border-muted/30 rounded p-5 space-y-3">
+        <h2 className="font-[family-name:var(--font-unica)] text-sm text-muted">Add meal</h2>
         <input name="name" required placeholder="Name *" className={inputCls} />
         <textarea name="notes" placeholder="Notes" rows={2} className={inputCls} />
         <input name="tags" placeholder="Tags (comma-separated, e.g. pasta, quick)" className={inputCls} />
-        <SubmitButton className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+        <SubmitButton className="px-4 py-2 bg-teal text-white rounded text-sm font-[family-name:var(--font-unica)] hover:opacity-80 transition-opacity cursor-pointer">
           Add
         </SubmitButton>
       </form>
 
       {/* List */}
       {meals.length === 0 ? (
-        <p className="text-gray-400 dark:text-gray-500 text-sm">No meals yet.</p>
+        <p className="text-muted text-sm">No meals yet.</p>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm divide-y divide-gray-100 dark:divide-gray-700">
+        <div>
           {meals.map((m) => (
-            <details key={m.id} className="group">
-              <summary className="list-none flex items-center gap-3 px-4 py-2.5 cursor-default">
+            <details key={m.id} className="group border-b border-dashed border-muted/30">
+              <summary className="list-none flex items-center gap-3 py-3 cursor-default">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">{m.name}</span>
-                    <span className="text-xs text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 cursor-pointer">Edit <span className="group-open:hidden">▸</span><span className="hidden group-open:inline">▾</span></span>
+                    <span className="text-sm text-fg">{m.name}</span>
+                    <span className="text-xs text-teal hover:text-pink cursor-pointer transition-colors">
+                      Edit <span className="group-open:hidden">▸</span><span className="hidden group-open:inline">▾</span>
+                    </span>
                   </div>
                   <Tags tags={m.tags} className="mt-0.5" />
-                  {m.notes && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">{m.notes}</p>}
+                  {m.notes && <p className="text-xs text-muted mt-0.5 truncate italic">{m.notes}</p>}
                 </div>
                 <div className="flex items-center gap-3 shrink-0 text-xs">
-                  <span className="text-gray-400 dark:text-gray-500 tabular-nums">{m._count.dinners}×</span>
+                  <span className="text-muted tabular-nums">{m._count.dinners}×</span>
                 </div>
               </summary>
-              <div className="px-4 pb-3 space-y-2">
+              <div className="pb-3 space-y-2">
                 <CollapsingForm action={updateMeal} className="space-y-2">
                   <input type="hidden" name="id" value={m.id} />
                   <input name="name" required defaultValue={m.name} placeholder="Name *" className={inputCls} />
                   <textarea name="notes" defaultValue={m.notes ?? ""} placeholder="Notes" rows={2} className={inputCls} />
                   <input name="tags" defaultValue={m.tags.join(", ")} placeholder="Tags (comma-separated)" className={inputCls} />
-                  <SubmitButton className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                  <SubmitButton className="px-3 py-1.5 bg-teal text-white rounded text-sm hover:opacity-80 transition-opacity cursor-pointer">
                     Save
                   </SubmitButton>
                 </CollapsingForm>
                 {m._count.dinners > 0 ? (
                   <form action={hideMeal.bind(null, m.id)}>
-                    <SubmitButton className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
+                    <SubmitButton className="text-xs text-muted hover:text-pink transition-colors cursor-pointer">
                       Hide
                     </SubmitButton>
                   </form>
                 ) : (
                   <form action={deleteMeal.bind(null, m.id)}>
-                    <SubmitButton className="text-xs text-red-400 hover:text-red-600">
+                    <SubmitButton className="text-xs text-pink/60 hover:text-pink transition-colors cursor-pointer">
                       Delete
                     </SubmitButton>
                   </form>
@@ -101,7 +106,7 @@ export default async function MealsPage({
         <Link
           href={showingHidden ? "/meals" : "/meals?showHidden=1"}
           scroll={false}
-          className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+          className="text-xs text-muted hover:text-pink transition-colors"
         >
           {showingHidden ? "Hide hidden meals" : "Show hidden meals"}
         </Link>
@@ -110,18 +115,18 @@ export default async function MealsPage({
       {/* Hidden meals */}
       {showingHidden && hiddenMeals.length > 0 && (
         <div className="space-y-2">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Hidden</h2>
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm divide-y divide-gray-100 dark:divide-gray-700">
+          <h2 className="font-[family-name:var(--font-unica)] text-sm text-muted">Hidden</h2>
+          <div>
             {hiddenMeals.map((m) => (
-              <div key={m.id} className="flex items-center justify-between px-4 py-2.5">
+              <div key={m.id} className="flex items-center justify-between py-2.5 border-b border-dashed border-muted/20">
                 <div className="flex-1 min-w-0">
-                  <span className="font-medium text-sm text-gray-400 dark:text-gray-500">{m.name}</span>
+                  <span className="text-sm text-muted">{m.name}</span>
                   <Tags tags={m.tags} className="mt-0.5" />
                 </div>
                 <div className="flex items-center gap-3 shrink-0 text-xs">
-                  <span className="text-gray-300 dark:text-gray-600 tabular-nums">{m._count.dinners}×</span>
+                  <span className="text-muted/50 tabular-nums">{m._count.dinners}×</span>
                   <form action={unhideMeal.bind(null, m.id)}>
-                    <SubmitButton className="text-xs text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300">
+                    <SubmitButton className="text-xs text-teal hover:text-pink transition-colors cursor-pointer">
                       Unhide
                     </SubmitButton>
                   </form>
@@ -132,7 +137,7 @@ export default async function MealsPage({
         </div>
       )}
       {showingHidden && hiddenMeals.length === 0 && (
-        <p className="text-gray-400 dark:text-gray-500 text-sm text-center">No hidden meals.</p>
+        <p className="text-muted text-sm text-center">No hidden meals.</p>
       )}
     </div>
   );
