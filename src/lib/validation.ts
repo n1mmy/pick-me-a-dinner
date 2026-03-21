@@ -75,7 +75,7 @@ export const createDinnerSchema = z.object({
   notes: optionalString,
 });
 
-export const updateDinnerSchema = createDinnerSchema.extend({
+export const updateDinnerSchema = createDinnerSchema.omit({ date: true }).extend({
   id: requiredString,
 });
 
