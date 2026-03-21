@@ -80,7 +80,7 @@ export default async function HistoryPage({
         </form>
       </div>
 
-      <SearchBar placeholder="Search dinners…" defaultValue={search} />
+      <SearchBar placeholder="Search dinners…" />
 
       {dinners.length === 0 ? (
         <p className="text-muted">{search ? `No dinners matching "${search}".` : "No dinners recorded yet."}</p>
