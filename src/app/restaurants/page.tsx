@@ -8,6 +8,7 @@ import { Tags } from "@/components/Tags";
 import { CollapsingForm } from "@/components/CollapsingForm";
 import { LoadingLink } from "@/components/LoadingLink";
 import Link from "next/link";
+import { SearchBar } from "@/components/SearchBar";
 
 const inputCls = "w-full border border-muted/40 rounded px-3 py-2 text-sm bg-surface text-fg placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-teal";
 const halfInputCls = "border border-muted/40 rounded px-3 py-2 text-sm bg-surface text-fg placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-teal";
@@ -15,15 +16,23 @@ const halfInputCls = "border border-muted/40 rounded px-3 py-2 text-sm bg-surfac
 export default async function RestaurantsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ showHidden?: string }>;
+  searchParams: Promise<{ showHidden?: string; q?: string }>;
 }) {
-  const { showHidden } = await searchParams;
+  const { showHidden, q } = await searchParams;
   const showingHidden = showHidden === "1";
+  const search = q?.trim() ?? "";
   const todayStr = new Date().toISOString().split("T")[0];
+
+  const tagMatchIds = search
+    ? (await prisma.$queryRaw<{ id: string }[]>`SELECT id FROM "Restaurant" WHERE array_to_string(tags, ',') ILIKE ${`%${search}%`}`).map((r) => r.id)
+    : [];
+  const searchFilter = search
+    ? { OR: [{ name: { contains: search, mode: "insensitive" as const } }, { id: { in: tagMatchIds } }] }
+    : {};
 
   const [restaurants, hiddenRestaurants] = await Promise.all([
     prisma.restaurant.findMany({
-      where: { hidden: false },
+      where: { hidden: false, ...searchFilter },
       orderBy: { name: "asc" },
       include: {
         _count: { select: { dinners: true } },
@@ -32,7 +41,7 @@ export default async function RestaurantsPage({
     }),
     showingHidden
       ? prisma.restaurant.findMany({
-          where: { hidden: true },
+          where: { hidden: true, ...searchFilter },
           orderBy: { name: "asc" },
           include: { _count: { select: { dinners: true } } },
         })
@@ -62,9 +71,12 @@ export default async function RestaurantsPage({
         </SubmitButton>
       </form>
 
+      {/* Search */}
+      <SearchBar placeholder="Search restaurants…" defaultValue={search} />
+
       {/* List */}
       {restaurants.length === 0 ? (
-        <p className="text-muted text-sm">No restaurants yet.</p>
+        <p className="text-muted text-sm">{search ? `No restaurants matching "${search}".` : "No restaurants yet."}</p>
       ) : (
         <div>
           {restaurants.map((r) => (
@@ -132,7 +144,9 @@ export default async function RestaurantsPage({
       {/* Show hidden toggle */}
       <div className="text-center">
         <Link
-          href={showingHidden ? "/restaurants" : "/restaurants?showHidden=1"}
+          href={showingHidden
+            ? `/restaurants${search ? `?q=${encodeURIComponent(search)}` : ""}`
+            : `/restaurants?showHidden=1${search ? `&q=${encodeURIComponent(search)}` : ""}`}
           scroll={false}
           className="text-xs text-muted hover:text-pink transition-colors"
         >

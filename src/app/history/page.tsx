@@ -5,6 +5,8 @@ import { deleteDinner } from "@/app/actions/dinners";
 import { SubmitButton } from "@/components/SubmitButton";
 import { LoadingLink } from "@/components/LoadingLink";
 import { Tags } from "@/components/Tags";
+import { SearchBar } from "@/components/SearchBar";
+import { Prisma } from "@/generated/prisma/client";
 
 const PAGE_SIZE = 30;
 
@@ -21,21 +23,39 @@ function formatDate(d: Date) {
 export default async function HistoryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; q?: string }>;
 }) {
-  const { page: pageParam } = await searchParams;
-  const page = Math.max(1, parseInt(pageParam ?? "1", 10));
+  const { page: pageParam, q } = await searchParams;
+  const search = q?.trim() ?? "";
+  const page = search ? 1 : Math.max(1, parseInt(pageParam ?? "1", 10));
   const todayStr = new Date().toISOString().split("T")[0];
   const skip = (page - 1) * PAGE_SIZE;
 
+  let where: Prisma.DinnerWhereInput = {};
+  if (search) {
+    const [restaurantTagIds, mealTagIds] = await Promise.all([
+      prisma.$queryRaw<{ id: string }[]>`SELECT id FROM "Restaurant" WHERE array_to_string(tags, ',') ILIKE ${`%${search}%`}`,
+      prisma.$queryRaw<{ id: string }[]>`SELECT id FROM "Meal" WHERE array_to_string(tags, ',') ILIKE ${`%${search}%`}`,
+    ]);
+    where = {
+      OR: [
+        { restaurant: { name: { contains: search, mode: "insensitive" } } },
+        { meal: { name: { contains: search, mode: "insensitive" } } },
+        { restaurantId: { in: restaurantTagIds.map((r) => r.id) } },
+        { mealId: { in: mealTagIds.map((m) => m.id) } },
+      ],
+    };
+  }
+
   const [dinners, total] = await Promise.all([
     prisma.dinner.findMany({
+      where,
       include: { restaurant: true, meal: true },
       orderBy: { date: "desc" },
       skip,
       take: PAGE_SIZE,
     }),
-    prisma.dinner.count(),
+    prisma.dinner.count({ where }),
   ]);
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
@@ -60,8 +80,10 @@ export default async function HistoryPage({
         </form>
       </div>
 
+      <SearchBar placeholder="Search dinners…" defaultValue={search} />
+
       {dinners.length === 0 ? (
-        <p className="text-muted">No dinners recorded yet.</p>
+        <p className="text-muted">{search ? `No dinners matching "${search}".` : "No dinners recorded yet."}</p>
       ) : (
         <div>
           {dinners.map((dinner) => (
@@ -112,7 +134,7 @@ export default async function HistoryPage({
         <div className="flex gap-2 pt-2 items-center">
           {page > 1 && (
             <LoadingLink
-              href={`/history?page=${page - 1}`}
+              href={`/history?page=${page - 1}${search ? `&q=${encodeURIComponent(search)}` : ""}`}
               className="px-3 py-1.5 border border-dashed border-muted/40 rounded text-sm text-muted hover:text-pink hover:border-pink/40 transition-colors"
             >
               ← Previous
@@ -123,7 +145,7 @@ export default async function HistoryPage({
           </span>
           {page < totalPages && (
             <LoadingLink
-              href={`/history?page=${page + 1}`}
+              href={`/history?page=${page + 1}${search ? `&q=${encodeURIComponent(search)}` : ""}`}
               className="px-3 py-1.5 border border-dashed border-muted/40 rounded text-sm text-muted hover:text-pink hover:border-pink/40 transition-colors"
             >
               Next →

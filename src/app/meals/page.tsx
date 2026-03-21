@@ -8,21 +8,30 @@ import { Tags } from "@/components/Tags";
 import { CollapsingForm } from "@/components/CollapsingForm";
 import { LoadingLink } from "@/components/LoadingLink";
 import Link from "next/link";
+import { SearchBar } from "@/components/SearchBar";
 
 const inputCls = "w-full border border-muted/40 rounded px-3 py-2 text-sm bg-surface text-fg placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-teal";
 
 export default async function MealsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ showHidden?: string }>;
+  searchParams: Promise<{ showHidden?: string; q?: string }>;
 }) {
-  const { showHidden } = await searchParams;
+  const { showHidden, q } = await searchParams;
   const showingHidden = showHidden === "1";
+  const search = q?.trim() ?? "";
   const todayStr = new Date().toISOString().split("T")[0];
+
+  const tagMatchIds = search
+    ? (await prisma.$queryRaw<{ id: string }[]>`SELECT id FROM "Meal" WHERE array_to_string(tags, ',') ILIKE ${`%${search}%`}`).map((m) => m.id)
+    : [];
+  const searchFilter = search
+    ? { OR: [{ name: { contains: search, mode: "insensitive" as const } }, { id: { in: tagMatchIds } }] }
+    : {};
 
   const [meals, hiddenMeals] = await Promise.all([
     prisma.meal.findMany({
-      where: { hidden: false },
+      where: { hidden: false, ...searchFilter },
       orderBy: { name: "asc" },
       include: {
         _count: { select: { dinners: true } },
@@ -31,7 +40,7 @@ export default async function MealsPage({
     }),
     showingHidden
       ? prisma.meal.findMany({
-          where: { hidden: true },
+          where: { hidden: true, ...searchFilter },
           orderBy: { name: "asc" },
           include: { _count: { select: { dinners: true } } },
         })
@@ -56,9 +65,12 @@ export default async function MealsPage({
         </SubmitButton>
       </form>
 
+      {/* Search */}
+      <SearchBar placeholder="Search meals…" defaultValue={search} />
+
       {/* List */}
       {meals.length === 0 ? (
-        <p className="text-muted text-sm">No meals yet.</p>
+        <p className="text-muted text-sm">{search ? `No meals matching "${search}".` : "No meals yet."}</p>
       ) : (
         <div>
           {meals.map((m) => (
@@ -112,7 +124,9 @@ export default async function MealsPage({
       {/* Show hidden toggle */}
       <div className="text-center">
         <Link
-          href={showingHidden ? "/meals" : "/meals?showHidden=1"}
+          href={showingHidden
+            ? `/meals${search ? `?q=${encodeURIComponent(search)}` : ""}`
+            : `/meals?showHidden=1${search ? `&q=${encodeURIComponent(search)}` : ""}`}
           scroll={false}
           className="text-xs text-muted hover:text-pink transition-colors"
         >
