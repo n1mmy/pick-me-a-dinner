@@ -54,14 +54,14 @@ export default async function SuggestionsPage() {
       {restaurantSuggestions.length > 0 && (
         <section className="space-y-1">
           <p className="font-[family-name:var(--font-unica)] text-sm text-muted">Restaurants</p>
-          <SuggestionsPageList suggestions={restaurantSuggestions} verb="ordered" todayStr={todayStr} />
+          <SuggestionsPageList suggestions={restaurantSuggestions} verb="ordered" todayStr={todayStr} type="RESTAURANT" />
         </section>
       )}
 
       {mealSuggestions.length > 0 && (
         <section className="space-y-1">
           <p className="font-[family-name:var(--font-unica)] text-sm text-muted">Homecooked</p>
-          <SuggestionsPageList suggestions={mealSuggestions} verb="cooked" todayStr={todayStr} />
+          <SuggestionsPageList suggestions={mealSuggestions} verb="cooked" todayStr={todayStr} type="HOMECOOKED" />
         </section>
       )}
 
