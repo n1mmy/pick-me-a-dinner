@@ -12,5 +12,6 @@ export default defineConfig({
     globals: true,
     env: { NODE_ENV: "test" },
     fileParallelism: false,
+    exclude: ["**/.claude/**", "**/node_modules/**"],
   },
 });
