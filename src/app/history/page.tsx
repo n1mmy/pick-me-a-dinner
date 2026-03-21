@@ -77,10 +77,10 @@ export default async function HistoryPage({
                   <span className="font-[family-name:var(--font-unica)]">{formatDate(dinner.date)}</span> · {dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
                 </p>
                 {(dinner.restaurant?.notes ?? dinner.meal?.notes) && (
-                  <p className="text-xs text-muted mt-0.5 italic">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
+                  <p className="text-xs text-muted mt-1 italic">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
                 )}
                 {dinner.notes && (
-                  <p className="text-xs text-fg/60 mt-0.5">{dinner.notes}</p>
+                  <p className="text-xs text-muted/70 mt-1 italic">"{dinner.notes}"</p>
                 )}
                 <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
               </div>
