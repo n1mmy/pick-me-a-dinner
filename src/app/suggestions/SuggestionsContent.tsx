@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { LoadingLink } from "@/components/LoadingLink";
 import { fetchMoreSuggestions, type Suggestion } from "@/app/actions/dinners";
 
@@ -10,6 +10,8 @@ function daysSinceLabel(n: number | null, verb: "ordered" | "cooked") {
   if (n === 1) return `last ${verb} yesterday`;
   return `last ${verb} ${n} days ago`;
 }
+
+type TagFilter = { mode: "only" | "exclude"; tag: string };
 
 interface Props {
   restaurantCandidates: Suggestion[];
@@ -26,8 +28,34 @@ export function SuggestionsContent({
   const [allMeals, setAllMeals] = useState<Suggestion[]>(initialMeals);
   const [rejectedIds, setRejectedIds] = useState<string[]>([]);
   const [isFetching, setIsFetching] = useState(false);
+  const [tagFilter, setTagFilter] = useState<TagFilter | null>(null);
   const mountedRef = useRef(true);
   useEffect(() => () => { mountedRef.current = false; }, []);
+
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    [...allRestaurants, ...allMeals].forEach((s) =>
+      s.tagsWithRecency.forEach((t) => tagSet.add(t.tag))
+    );
+    return [...tagSet].sort();
+  }, [allRestaurants, allMeals]);
+
+  const handleTagClick = (tag: string) => {
+    setTagFilter((prev) => {
+      if (prev?.tag === tag) {
+        if (prev.mode === "only") return { mode: "exclude", tag };
+        return null;
+      }
+      return { mode: "only", tag };
+    });
+  };
+
+  const applyTagFilter = (suggestions: Suggestion[]) => {
+    if (!tagFilter) return suggestions;
+    if (tagFilter.mode === "only")
+      return suggestions.filter((s) => s.tagsWithRecency.some((t) => t.tag === tagFilter.tag));
+    return suggestions.filter((s) => !s.tagsWithRecency.some((t) => t.tag === tagFilter.tag));
+  };
 
   const reject = async (id: string) => {
     const newRejected = [...rejectedIds, id];
@@ -47,11 +75,43 @@ export function SuggestionsContent({
     }
   };
 
-  const visibleRestaurants = allRestaurants.filter((s) => !rejectedIds.includes(s.id)).slice(0, 5);
-  const visibleMeals = allMeals.filter((s) => !rejectedIds.includes(s.id)).slice(0, 3);
+  const visibleRestaurants = applyTagFilter(allRestaurants.filter((s) => !rejectedIds.includes(s.id))).slice(0, 5);
+  const visibleMeals = applyTagFilter(allMeals.filter((s) => !rejectedIds.includes(s.id))).slice(0, 3);
 
   return (
     <div className="space-y-6">
+      {allTags.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-xs text-muted mr-1">Filter:</span>
+          {allTags.map((tag) => {
+            const state = tagFilter?.tag === tag ? tagFilter.mode : null;
+            return (
+              <button
+                key={tag}
+                onClick={() => handleTagClick(tag)}
+                title={state === "only" ? "Click to exclude" : state === "exclude" ? "Click to clear" : "Click to filter to this tag"}
+                className={
+                  state === "only"
+                    ? "inline-flex items-center px-1.5 py-0.5 rounded text-xs cursor-pointer bg-teal text-bg"
+                    : state === "exclude"
+                    ? "inline-flex items-center px-1.5 py-0.5 rounded text-xs cursor-pointer bg-pink/15 text-pink line-through"
+                    : "inline-flex items-center px-1.5 py-0.5 rounded text-xs cursor-pointer bg-teal/15 text-teal hover:bg-teal/30 transition-colors"
+                }
+              >
+                #{tag}
+              </button>
+            );
+          })}
+          {tagFilter && (
+            <button
+              onClick={() => setTagFilter(null)}
+              className="text-xs text-muted/60 hover:text-pink transition-colors ml-1"
+            >
+              clear ×
+            </button>
+          )}
+        </div>
+      )}
       {(visibleRestaurants.length > 0 || (isFetching && allRestaurants.filter((s) => !rejectedIds.includes(s.id)).length === 0)) && (
         <section className="space-y-1">
           <p className="font-[family-name:var(--font-unica)] text-sm text-muted">Restaurants</p>
@@ -169,7 +229,11 @@ export function SuggestionsContent({
       )}
 
       {!isFetching && visibleRestaurants.length === 0 && visibleMeals.length === 0 && (
-        <p className="text-muted text-sm">No restaurants or meals added yet.</p>
+        <p className="text-muted text-sm">
+          {tagFilter
+            ? `No suggestions match ${tagFilter.mode === "only" ? `#${tagFilter.tag}` : `(excluding #${tagFilter.tag})`}.`
+            : "No restaurants or meals added yet."}
+        </p>
       )}
     </div>
   );
