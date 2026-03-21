@@ -9,15 +9,12 @@ const optionalString = z
   .optional();
 const optionalUrl = z
   .string()
-  .transform((v) => {
-    const trimmed = v.trim();
-    if (!trimmed) return null;
-    // Validate as URL only when non-empty
-    new URL(trimmed);
-    return trimmed;
-  })
+  .transform((v) => v.trim() || null)
   .nullable()
-  .optional();
+  .optional()
+  .refine((v) => v === null || v === undefined || (() => { try { new URL(v); return true; } catch { return false; } })(), {
+    message: "Invalid URL",
+  });
 const dateString = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const tagsString = z
   .string()

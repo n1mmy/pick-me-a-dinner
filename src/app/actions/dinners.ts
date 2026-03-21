@@ -98,15 +98,19 @@ export async function createDinner(formData: FormData) {
     formData
   );
 
-  await prisma.dinner.create({
-    data: {
-      date: new Date(date + "T00:00:00.000Z"),
-      type: type as DinnerType,
-      restaurantId: type === "RESTAURANT" ? restaurantId : null,
-      mealId: type === "HOMECOOKED" ? mealId : null,
-      notes,
-    },
-  });
+  try {
+    await prisma.dinner.create({
+      data: {
+        date: new Date(date + "T00:00:00.000Z"),
+        type: type as DinnerType,
+        restaurantId: type === "RESTAURANT" ? restaurantId : null,
+        mealId: type === "HOMECOOKED" ? mealId : null,
+        notes,
+      },
+    });
+  } catch {
+    throw new Error("Failed to save dinner. Please try again.");
+  }
 
   revalidatePath("/");
   revalidatePath("/history");
@@ -119,15 +123,19 @@ export async function updateDinner(formData: FormData) {
     formData
   );
 
-  await prisma.dinner.update({
-    where: { id },
-    data: {
-      type: type as DinnerType,
-      restaurantId: type === "RESTAURANT" ? restaurantId : null,
-      mealId: type === "HOMECOOKED" ? mealId : null,
-      notes,
-    },
-  });
+  try {
+    await prisma.dinner.update({
+      where: { id },
+      data: {
+        type: type as DinnerType,
+        restaurantId: type === "RESTAURANT" ? restaurantId : null,
+        mealId: type === "HOMECOOKED" ? mealId : null,
+        notes,
+      },
+    });
+  } catch {
+    throw new Error("Failed to update dinner. Please try again.");
+  }
 
   revalidatePath("/");
   revalidatePath("/history");

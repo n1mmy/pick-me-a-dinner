@@ -33,6 +33,7 @@ export default async function MealsPage({
       ? prisma.meal.findMany({
           where: { hidden: true },
           orderBy: { name: "asc" },
+          take: 50,
           include: { _count: { select: { dinners: true } } },
         })
       : Promise.resolve([]),

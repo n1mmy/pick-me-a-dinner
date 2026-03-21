@@ -17,9 +17,13 @@ export async function createRestaurant(formData: FormData) {
     formData
   );
 
-  await prisma.restaurant.create({
-    data: { name, orderUrl, menuUrl, phoneNumber, notes, tags },
-  });
+  try {
+    await prisma.restaurant.create({
+      data: { name, orderUrl, menuUrl, phoneNumber, notes, tags },
+    });
+  } catch {
+    throw new Error("Failed to save restaurant. Please try again.");
+  }
 
   revalidatePath("/restaurants");
 }
@@ -28,9 +32,14 @@ export async function createRestaurantAndReturn(formData: FormData) {
   const { name, orderUrl, menuUrl, phoneNumber, tags, returnDate, returnDinnerId } =
     parseFormData(createRestaurantAndReturnSchema, formData);
 
-  const restaurant = await prisma.restaurant.create({
-    data: { name, orderUrl, menuUrl, phoneNumber, tags },
-  });
+  let restaurant;
+  try {
+    restaurant = await prisma.restaurant.create({
+      data: { name, orderUrl, menuUrl, phoneNumber, tags },
+    });
+  } catch {
+    throw new Error("Failed to save restaurant. Please try again.");
+  }
 
   revalidatePath("/restaurants");
   if (returnDinnerId) {
@@ -49,10 +58,14 @@ export async function updateRestaurant(formData: FormData) {
     formData
   );
 
-  await prisma.restaurant.update({
-    where: { id },
-    data: { name, orderUrl, menuUrl, phoneNumber, notes, tags },
-  });
+  try {
+    await prisma.restaurant.update({
+      where: { id },
+      data: { name, orderUrl, menuUrl, phoneNumber, notes, tags },
+    });
+  } catch {
+    throw new Error("Failed to update restaurant. Please try again.");
+  }
 
   revalidatePath("/restaurants");
 }
