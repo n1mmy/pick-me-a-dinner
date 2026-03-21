@@ -1,5 +1,24 @@
 import { describe, it, expect, vi } from "vitest";
-import { computeLastUsed, tagAwareScore, pickTop, pickBest } from "@/lib/scoring";
+import { buildEntityTags, computeLastUsed, tagAwareScore, pickTop, pickBest } from "@/lib/scoring";
+
+describe("buildEntityTags", () => {
+  it("maps restaurant and meal ids to their tags", () => {
+    const restaurants = [{ id: "r1", tags: ["italian", "pizza"] }];
+    const meals = [{ id: "m1", tags: ["quick"] }];
+    const map = buildEntityTags(restaurants, meals);
+    expect(map.get("r1")).toEqual(["italian", "pizza"]);
+    expect(map.get("m1")).toEqual(["quick"]);
+  });
+
+  it("returns empty map for empty inputs", () => {
+    expect(buildEntityTags([], []).size).toBe(0);
+  });
+
+  it("handles entities with no tags", () => {
+    const map = buildEntityTags([{ id: "r1", tags: [] }], []);
+    expect(map.get("r1")).toEqual([]);
+  });
+});
 
 // Fixed "now" so day calculations are deterministic
 const NOW = new Date("2026-03-20T12:00:00Z").getTime();
