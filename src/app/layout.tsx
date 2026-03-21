@@ -22,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </Link>
             <div className="flex gap-0.5 sm:gap-1 text-xs sm:text-sm -ml-1.5 sm:ml-0">
               <Link href="/history" className="px-1.5 sm:px-2.5 py-1 text-[#a8b0bb] dark:text-muted hover:text-pink transition-colors">History</Link>
+              <Link href="/calendar" className="px-1.5 sm:px-2.5 py-1 text-[#a8b0bb] dark:text-muted hover:text-pink transition-colors">Calendar</Link>
               <Link href="/restaurants" className="px-1.5 sm:px-2.5 py-1 text-[#a8b0bb] dark:text-muted hover:text-pink transition-colors">Restaurants</Link>
               <Link href="/meals" className="px-1.5 sm:px-2.5 py-1 text-[#a8b0bb] dark:text-muted hover:text-pink transition-colors">Meals</Link>
               <Link href="/suggestions" className="px-1.5 sm:px-2.5 py-1 text-[#a8b0bb] dark:text-muted hover:text-pink transition-colors">Suggestions</Link>
