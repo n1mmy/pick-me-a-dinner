@@ -34,7 +34,6 @@ export default async function RestaurantsPage({
       ? prisma.restaurant.findMany({
           where: { hidden: true },
           orderBy: { name: "asc" },
-          take: 50,
           include: { _count: { select: { dinners: true } } },
         })
       : Promise.resolve([]),
