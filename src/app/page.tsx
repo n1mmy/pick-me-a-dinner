@@ -45,7 +45,7 @@ export default async function Home({
     prisma.restaurant.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
     prisma.meal.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
     prisma.dinner.findMany({
-      where: { date: { gte: new Date(Date.now() - 90 * 86_400_000) } },
+      where: { date: { gte: new Date(today.getTime() - 90 * 86_400_000) } },
       orderBy: { date: "desc" },
     }),
   ]);

@@ -22,7 +22,7 @@ export function DeleteButton({
   children: React.ReactNode;
 }) {
   const [state, formAction] = useActionState(
-    async (_prev: { error: string } | null) => (await action()) ?? null,
+    async () => (await action()) ?? null,
     null
   );
 

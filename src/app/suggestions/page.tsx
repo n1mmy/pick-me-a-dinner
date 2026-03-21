@@ -8,11 +8,14 @@ import { SuggestionsPageList } from "./SuggestionsPageList";
 export default async function SuggestionsPage() {
   const todayStr = new Date().toISOString().split("T")[0];
 
+  const scoringCutoff = new Date();
+  scoringCutoff.setUTCDate(scoringCutoff.getUTCDate() - 90);
+
   const [restaurants, meals, scoringDinners] = await Promise.all([
     prisma.restaurant.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
     prisma.meal.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),
     prisma.dinner.findMany({
-      where: { date: { gte: new Date(Date.now() - 90 * 86_400_000) } },
+      where: { date: { gte: scoringCutoff } },
       orderBy: { date: "desc" },
     }),
   ]);
