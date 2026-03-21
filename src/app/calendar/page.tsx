@@ -59,7 +59,7 @@ export default async function CalendarPage({
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-[family-name:var(--font-unica)] text-2xl text-fg">Calendar</h1>
+          <h1 className="font-display text-2xl text-fg">Calendar</h1>
           <hr className="border-0 border-b-[3px] border-dashed border-pink w-2/3 mt-1" />
         </div>
         <div className="flex items-center gap-2">
@@ -69,7 +69,7 @@ export default async function CalendarPage({
           >
             ←
           </LoadingLink>
-          <span className="font-[family-name:var(--font-unica)] text-sm text-fg min-w-[120px] text-center">
+          <span className="font-display text-sm text-fg min-w-[120px] text-center">
             {formatMonthYear(year, month)}
           </span>
           <LoadingLink
@@ -83,7 +83,7 @@ export default async function CalendarPage({
 
       <div className="grid grid-cols-7 gap-1">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-          <div key={d} className="text-center text-xs text-muted pb-1 font-[family-name:var(--font-unica)]">
+          <div key={d} className="text-center text-xs text-muted pb-1 font-display">
             {d}
           </div>
         ))}
@@ -120,7 +120,7 @@ export default async function CalendarPage({
                 className={[
                   "text-xs leading-none",
                   isToday
-                    ? "text-teal font-bold font-[family-name:var(--font-unica)]"
+                    ? "text-teal font-bold font-display"
                     : "text-muted",
                 ].join(" ")}
               >

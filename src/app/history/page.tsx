@@ -64,7 +64,7 @@ export default async function HistoryPage({
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-[family-name:var(--font-unica)] text-2xl text-fg">Dinner history</h1>
+          <h1 className="font-display text-2xl text-fg">Dinner history</h1>
           <hr className="border-0 border-b-[3px] border-dashed border-pink w-2/3 mt-1" />
         </div>
         <form method="get" action="/add" className="flex items-center gap-2">
@@ -74,7 +74,7 @@ export default async function HistoryPage({
             defaultValue={new Date().toISOString().split("T")[0]}
             className="border border-muted/40 rounded px-3 py-1.5 text-sm bg-surface text-fg focus:outline-none focus:ring-1 focus:ring-teal"
           />
-          <button type="submit" className="px-3 py-1.5 bg-teal text-white rounded text-sm font-[family-name:var(--font-unica)] hover:opacity-80 transition-opacity cursor-pointer">
+          <button type="submit" className="px-3 py-1.5 bg-teal text-white rounded text-sm font-display hover:opacity-80 transition-opacity cursor-pointer">
             + Add
           </button>
         </form>
@@ -96,7 +96,7 @@ export default async function HistoryPage({
                   {dinner.restaurant?.name ?? dinner.meal?.name}
                 </p>
                 <p className="text-xs text-muted">
-                  <span className="font-[family-name:var(--font-unica)]">{formatDate(dinner.date)}</span> · {dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
+                  <span className="font-display">{formatDate(dinner.date)}</span> · {dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
                 </p>
                 {(dinner.restaurant?.notes ?? dinner.meal?.notes) && (
                   <p className="text-xs text-muted mt-1 italic">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
@@ -109,7 +109,7 @@ export default async function HistoryPage({
               <div className="flex gap-3 items-center shrink-0 ml-4">
                 <LoadingLink
                   href={`/add?date=${todayStr}&suggestedId=${dinner.restaurantId ?? dinner.mealId}&type=${dinner.type}`}
-                  className="px-2 py-0.5 border border-pink text-pink rounded text-xs font-[family-name:var(--font-unica)] hover:bg-pink hover:text-bg transition-colors"
+                  className="px-2 py-0.5 border border-pink text-pink rounded text-xs font-display hover:bg-pink hover:text-bg transition-colors"
                 >
                   Pick →
                 </LoadingLink>

@@ -111,7 +111,7 @@ export default async function Home({
     <div className="space-y-8">
       {/* Tonight */}
       <section>
-        <h2 className="font-[family-name:var(--font-unica)] text-3xl text-fg mb-1">Tonight</h2>
+        <h2 className="font-display text-3xl text-fg mb-1">Tonight</h2>
         <hr className="border-0 border-b-[3px] border-dashed border-pink w-1/3 mb-6" />
 
         {todayDinners.length > 0 ? (
@@ -119,7 +119,7 @@ export default async function Home({
             {todayDinners.map((dinner) => (
               <div key={dinner.id} className="flex items-start justify-between border-b border-dashed border-muted/40 pb-4">
                 <div>
-                  <p className="font-[family-name:var(--font-unica)] text-xl text-fg">
+                  <p className="font-display text-xl text-fg">
                     {dinner.restaurant?.name ?? dinner.meal?.name}
                   </p>
                   <p className="text-sm text-muted">
@@ -164,7 +164,7 @@ export default async function Home({
                 todayStr={todayStr}
               />
             )}
-            <LoadingLink href={`/add?date=${todayStr}`} className="self-start inline-block px-3 py-1 border border-pink text-pink rounded text-sm font-[family-name:var(--font-unica)] hover:bg-pink hover:text-bg transition-colors">
+            <LoadingLink href={`/add?date=${todayStr}`} className="self-start inline-block px-3 py-1 border border-pink text-pink rounded text-sm font-display hover:bg-pink hover:text-bg transition-colors">
               Choose myself →
             </LoadingLink>
           </div>
@@ -173,7 +173,7 @@ export default async function Home({
 
       {/* Recent */}
       <section>
-        <h2 className="font-[family-name:var(--font-unica)] text-xl text-muted mb-4">Last {days} nights</h2>
+        <h2 className="font-display text-xl text-muted mb-4">Last {days} nights</h2>
         <div className="space-y-0">
           {pastDays.map((day) => {
             const dateStr = toDateStr(day);
@@ -181,7 +181,7 @@ export default async function Home({
             return (
               <div key={dateStr} className="border-b border-dashed border-muted/30 py-3">
                 <div className="flex justify-between items-baseline">
-                  <p className="font-[family-name:var(--font-unica)] text-sm text-muted">{formatDate(day)}</p>
+                  <p className="font-display text-sm text-muted">{formatDate(day)}</p>
                   <LoadingLink href={`/add?date=${dateStr}`} className="text-xs text-teal hover:text-pink transition-colors">
                     + Add
                   </LoadingLink>

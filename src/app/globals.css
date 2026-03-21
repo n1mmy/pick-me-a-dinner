@@ -32,7 +32,7 @@
   --color-pink: var(--pink);
   --color-teal: var(--teal);
   --font-sans: var(--font-geist);
-  --font-display: var(--font-unica);
+  --font-display: var(--font-space);
 }
 
 body {

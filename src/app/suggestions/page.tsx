@@ -60,7 +60,7 @@ export default async function SuggestionsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-[family-name:var(--font-unica)] text-2xl text-fg">Suggestions</h1>
+        <h1 className="font-display text-2xl text-fg">Suggestions</h1>
         <hr className="border-0 border-b-[3px] border-dashed border-pink w-1/4 mt-1" />
       </div>
 
