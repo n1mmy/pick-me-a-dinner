@@ -1,5 +1,22 @@
 # Manual Test Plan — Pick Me A Dinner
 
+## Prompt for automated execution
+
+```
+Run the manual test plan in manual-test-plan.md. Use preview_start to start the dev server, then work through each section systematically using the preview tools (preview_snapshot, preview_click, preview_fill, preview_inspect, preview_screenshot, preview_resize).
+
+Create any necessary test data via the UI as you go (e.g. add restaurants and meals before testing hide/delete, add dinners before testing the home and history pages).
+
+Implementation notes from prior runs:
+- preview_snapshot occasionally fails with "t.slice is not a function" — fall back to preview_eval with DOM queries (document.body.innerText, document.querySelector, etc.)
+- Server actions (form submissions) require form.requestSubmit() not button.click(). Use: document.querySelector('form').requestSubmit() or input.form.requestSubmit()
+- To test empty calendar months, use a far-future date (e.g. 2027-06) — the DB likely has extensive history going back years
+- For whitespace/text content bugs, use preview_eval with element.innerHTML (not textContent) to see exact rendered markup
+- At the end, run preview_console_logs to check for any browser errors accumulated during the session
+
+Skip steps that require real database state you can't set up (e.g. scoring/suggestion quality over many days, section 7f empty state which requires deleting all restaurants/meals). Report a summary at the end grouped by section, listing any failures or unexpected behavior.
+```
+
 ## Prerequisites
 
 - App running locally (`npm run dev` or `docker-compose up`)
@@ -200,7 +217,7 @@
 | 9.4 | Today's date | Cell has a teal dashed border and teal day number |
 | 9.5 | Click the "←" arrow | Previous month loads; URL updates to `?month=YYYY-MM` |
 | 9.6 | Click the "→" arrow | Next month loads |
-| 9.7 | Navigate to a month with no dinners | Grid shows only day numbers; all cells are empty |
+| 9.7 | Navigate to a month with no dinners (use a far-future month e.g. `/calendar?month=2027-06` if DB has extensive history) | Grid shows only day numbers; all cells are empty |
 | 9.8 | Click any day cell | Redirects to `/add` (for tonight, not the clicked date) |
 | 9.9 | Check the legend at the bottom | "Pink = restaurant · Teal = homecooked · click any day to add tonight's dinner" |
 
@@ -210,14 +227,14 @@
 
 | Step | Action | Look for |
 |------|--------|----------|
-| 9.1 | Navigate to `/suggestions` | "Suggestions" heading |
-| 9.2 | With restaurants and meals | "Restaurants" section (up to 5) and "Homecooked" section (up to 3) |
-| 9.3 | Each suggestion | Name (clickable), last ordered/cooked label, tags with recency, Pick button |
-| 9.4 | Restaurant suggestions | Also show Call and Order links if applicable |
-| 9.5 | Click "Pick" | Redirects to `/add` with suggestion pre-filled |
-| 9.6 | Click "Nah" | Suggestion disappears from list |
-| 9.7 | Nah all suggestions | Section disappears |
-| 9.8 | With no restaurants or meals | "No restaurants or meals added yet." |
+| 10.1 | Navigate to `/suggestions` | "Suggestions" heading |
+| 10.2 | With restaurants and meals | "Restaurants" section (up to 5) and "Homecooked" section (up to 3) |
+| 10.3 | Each suggestion | Name (clickable), last ordered/cooked label, tags with recency, Pick button |
+| 10.4 | Restaurant suggestions | Also show Call and Order links if applicable |
+| 10.5 | Click "Pick" | Redirects to `/add` with suggestion pre-filled |
+| 10.6 | Click "Nah" | Suggestion disappears from list |
+| 10.7 | Nah all suggestions | Section disappears |
+| 10.8 | With no restaurants or meals | "No restaurants or meals added yet." |
 
 ---
 
@@ -225,11 +242,11 @@
 
 | Step | Action | Look for |
 |------|--------|----------|
-| 10.1 | Add several restaurants, use one today | That restaurant should NOT appear at the top of suggestions tomorrow |
-| 10.2 | Leave a restaurant unused for many days | It should rise to the top of suggestions |
-| 10.3 | Use a restaurant with a tag (e.g. "pizza"), then check other "pizza"-tagged restaurants | Tag-aware scoring: other pizza restaurants may also be ranked lower due to recent tag use |
-| 10.4 | Refresh suggestions multiple times | Picks from the highest-scoring tier are random — order may vary |
-| 10.5 | Scoring caps at 21 days | After 21+ days unused, items should have equal max score |
+| 11.1 | Add several restaurants, use one today | That restaurant should NOT appear at the top of suggestions tomorrow |
+| 11.2 | Leave a restaurant unused for many days | It should rise to the top of suggestions |
+| 11.3 | Use a restaurant with a tag (e.g. "pizza"), then check other "pizza"-tagged restaurants | Tag-aware scoring: other pizza restaurants may also be ranked lower due to recent tag use |
+| 11.4 | Refresh suggestions multiple times | Picks from the highest-scoring tier are random — order may vary |
+| 11.5 | Scoring caps at 21 days | After 21+ days unused, items should have equal max score |
 
 ---
 
@@ -237,11 +254,12 @@
 
 | Step | Action | Look for |
 |------|--------|----------|
-| 11.1 | Click any navigation link or action button | Loading spinner appears during navigation/submission |
-| 11.2 | Submit any form | Submit button shows spinner while pending; prevents double-submit |
-| 11.3 | Check all external links (Order, Menu) | Open in new tab (`target="_blank"` or equivalent) |
-| 11.4 | Check all Call links | Use `tel:` protocol |
-| 11.5 | Test on mobile viewport | Layout is responsive; forms are usable; nav stacks properly |
-| 11.6 | Check dark mode (if OS is set to dark) | Colors adapt; text remains readable; no broken contrast |
-| 11.7 | Verify page titles / heading hierarchy | Each page has a clear heading; no duplicate h1 tags |
-| 11.8 | Try navigating directly to `/add` with no query params | Should default to today's date and Restaurant type |
+| 12.1 | Click any navigation link or action button | Loading spinner appears during navigation/submission |
+| 12.2 | Submit any form | Submit button shows spinner while pending; prevents double-submit |
+| 12.3 | Check all external links (Order, Menu) | Open in new tab (`target="_blank"` or equivalent) |
+| 12.4 | Check all Call links | Use `tel:` protocol |
+| 12.5 | Test on mobile viewport | Layout is responsive; forms are usable; nav stacks properly |
+| 12.6 | Check dark mode (if OS is set to dark) | Colors adapt; text remains readable; no broken contrast |
+| 12.7 | Verify page titles / heading hierarchy | Each page has a clear heading; no duplicate h1 tags |
+| 12.8 | Try navigating directly to `/add` with no query params | Should default to today's date and Restaurant type |
+| 12.9 | Check browser console for errors | Zero errors in console throughout the session |

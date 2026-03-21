@@ -151,7 +151,7 @@ export default async function CalendarPage({
       </div>
 
       <p className="text-xs text-muted">
-        <span className="text-pink">Pink</span> = restaurant · <span className="text-teal">Teal</span> = homecooked · click any day to add tonight&apos;s dinner
+        <span className="text-pink">Pink</span> = restaurant · <span className="text-teal">Teal</span>{" "}= homecooked · click any day to add tonight&apos;s dinner
       </p>
     </div>
   );
