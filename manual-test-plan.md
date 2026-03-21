@@ -39,64 +39,88 @@ Skip steps that require real database state you can't set up (e.g. scoring/sugge
 
 ## 2. Restaurants Page (`/restaurants`)
 
-### 2a. Add a restaurant
+### 2a. Search
 
 | Step | Action | Look for |
 |------|--------|----------|
-| 2a.1 | Navigate to `/restaurants` | "Restaurants" heading visible; "Add restaurant" form at top |
-| 2a.2 | Submit the form with all fields empty | Name field is required — browser blocks submission |
-| 2a.3 | Enter only a name (e.g. "Pizza Palace") and submit | Restaurant appears in the list below; form clears |
-| 2a.4 | Add another with name, phone, order URL, menu URL, notes, and comma-separated tags | All fields display correctly in the collapsed summary: name, tags as teal pills, notes (italic, truncated), Call/Menu/Order links |
-| 2a.5 | Verify Call link | Opens `tel:` handler with the phone number |
-| 2a.6 | Verify Order link | Opens the order URL in a new tab |
-| 2a.7 | Verify Menu link | Opens the menu URL in a new tab |
+| 2a.1 | Navigate to `/restaurants` with multiple restaurants | Search bar appears above the list |
+| 2a.2 | Type part of a restaurant name | List filters in real time (300ms debounce); non-matching restaurants disappear |
+| 2a.3 | Type a tag name | Restaurants with that tag appear; others hide |
+| 2a.4 | Clear the search box | Full list restores |
+| 2a.5 | Type a search that matches nothing | List is empty (no error) |
+| 2a.6 | While a search is active, click "Show hidden restaurants" | Hidden section should appear without the page scrolling unexpectedly |
 
-### 2b. Edit a restaurant
-
-| Step | Action | Look for |
-|------|--------|----------|
-| 2b.1 | Click "Edit" on a restaurant | Details expand showing an edit form pre-filled with current values |
-| 2b.2 | Change the name and submit | Details collapse; updated name shows in the list |
-| 2b.3 | Clear optional fields and submit | Fields are removed; no stale data shown |
-
-### 2c. Delete / Hide a restaurant
+### 2b. Add a restaurant
 
 | Step | Action | Look for |
 |------|--------|----------|
-| 2c.1 | On a restaurant with no dinners, click "Delete" | Restaurant removed from the list |
-| 2c.2 | On a restaurant that has dinners, look for delete button | "Delete" should NOT appear; "Hide" button shown instead |
-| 2c.3 | Click "Hide" | Restaurant disappears from the main list |
-| 2c.4 | Click "Show hidden restaurants" link | Hidden section appears with the hidden restaurant listed |
-| 2c.5 | Click "Unhide" | Restaurant returns to the main list |
-| 2c.6 | Click "Hide hidden restaurants" link | Hidden section disappears |
+| 2b.1 | Navigate to `/restaurants` | "Restaurants" heading visible; "Add restaurant" form at top shows only the name field |
+| 2b.2 | Click into the name field | Form expands to reveal phone, order URL, menu URL, notes, and tags fields |
+| 2b.3 | Click away with the name empty | Form collapses back to name-only |
+| 2b.4 | Submit the form with all fields empty | Name field is required — browser blocks submission |
+| 2b.5 | Enter only a name (e.g. "Pizza Palace") and submit | Restaurant appears in the list below; form clears and collapses |
+| 2b.6 | Add another with name, phone, order URL, menu URL, notes, and comma-separated tags | All fields display correctly in the collapsed summary: name, tags as teal pills, notes (italic, truncated), Call/Menu/Order links |
+| 2b.7 | Verify Call link | Opens `tel:` handler with the phone number |
+| 2b.8 | Verify Order link | Opens the order URL in a new tab |
+| 2b.9 | Verify Menu link | Opens the menu URL in a new tab |
 
-### 2d. Empty state
+### 2c. Edit a restaurant
 
 | Step | Action | Look for |
 |------|--------|----------|
-| 2d.1 | Delete/hide all restaurants | "No restaurants yet." message appears |
+| 2c.1 | Click "Edit" on a restaurant | Details expand showing an edit form pre-filled with current values |
+| 2c.2 | Change the name and submit | Details collapse; updated name shows in the list |
+| 2c.3 | Clear optional fields and submit | Fields are removed; no stale data shown |
+
+### 2d. Delete / Hide a restaurant
+
+| Step | Action | Look for |
+|------|--------|----------|
+| 2d.1 | On a restaurant with no dinners, click "Delete" | Restaurant removed from the list |
+| 2d.2 | On a restaurant that has dinners, look for delete button | "Delete" should NOT appear; "Hide" button shown instead |
+| 2d.3 | Click "Hide" | Restaurant disappears from the main list |
+| 2d.4 | Click "Show hidden restaurants" link | Hidden section appears with the hidden restaurant listed |
+| 2d.5 | Click "Unhide" | Restaurant returns to the main list |
+| 2d.6 | Click "Hide hidden restaurants" link | Hidden section disappears |
+
+### 2e. Empty state
+
+| Step | Action | Look for |
+|------|--------|----------|
+| 2e.1 | Delete/hide all restaurants | "No restaurants yet." message appears |
 
 ---
 
 ## 3. Meals Page (`/meals`)
 
-### 3a. Add a meal
+### 3a. Search
 
 | Step | Action | Look for |
 |------|--------|----------|
-| 3a.1 | Navigate to `/meals` | "Homecooked meals" heading; "Add meal" form at top |
-| 3a.2 | Submit with empty name | Browser blocks — name is required |
-| 3a.3 | Add a meal with name, notes, and tags | Meal appears in list; tags shown as teal pills |
-| 3a.4 | Confirm no phone/URL fields exist | Only name, notes, and tags fields in the form |
+| 3a.1 | Navigate to `/meals` with multiple meals | Search bar appears above the list |
+| 3a.2 | Type part of a meal name | List filters in real time |
+| 3a.3 | Type a tag name | Meals with that tag shown |
+| 3a.4 | Clear the search | Full list restores |
 
-### 3b. Edit / Delete / Hide
+### 3b. Add a meal
 
 | Step | Action | Look for |
 |------|--------|----------|
-| 3b.1 | Edit a meal — change name and notes | Updates reflected after collapse |
-| 3b.2 | Delete a meal with no dinners | Removed from list |
-| 3b.3 | Hide a meal that has dinners | Disappears from main list; appears in hidden section |
-| 3b.4 | Unhide | Returns to main list |
+| 3b.1 | Navigate to `/meals` | "Homecooked meals" heading; "Add meal" form at top shows only the name field |
+| 3b.2 | Click into the name field | Form expands to reveal notes and tags fields |
+| 3b.3 | Click away with the name empty | Form collapses back to name-only |
+| 3b.4 | Submit with empty name | Browser blocks — name is required |
+| 3b.5 | Add a meal with name, notes, and tags | Meal appears in list; tags shown as teal pills |
+| 3b.6 | Confirm no phone/URL fields exist | Only name, notes, and tags fields expand |
+
+### 3c. Edit / Delete / Hide
+
+| Step | Action | Look for |
+|------|--------|----------|
+| 3c.1 | Edit a meal — change name and notes | Updates reflected after collapse |
+| 3c.2 | Delete a meal with no dinners | Removed from list |
+| 3c.3 | Hide a meal that has dinners | Disappears from main list; appears in hidden section |
+| 3c.4 | Unhide | Returns to main list |
 
 ---
 
@@ -195,15 +219,18 @@ Skip steps that require real database state you can't set up (e.g. scoring/sugge
 
 | Step | Action | Look for |
 |------|--------|----------|
-| 8.1 | Navigate to `/history` | "Dinner history" heading; quick-add date input at top |
+| 8.1 | Navigate to `/history` | "Dinner history" heading; search bar and quick-add date input at top |
 | 8.2 | With dinners recorded | List of dinners sorted by date descending; each shows name, formatted date (with weekday), type, notes, tags |
-| 8.3 | Click "Edit" on a dinner | Redirects to `/add?id={dinnerId}` |
-| 8.4 | Click "Delete" on a dinner | Dinner removed from the list |
-| 8.5 | Use the quick-add date input and click "Add" | Redirects to `/add?date={selectedDate}` |
-| 8.6 | With >30 dinners | Pagination appears: "Page 1 of N", Next button |
-| 8.7 | Click "Next" | Page 2 loads; "Previous" button appears |
-| 8.8 | Click "Previous" | Returns to page 1 |
-| 8.9 | With no dinners | "No dinners recorded yet." message |
+| 8.3 | Type a restaurant/meal name in the search bar | List filters in real time; non-matching dinners disappear |
+| 8.4 | Type a tag name | Dinners with that tag shown; others hidden |
+| 8.5 | Clear the search | Full list restores |
+| 8.6 | Click "Edit" on a dinner | Redirects to `/add?id={dinnerId}` |
+| 8.7 | Click "Delete" on a dinner | Dinner removed from the list |
+| 8.8 | Use the quick-add date input and click "Add" | Redirects to `/add?date={selectedDate}` |
+| 8.9 | With >30 dinners (no active search) | Pagination appears: "Page 1 of N", Next button |
+| 8.10 | Click "Next" | Page 2 loads; "Previous" button appears |
+| 8.11 | Click "Previous" | Returns to page 1 |
+| 8.12 | With no dinners | "No dinners recorded yet." message |
 
 ---
 
@@ -228,13 +255,18 @@ Skip steps that require real database state you can't set up (e.g. scoring/sugge
 | Step | Action | Look for |
 |------|--------|----------|
 | 10.1 | Navigate to `/suggestions` | "Suggestions" heading |
-| 10.2 | With restaurants and meals | "Restaurants" section (up to 5) and "Homecooked" section (up to 3) |
-| 10.3 | Each suggestion | Name (clickable), last ordered/cooked label, tags with recency, Pick button |
-| 10.4 | Restaurant suggestions | Also show Call and Order links if applicable |
-| 10.5 | Click "Pick" | Redirects to `/add` with suggestion pre-filled |
-| 10.6 | Click "Nah" | Suggestion disappears from list |
-| 10.7 | Nah all suggestions | Section disappears |
-| 10.8 | With no restaurants or meals | "No restaurants or meals added yet." |
+| 10.2 | With restaurants and meals that have tags | Tag chips appear above the suggestion list |
+| 10.3 | With restaurants and meals | "Restaurants" section (up to 5) and "Homecooked" section (up to 3) |
+| 10.4 | Each suggestion | Name (clickable), last ordered/cooked label, tags with recency, Pick button |
+| 10.5 | Restaurant suggestions | Also show Call and Order links if applicable |
+| 10.6 | Click a tag chip once | Chip highlights (include mode); suggestions filter to only that tag |
+| 10.7 | Click the same tag chip again | Chip changes appearance (exclude mode); suggestions with that tag are hidden |
+| 10.8 | Click the same tag chip a third time | Filter clears; all suggestions return |
+| 10.9 | While a tag filter is active | "clear ×" shortcut appears; clicking it removes the filter immediately |
+| 10.10 | Click "Pick" | Redirects to `/add` with suggestion pre-filled |
+| 10.11 | Click "Nah" | Suggestion disappears from list |
+| 10.12 | Nah all suggestions | Section disappears |
+| 10.13 | With no restaurants or meals | "No restaurants or meals added yet." |
 
 ---
 
