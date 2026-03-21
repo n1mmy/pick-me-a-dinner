@@ -20,6 +20,7 @@ async function main() {
       {
         name: "Sakura Ramen",
         orderUrl: "https://sakuraramen.com/order",
+        menuUrl: "https://sakuraramen.com/menu",
         phoneNumber: "(503) 555-0101",
         notes: "Get the spicy miso — it's incredible",
         tags: ["japanese", "ramen", "noodles"],
@@ -27,12 +28,14 @@ async function main() {
       {
         name: "Little Italy Trattoria",
         orderUrl: "https://littleitalytrattoria.com",
+        menuUrl: "https://littleitalytrattoria.com/menu",
         phoneNumber: "(503) 555-0102",
         notes: "Ask for the off-menu burrata appetizer",
         tags: ["italian", "pasta", "wine"],
       },
       {
         name: "El Camino Taqueria",
+        menuUrl: "https://elcaminotaqueria.com/menu",
         phoneNumber: "(503) 555-0103",
         notes: "Cash only! The al pastor is legendary",
         tags: ["mexican", "tacos", "casual"],
@@ -40,12 +43,14 @@ async function main() {
       {
         name: "Golden Palace",
         orderUrl: "https://goldenpalacedelivery.com",
+        menuUrl: "https://goldenpalacedelivery.com/menu",
         phoneNumber: "(503) 555-0104",
         tags: ["chinese", "dim sum", "family style"],
       },
       {
         name: "The Burger Joint",
         orderUrl: "https://theburgerjoint.com/order",
+        menuUrl: "https://theburgerjoint.com/menu",
         notes: "Smash burgers and milkshakes",
         tags: ["american", "burgers", "casual"],
       },
@@ -58,6 +63,7 @@ async function main() {
       {
         name: "Tandoori Nights",
         orderUrl: "https://tandoorinights.com/menu",
+        menuUrl: "https://tandoorinights.com/menu",
         phoneNumber: "(503) 555-0107",
         notes: "Butter chicken and garlic naan combo is the move",
         tags: ["indian", "curry", "tandoori"],
@@ -65,11 +71,13 @@ async function main() {
       {
         name: "Olive & Thyme",
         orderUrl: "https://oliveandthyme.com",
+        menuUrl: "https://oliveandthyme.com/menu",
         notes: "Great for date night — reserve ahead on weekends",
         tags: ["mediterranean", "healthy", "date night"],
       },
       {
         name: "Sushi Kawa",
+        menuUrl: "https://sushikawa.com/menu",
         phoneNumber: "(503) 555-0109",
         notes: "Omakase is worth it if you're feeling fancy",
         tags: ["japanese", "sushi", "seafood"],
@@ -77,17 +85,20 @@ async function main() {
       {
         name: "Casa Mexicana",
         orderUrl: "https://casamexicana.com/order",
+        menuUrl: "https://casamexicana.com/menu",
         phoneNumber: "(503) 555-0110",
         tags: ["mexican", "family style", "margaritas"],
       },
       {
         name: "Bangkok Street Kitchen",
         orderUrl: "https://bangkokstreetkitchen.com",
+        menuUrl: "https://bangkokstreetkitchen.com/menu",
         notes: "Pad see ew and mango sticky rice — always",
         tags: ["thai", "street food", "spicy"],
       },
       {
         name: "Nonna's Pizza",
+        menuUrl: "https://nonnaspizza.com/menu",
         phoneNumber: "(503) 555-0112",
         notes: "Neapolitan style, wood-fired. No delivery.",
         tags: ["italian", "pizza", "wood-fired"],
@@ -95,10 +106,12 @@ async function main() {
       {
         name: "The Greek Spot",
         orderUrl: "https://thegreekspot.com/order",
+        menuUrl: "https://thegreekspot.com/menu",
         tags: ["greek", "gyros", "healthy"],
       },
       {
         name: "Cedar & Vine",
+        menuUrl: "https://cedarandvine.com/menu",
         notes: "Upscale Lebanese — try the lamb shawarma plate",
         tags: ["lebanese", "mediterranean", "date night"],
         hidden: true,
@@ -106,6 +119,7 @@ async function main() {
       {
         name: "Blue Fin Poke",
         orderUrl: "https://bluefinpoke.com",
+        menuUrl: "https://bluefinpoke.com/menu",
         tags: ["hawaiian", "poke", "healthy"],
         hidden: true,
       },
