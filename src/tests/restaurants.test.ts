@@ -41,12 +41,26 @@ describe("createRestaurant", () => {
 
   it("stores optional fields", async () => {
     await createRestaurant(
-      fd({ name: "Noma", orderUrl: "https://order.me", phoneNumber: "555-1234", notes: "great" })
+      fd({
+        name: "Noma",
+        orderUrl: "https://order.me",
+        menuUrl: "https://menu.me",
+        phoneNumber: "555-1234",
+        notes: "great",
+      })
     );
     const r = await prisma.restaurant.findFirst();
     expect(r?.orderUrl).toBe("https://order.me");
+    expect(r?.menuUrl).toBe("https://menu.me");
     expect(r?.phoneNumber).toBe("555-1234");
     expect(r?.notes).toBe("great");
+  });
+
+  it("throws on invalid menuUrl", async () => {
+    await expect(
+      createRestaurant(fd({ name: "Noma", menuUrl: "not-a-url" }))
+    ).rejects.toThrow();
+    expect(await prisma.restaurant.count()).toBe(0);
   });
 
   it("stores parsed tags", async () => {
@@ -85,13 +99,28 @@ describe("updateRestaurant", () => {
     ).rejects.toThrow();
   });
 
+  it("throws on invalid menuUrl", async () => {
+    const r = await prisma.restaurant.create({ data: { name: "Place", tags: [] } });
+    await expect(
+      updateRestaurant(fd({ id: r.id, name: "Place", menuUrl: "bad-url" }))
+    ).rejects.toThrow();
+  });
+
+  it("stores and updates menuUrl", async () => {
+    const r = await prisma.restaurant.create({ data: { name: "Place", tags: [] } });
+    await updateRestaurant(fd({ id: r.id, name: "Place", menuUrl: "https://menu.example.com" }));
+    const updated = await prisma.restaurant.findUnique({ where: { id: r.id } });
+    expect(updated?.menuUrl).toBe("https://menu.example.com");
+  });
+
   it("clears optional fields when omitted", async () => {
     const r = await prisma.restaurant.create({
-      data: { name: "Place", orderUrl: "https://x.com", phoneNumber: "555", tags: [] },
+      data: { name: "Place", orderUrl: "https://x.com", menuUrl: "https://menu.x.com", phoneNumber: "555", tags: [] },
     });
     await updateRestaurant(fd({ id: r.id, name: "Place" }));
     const updated = await prisma.restaurant.findUnique({ where: { id: r.id } });
     expect(updated?.orderUrl).toBeNull();
+    expect(updated?.menuUrl).toBeNull();
     expect(updated?.phoneNumber).toBeNull();
   });
 
