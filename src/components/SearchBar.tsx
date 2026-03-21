@@ -8,11 +8,12 @@ export function SearchBar({ placeholder }: { placeholder: string }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [value, setValue] = useState(() => searchParams.get("q") ?? "");
-  const [isLoading, setIsLoading] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scrollRef = useRef<number>(0);
   const didSearchRef = useRef(false);
   const isMountedRef = useRef(false);
+
+  const isLoading = value !== (searchParams.get("q") ?? "");
 
   useEffect(() => {
     if (!isMountedRef.current) {
@@ -20,7 +21,6 @@ export function SearchBar({ placeholder }: { placeholder: string }) {
       return;
     }
     if (timerRef.current) clearTimeout(timerRef.current);
-    setIsLoading(true);
     timerRef.current = setTimeout(() => {
       scrollRef.current = window.scrollY;
       didSearchRef.current = true;
@@ -39,8 +39,8 @@ export function SearchBar({ placeholder }: { placeholder: string }) {
   }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    setIsLoading(false);
     if (!didSearchRef.current) return;
+    didSearchRef.current = false;
     window.scrollTo(0, scrollRef.current);
   }, [searchParams]);
 
