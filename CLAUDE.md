@@ -18,9 +18,13 @@ npm run test:unit     # must pass (does not require DATABASE_URL)
 npm run dev           # start dev server (localhost:3000)
 npm run build         # production build
 npm run lint          # run ESLint
+npm run test          # run all tests (requires DATABASE_URL)
 npm run test:unit     # run unit tests (no database required)
+npm run test:db       # run database integration tests (requires DATABASE_URL)
+npm run test:watch    # run tests in watch mode
 npm run db:migrate    # create and apply a new migration (requires DATABASE_URL)
 npm run db:generate   # regenerate Prisma client after schema changes
+npm run db:seed       # seed the database with sample data
 ```
 
 Local dev with Docker (app + postgres):
