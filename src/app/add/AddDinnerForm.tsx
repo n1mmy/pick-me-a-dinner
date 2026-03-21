@@ -38,7 +38,7 @@ export function AddDinnerForm({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-[family-name:var(--font-unica)] text-2xl text-fg">Add dinner</h1>
+        <h1 className="font-display text-2xl text-fg">Add dinner</h1>
         <hr className="border-0 border-b-[3px] border-dashed border-pink w-1/4 mt-1" />
       </div>
 
@@ -54,7 +54,7 @@ export function AddDinnerForm({
           <button
             type="button"
             onClick={() => setType("RESTAURANT")}
-            className={`px-4 py-2 text-sm font-[family-name:var(--font-unica)] transition-colors ${
+            className={`px-4 py-2 text-sm font-display transition-colors ${
               type === "RESTAURANT"
                 ? "bg-pink text-white"
                 : "bg-surface text-muted hover:text-fg"
@@ -65,7 +65,7 @@ export function AddDinnerForm({
           <button
             type="button"
             onClick={() => setType("HOMECOOKED")}
-            className={`px-4 py-2 text-sm font-[family-name:var(--font-unica)] border-l border-muted/30 transition-colors ${
+            className={`px-4 py-2 text-sm font-display border-l border-muted/30 transition-colors ${
               type === "HOMECOOKED"
                 ? "bg-pink text-white"
                 : "bg-surface text-muted hover:text-fg"
@@ -114,7 +114,7 @@ export function AddDinnerForm({
 
         <SubmitButton
           disabled={options.length === 0}
-          className="px-5 py-2 bg-teal text-white rounded text-sm font-[family-name:var(--font-unica)] hover:opacity-80 transition-opacity disabled:opacity-40 cursor-pointer"
+          className="px-5 py-2 bg-teal text-white rounded text-sm font-display hover:opacity-80 transition-opacity disabled:opacity-40 cursor-pointer"
         >
           Save dinner
         </SubmitButton>

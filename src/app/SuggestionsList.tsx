@@ -52,7 +52,7 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
     <div className="space-y-5">
       {(visibleRestaurants.length > 0 || (isFetching && allRestaurants.filter((s) => !rejectedIds.includes(s.id)).length === 0)) && (
         <div>
-          <p className="font-[family-name:var(--font-unica)] text-sm text-muted mb-3">Restaurants</p>
+          <p className="font-display text-sm text-muted mb-3">Restaurants</p>
           {visibleRestaurants.length > 0 ? (
             <ul>
               {visibleRestaurants.map((s) => (
@@ -100,7 +100,7 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                       </a>
                     )}
                     <div className="flex flex-col items-center gap-1.5">
-                      <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="inline-block px-3 py-1 border border-pink text-pink rounded text-sm font-[family-name:var(--font-unica)] hover:bg-pink hover:text-bg transition-colors">
+                      <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="inline-block px-3 py-1 border border-pink text-pink rounded text-sm font-display hover:bg-pink hover:text-bg transition-colors">
                         Pick →
                       </LoadingLink>
                       <button
@@ -121,7 +121,7 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
       )}
       {(visibleMeals.length > 0 || (isFetching && allMeals.filter((s) => !rejectedIds.includes(s.id)).length === 0)) && (
         <div>
-          <p className="font-[family-name:var(--font-unica)] text-sm text-muted mb-3">Homecooked</p>
+          <p className="font-display text-sm text-muted mb-3">Homecooked</p>
           {visibleMeals.length > 0 ? (
             <ul>
               {visibleMeals.map((s) => (
@@ -161,7 +161,7 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                   </LoadingLink>
                   <div className="flex items-center gap-3 shrink-0 ml-4">
                     <div className="flex flex-col items-center gap-1.5">
-                      <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="inline-block px-3 py-1 border border-pink text-pink rounded text-sm font-[family-name:var(--font-unica)] hover:bg-pink hover:text-bg transition-colors">
+                      <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="inline-block px-3 py-1 border border-pink text-pink rounded text-sm font-display hover:bg-pink hover:text-bg transition-colors">
                         Pick →
                       </LoadingLink>
                       <button

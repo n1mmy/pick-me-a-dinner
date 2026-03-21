@@ -52,7 +52,7 @@ export default async function RestaurantsPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-[family-name:var(--font-unica)] text-2xl text-fg">Restaurants</h1>
+        <h1 className="font-display text-2xl text-fg">Restaurants</h1>
         <hr className="border-0 border-b-[3px] border-dashed border-pink w-1/4 mt-1" />
       </div>
 
@@ -71,7 +71,7 @@ export default async function RestaurantsPage({
         </div>
         <textarea name="notes" placeholder="Notes" rows={2} className={inputCls} />
         <input name="tags" placeholder="Tags (comma-separated, e.g. pizza, italian)" className={inputCls} />
-        <SubmitButton className="px-4 py-2 bg-teal text-white rounded text-sm font-[family-name:var(--font-unica)] hover:opacity-80 transition-opacity cursor-pointer">
+        <SubmitButton className="px-4 py-2 bg-teal text-white rounded text-sm font-display hover:opacity-80 transition-opacity cursor-pointer">
           Add
         </SubmitButton>
       </ExpandingAddForm>
@@ -109,7 +109,7 @@ export default async function RestaurantsPage({
                   {r.orderUrl && (
                     <a href={r.orderUrl} target="_blank" rel="noopener noreferrer" className="text-teal hover:text-fg transition-colors">Order ↗</a>
                   )}
-                  <LoadingLink href={`/add?date=${todayStr}&suggestedId=${r.id}&type=RESTAURANT`} className="px-2 py-0.5 border border-pink text-pink rounded font-[family-name:var(--font-unica)] hover:bg-pink hover:text-bg transition-colors">
+                  <LoadingLink href={`/add?date=${todayStr}&suggestedId=${r.id}&type=RESTAURANT`} className="px-2 py-0.5 border border-pink text-pink rounded font-display hover:bg-pink hover:text-bg transition-colors">
                     Pick →
                   </LoadingLink>
                 </div>
@@ -162,7 +162,7 @@ export default async function RestaurantsPage({
       {/* Hidden restaurants */}
       {showingHidden && hiddenRestaurants.length > 0 && (
         <div className="space-y-2">
-          <h2 className="font-[family-name:var(--font-unica)] text-sm text-muted">Hidden</h2>
+          <h2 className="font-display text-sm text-muted">Hidden</h2>
           <div>
             {hiddenRestaurants.map((r) => (
               <div key={r.id} className="flex items-center justify-between py-2.5 border-b border-dashed border-muted/20">

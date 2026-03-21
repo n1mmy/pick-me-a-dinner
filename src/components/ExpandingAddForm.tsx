@@ -35,7 +35,7 @@ export function ExpandingAddForm({
 
   return (
     <form ref={formRef} action={handleAction} onBlur={handleFormBlur} className={className}>
-      <h2 className="font-[family-name:var(--font-unica)] text-sm text-muted">{label}</h2>
+      <h2 className="font-display text-sm text-muted">{label}</h2>
       <input
         name="name"
         required
