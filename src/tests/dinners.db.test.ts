@@ -4,7 +4,8 @@ import { prisma } from "@/lib/db";
 
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
-import { createDinner, updateDinner, deleteDinner, fetchMoreSuggestions } from "@/app/actions/dinners";
+import { redirect } from "next/navigation";
+import { createDinner, updateDinner, deleteDinner, fetchMoreSuggestions, pickAndRedirect } from "@/app/actions/dinners";
 
 function fd(fields: Record<string, string>) {
   const form = new FormData();
@@ -152,7 +153,82 @@ describe("fetchMoreSuggestions", () => {
       orderUrl: null,
       phoneNumber: null,
       daysSinceLastOrder: null,
+      entityNotes: null,
+      lastNotes: null,
     });
     expect(candidate?.tagsWithRecency).toEqual([{ tag: "sushi", daysSince: null }]);
+  });
+
+  it("returns entityNotes from the restaurant's notes field", async () => {
+    const r = await prisma.restaurant.create({ data: { name: "Noted Place", tags: [], notes: "always ask for extra sauce" } });
+    const { restaurantCandidates } = await fetchMoreSuggestions([]);
+    const candidate = restaurantCandidates.find((c) => c.id === r.id);
+    expect(candidate?.entityNotes).toBe("always ask for extra sauce");
+  });
+
+  it("returns lastNotes from the most recent dinner's notes", async () => {
+    const r = await makeRestaurant("Memo Place");
+    await prisma.dinner.create({
+      data: { date: new Date("2026-03-10"), type: "RESTAURANT", restaurantId: r.id, notes: "old note" },
+    });
+    await prisma.dinner.create({
+      data: { date: new Date("2026-03-18"), type: "RESTAURANT", restaurantId: r.id, notes: "fresh note" },
+    });
+    const { restaurantCandidates } = await fetchMoreSuggestions([]);
+    const candidate = restaurantCandidates.find((c) => c.id === r.id);
+    expect(candidate?.lastNotes).toBe("fresh note");
+  });
+
+  it("returns null lastNotes when no dinner has notes", async () => {
+    const r = await makeRestaurant("Quiet Place");
+    await prisma.dinner.create({
+      data: { date: new Date("2026-03-18"), type: "RESTAURANT", restaurantId: r.id },
+    });
+    const { restaurantCandidates } = await fetchMoreSuggestions([]);
+    const candidate = restaurantCandidates.find((c) => c.id === r.id);
+    expect(candidate?.lastNotes).toBeNull();
+  });
+});
+
+describe("pickAndRedirect", () => {
+  beforeEach(() => {
+    vi.mocked(redirect).mockClear();
+  });
+
+  it("redirects to /add?date when no options exist", async () => {
+    vi.mocked(redirect).mockImplementationOnce(() => { throw new Error("NEXT_REDIRECT"); });
+    await expect(pickAndRedirect(fd({ date: "2026-03-20" }))).rejects.toThrow("NEXT_REDIRECT");
+    expect(redirect).toHaveBeenCalledWith("/add?date=2026-03-20");
+  });
+
+  it("redirects with the best-scoring restaurant when one exists", async () => {
+    const r = await makeRestaurant("The Only Place");
+    await pickAndRedirect(fd({ date: "2026-03-20" }));
+    expect(redirect).toHaveBeenCalledWith(`/add?date=2026-03-20&suggestedId=${r.id}&type=RESTAURANT`);
+  });
+
+  it("redirects with a meal when that's the only option", async () => {
+    const m = await makeMeal("Pasta Night");
+    await pickAndRedirect(fd({ date: "2026-03-20" }));
+    expect(redirect).toHaveBeenCalledWith(`/add?date=2026-03-20&suggestedId=${m.id}&type=HOMECOOKED`);
+  });
+
+  it("excludes hidden restaurants and meals", async () => {
+    await prisma.restaurant.create({ data: { name: "Hidden R", tags: [], hidden: true } });
+    await prisma.meal.create({ data: { name: "Hidden M", tags: [], hidden: true } });
+    vi.mocked(redirect).mockImplementationOnce(() => { throw new Error("NEXT_REDIRECT"); });
+    await expect(pickAndRedirect(fd({ date: "2026-03-20" }))).rejects.toThrow("NEXT_REDIRECT");
+    expect(redirect).toHaveBeenCalledWith("/add?date=2026-03-20");
+  });
+
+  it("prefers the option not used recently", async () => {
+    const r1 = await makeRestaurant("Recent Place");
+    const r2 = await makeRestaurant("Old Place");
+    // r1 was used yesterday (score = 1); r2 never used (score = 21)
+    await prisma.dinner.create({
+      data: { date: new Date(Date.now() - 86_400_000), type: "RESTAURANT", restaurantId: r1.id },
+    });
+    await pickAndRedirect(fd({ date: "2026-03-20" }));
+    expect(redirect).toHaveBeenCalledWith(`/add?date=2026-03-20&suggestedId=${r2.id}&type=RESTAURANT`);
   });
 });
