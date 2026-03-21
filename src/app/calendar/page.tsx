@@ -98,7 +98,7 @@ export default async function CalendarPage({
           const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(dayNum).padStart(2, "0")}`;
           const dinner = dinnerByDate.get(dateStr);
           const isToday = dateStr === today;
-          const href = `/add?date=${dateStr}`;
+          const href = `/add`;
           const name = dinner?.restaurant?.name ?? dinner?.meal?.name;
           const isRestaurant = dinner?.type === "RESTAURANT";
           const tags = dinner?.restaurant?.tags ?? dinner?.meal?.tags ?? [];
@@ -151,7 +151,7 @@ export default async function CalendarPage({
       </div>
 
       <p className="text-xs text-muted">
-        <span className="text-pink">Pink</span> = restaurant · <span className="text-teal">Teal</span> = homecooked · click any day to add a dinner
+        <span className="text-pink">Pink</span> = restaurant · <span className="text-teal">Teal</span> = homecooked · click any day to add tonight's dinner
       </p>
     </div>
   );
