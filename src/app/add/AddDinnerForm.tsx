@@ -145,6 +145,11 @@ export function AddDinnerForm({
                 placeholder="Order URL"
                 className={inputCls}
               />
+              <input
+                name="menuUrl"
+                placeholder="Menu URL"
+                className={inputCls}
+              />
             </>
           )}
           <SubmitButton

@@ -19,6 +19,7 @@ export async function createRestaurant(formData: FormData) {
     data: {
       name,
       orderUrl: (formData.get("orderUrl") as string)?.trim() || null,
+      menuUrl: (formData.get("menuUrl") as string)?.trim() || null,
       phoneNumber: (formData.get("phoneNumber") as string)?.trim() || null,
       notes: (formData.get("notes") as string)?.trim() || null,
       tags: parseTags(formData),
@@ -38,6 +39,7 @@ export async function createRestaurantAndReturn(formData: FormData) {
     data: {
       name,
       orderUrl: (formData.get("orderUrl") as string)?.trim() || null,
+      menuUrl: (formData.get("menuUrl") as string)?.trim() || null,
       phoneNumber: (formData.get("phoneNumber") as string)?.trim() || null,
       tags: parseTags(formData),
     },
@@ -60,6 +62,7 @@ export async function updateRestaurant(formData: FormData) {
     data: {
       name,
       orderUrl: (formData.get("orderUrl") as string)?.trim() || null,
+      menuUrl: (formData.get("menuUrl") as string)?.trim() || null,
       phoneNumber: (formData.get("phoneNumber") as string)?.trim() || null,
       notes: (formData.get("notes") as string)?.trim() || null,
       tags: parseTags(formData),
