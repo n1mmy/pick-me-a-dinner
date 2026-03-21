@@ -5,6 +5,8 @@
 ```
 Run the manual test plan in manual-test-plan.md. Use preview_start to start a production build (npm run build && npm run start), then work through each section systematically using the preview tools (preview_snapshot, preview_click, preview_fill, preview_inspect, preview_screenshot, preview_resize).
 
+If the database is empty, run `npm run db:seed` (with DATABASE_URL set) to populate it with sample data before testing. This is needed for sections that require existing restaurants, meals, and dinners (e.g. search filtering, hide/delete, home page history, suggestions).
+
 Create any necessary test data via the UI as you go (e.g. add restaurants and meals before testing hide/delete, add dinners before testing the home and history pages).
 
 Implementation notes from prior runs:
@@ -21,6 +23,7 @@ Skip steps that require real database state you can't set up (e.g. scoring/sugge
 
 - App running locally (`npm run build && npm run start` or `docker-compose up`)
 - Database migrated and accessible
+- If the database is empty, seed it first: `DATABASE_URL="postgresql://dinner:dinner@localhost:5432/pick-me-a-dinner?schema=public" npm run db:seed`
 - Start with an empty or known database state for predictable results
 
 ---
