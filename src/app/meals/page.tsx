@@ -71,7 +71,7 @@ export default async function MealsPage({
       </ExpandingAddForm>
 
       {/* Search */}
-      <SearchBar placeholder="Search meals…" defaultValue={search} />
+      <SearchBar placeholder="Search meals…" />
 
       {/* List */}
       {meals.length === 0 ? (
