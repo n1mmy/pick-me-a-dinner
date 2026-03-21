@@ -247,9 +247,12 @@ Skip steps that require real database state you can't set up (e.g. scoring/sugge
 | 9.4 | Today's date | Cell has a teal dashed border and teal day number |
 | 9.5 | Click the "←" arrow | Previous month loads; URL updates to `?month=YYYY-MM` |
 | 9.6 | Click the "→" arrow | Next month loads |
-| 9.7 | Navigate to a month with no dinners (use a far-future month e.g. `/calendar?month=2027-06` if DB has extensive history) | Grid shows only day numbers; all cells are empty |
-| 9.8 | Click any day cell | Redirects to `/add` (for tonight, not the clicked date) |
-| 9.9 | Check the legend at the bottom | "Pink = restaurant · Teal = homecooked · click any day to add tonight's dinner" |
+| 9.7 | Navigate to a month with no dinners (use a far-future month e.g. `/calendar?month=2027-06` if DB has extensive history) | Grid shows only day numbers; all cells are empty; no cells are clickable |
+| 9.8 | Hover over a day cell that has a dinner | Cell is clickable (cursor pointer, hover highlight) |
+| 9.9 | Hover over a day cell with no dinner recorded | Cell is NOT clickable (no pointer cursor, no hover effect) |
+| 9.10 | Click a day cell that has a dinner | Redirects to `/add?date={today}&suggestedId={entityId}&type={RESTAURANT or HOMECOOKED}` |
+| 9.11 | Verify the pre-populated form | Date is today; the correct restaurant/meal from the clicked day is pre-selected in the dropdown; type toggle matches |
+| 9.12 | Check the legend at the bottom | "Pink = restaurant · Teal = homecooked · click a day to add another dinner with the same option" |
 
 ---
 
