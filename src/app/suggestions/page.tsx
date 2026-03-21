@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/db";
 import { computeLastUsed, tagAwareScore, pickTop } from "@/lib/scoring";
 import type { Suggestion } from "@/app/actions/dinners";
-import { SuggestionsPageList } from "./SuggestionsPageList";
+import { SuggestionsContent } from "./SuggestionsContent";
 
 export default async function SuggestionsPage() {
   const today = new Date();
@@ -30,7 +30,7 @@ export default async function SuggestionsPage() {
       tagsWithRecency: r.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })),
       score: tagAwareScore(r.id, r.tags, lastUsed, tagLastUsed),
     })),
-    5,
+    8,
   );
 
   const mealSuggestions = pickTop<Suggestion>(
@@ -41,7 +41,7 @@ export default async function SuggestionsPage() {
       tagsWithRecency: m.tags.map((tag) => ({ tag, daysSince: tagLastUsed.get(tag) ?? null })),
       score: tagAwareScore(m.id, m.tags, lastUsed, tagLastUsed),
     })),
-    3,
+    5,
   );
 
   return (
@@ -51,23 +51,11 @@ export default async function SuggestionsPage() {
         <hr className="border-0 border-b-[3px] border-dashed border-pink w-1/4 mt-1" />
       </div>
 
-      {restaurantSuggestions.length > 0 && (
-        <section className="space-y-1">
-          <p className="font-[family-name:var(--font-unica)] text-sm text-muted">Restaurants</p>
-          <SuggestionsPageList suggestions={restaurantSuggestions} verb="ordered" todayStr={todayStr} type="RESTAURANT" />
-        </section>
-      )}
-
-      {mealSuggestions.length > 0 && (
-        <section className="space-y-1">
-          <p className="font-[family-name:var(--font-unica)] text-sm text-muted">Homecooked</p>
-          <SuggestionsPageList suggestions={mealSuggestions} verb="cooked" todayStr={todayStr} type="HOMECOOKED" />
-        </section>
-      )}
-
-      {restaurantSuggestions.length === 0 && mealSuggestions.length === 0 && (
-        <p className="text-muted text-sm">No restaurants or meals added yet.</p>
-      )}
+      <SuggestionsContent
+        restaurantCandidates={restaurantSuggestions}
+        mealCandidates={mealSuggestions}
+        todayStr={todayStr}
+      />
     </div>
   );
 }
