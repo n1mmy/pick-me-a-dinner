@@ -1,8 +1,5 @@
-import { vi, beforeEach, afterAll } from "vitest";
+import { beforeEach, afterAll } from "vitest";
 import { prisma } from "@/lib/db";
-
-vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 
 beforeEach(async () => {
   await prisma.dinner.deleteMany();
