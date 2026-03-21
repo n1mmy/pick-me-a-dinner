@@ -6,11 +6,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Do not commit after making changes.** Only create commits when explicitly asked to.
 
+Before committing, always run the linter and unit tests:
+```bash
+npm run lint          # must pass with no errors
+npm run test:unit     # must pass (does not require DATABASE_URL)
+```
+
 ## Commands
 
 ```bash
 npm run dev           # start dev server (localhost:3000)
 npm run build         # production build
+npm run lint          # run ESLint
+npm run test:unit     # run unit tests (no database required)
 npm run db:migrate    # create and apply a new migration (requires DATABASE_URL)
 npm run db:generate   # regenerate Prisma client after schema changes
 ```
