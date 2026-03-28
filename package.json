@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run --reporter=verbose",
-    "test:unit": "vitest run --reporter=verbose src/tests/scoring.unit.test.ts src/tests/utils.unit.test.ts",
+    "test:unit": "vitest run --reporter=verbose src/tests/scoring.unit.test.ts src/tests/dates.unit.test.ts",
     "test:db": "vitest run --reporter=verbose src/tests/dinners.db.test.ts src/tests/restaurants.db.test.ts src/tests/meals.db.test.ts",
     "test:watch": "vitest",
     "db:migrate": "prisma migrate dev",

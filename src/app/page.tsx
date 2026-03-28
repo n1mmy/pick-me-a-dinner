@@ -4,23 +4,11 @@ import { prisma } from "@/lib/db";
 import { deleteDinner } from "@/app/actions/dinners";
 import type { Suggestion } from "@/app/actions/dinners";
 import { buildEntityTags, computeLastUsed, tagAwareScore, pickTop } from "@/lib/scoring";
+import { toDateStr, localTodayUTC, formatDate } from "@/lib/dates";
 import { SubmitButton } from "@/components/SubmitButton";
 import { LoadingLink } from "@/components/LoadingLink";
 import { Tags } from "@/components/Tags";
 import { SuggestionsList } from "@/app/SuggestionsList";
-
-function toDateStr(d: Date) {
-  return d.toISOString().split("T")[0];
-}
-
-function formatDate(d: Date) {
-  return d.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
-    timeZone: "UTC",
-  });
-}
 
 export default async function Home({
   searchParams,
@@ -30,10 +18,8 @@ export default async function Home({
   const { days: daysParam } = await searchParams;
   const days = Math.max(14, parseInt(daysParam ?? "14", 10));
 
-  // Determine today's date in the server's local timezone (set TZ env var to control this).
-  // Dinner dates are stored as midnight UTC, so we build today as midnight UTC for the local date.
-  const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD in local tz
-  const today = new Date(todayStr + "T00:00:00.000Z");
+  // today is midnight UTC for the local date (TZ env var controls the timezone).
+  const today = localTodayUTC();
 
   const since = new Date(today);
   since.setUTCDate(since.getUTCDate() - days);
