@@ -11,6 +11,12 @@ import { LoadingLink } from "@/components/LoadingLink";
 import Link from "next/link";
 import { SearchBar } from "@/components/SearchBar";
 
+function fmtDate(date: Date, today: Date): string {
+  const d = new Date(date);
+  const sameYear = d.getFullYear() === today.getFullYear();
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", ...(!sameYear && { year: "numeric" }) });
+}
+
 const inputCls = "w-full border border-muted/40 rounded px-3 py-2 text-sm bg-surface text-fg placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-teal";
 
 export default async function MealsPage({
@@ -30,13 +36,14 @@ export default async function MealsPage({
     ? { OR: [{ name: { contains: search, mode: "insensitive" as const } }, { id: { in: tagMatchIds } }] }
     : {};
 
+  const today = new Date();
   const [meals, hiddenMeals] = await Promise.all([
     prisma.meal.findMany({
       where: { hidden: false, ...searchFilter },
       orderBy: { name: "asc" },
       include: {
         _count: { select: { dinners: true } },
-        dinners: { where: { notes: { not: null } }, orderBy: { date: "desc" }, take: 1, select: { notes: true } },
+        dinners: { orderBy: { date: "desc" }, take: 1, select: { notes: true, date: true } },
       },
     }),
     showingHidden
@@ -78,7 +85,9 @@ export default async function MealsPage({
         <p className="text-muted text-sm">{search ? `No meals matching "${search}".` : "No meals yet."}</p>
       ) : (
         <div>
-          {meals.map((m) => (
+          {meals.map((m) => {
+            const last = m.dinners[0];
+            return (
             <details key={m.id} className="group border-b border-dashed border-muted/30">
               <summary className="list-none flex items-center gap-3 py-3 cursor-default">
                 <div className="flex-1 min-w-0">
@@ -90,7 +99,8 @@ export default async function MealsPage({
                   </div>
                   <Tags tags={m.tags} className="mt-0.5" />
                   {m.notes && <p className="text-xs text-muted mt-0.5 truncate italic">{m.notes}</p>}
-                  {m.dinners[0]?.notes && <p className="text-xs text-muted/70 mt-0.5 truncate italic">&ldquo;{m.dinners[0].notes}&rdquo;</p>}
+                  {last?.date && <p className="text-xs text-muted/60 mt-0.5">Last cooked {fmtDate(last.date, today)}</p>}
+                  {last?.notes && <p className="text-xs text-muted/70 mt-0.5 truncate italic">&ldquo;{last.notes}&rdquo;</p>}
                 </div>
                 <div className="flex items-center gap-3 shrink-0 text-xs">
                   <span className="text-muted tabular-nums">{m._count.dinners}×</span>
@@ -122,7 +132,8 @@ export default async function MealsPage({
                 )}
               </div>
             </details>
-          ))}
+            );
+          })}
         </div>
       )}
 
