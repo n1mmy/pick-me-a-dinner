@@ -30,8 +30,10 @@ export default async function Home({
   const { days: daysParam } = await searchParams;
   const days = Math.max(14, parseInt(daysParam ?? "14", 10));
 
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
+  // Determine today's date in the server's local timezone (set TZ env var to control this).
+  // Dinner dates are stored as midnight UTC, so we build today as midnight UTC for the local date.
+  const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD in local tz
+  const today = new Date(todayStr + "T00:00:00.000Z");
 
   const since = new Date(today);
   since.setUTCDate(since.getUTCDate() - days);
@@ -91,8 +93,6 @@ export default async function Home({
     })),
     5,
   );
-
-  const todayStr = toDateStr(today);
 
   const dinnersByDate: Record<string, typeof recentDinners> = {};
   for (const d of recentDinners) {
