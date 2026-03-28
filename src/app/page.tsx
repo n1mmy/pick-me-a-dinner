@@ -20,6 +20,7 @@ export default async function Home({
 
   // today is midnight UTC for the local date (TZ env var controls the timezone).
   const today = localTodayUTC();
+  const todayStr = toDateStr(today);
 
   const since = new Date(today);
   since.setUTCDate(since.getUTCDate() - days);
