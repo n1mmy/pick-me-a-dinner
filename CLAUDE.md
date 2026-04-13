@@ -62,3 +62,9 @@ npx prisma migrate deploy
 **Add dinner page**: `src/app/add/page.tsx` (server, fetches data) + `src/app/add/AddDinnerForm.tsx` (client component, handles restaurant/homecooked toggle). Inline create uses a `<details>` element that posts to `createRestaurantAndReturn` / `createMealAndReturn`, which create the entry and redirect back to `/add`.
 
 **Deployment**: multi-stage Dockerfile (node:20-alpine), runs `prisma migrate deploy` before starting. Kubernetes manifests in `k8s/` — update `k8s/secret.yaml` with the real `DATABASE_URL` and `k8s/ingress.yaml` with the real hostname before deploying.
+
+## Design System
+Always read DESIGN.md before making any visual or UI decisions.
+All font choices, colors, spacing, and aesthetic direction are defined there.
+Do not deviate without explicit user approval.
+In QA mode, flag any code that doesn't match DESIGN.md.
