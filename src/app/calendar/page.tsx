@@ -120,9 +120,9 @@ export default async function CalendarPage({
             <>
               <span
                 className={[
-                  "text-xs leading-none",
+                  "text-xs leading-none font-mono",
                   isToday
-                    ? "text-teal font-bold font-display"
+                    ? "text-teal font-bold"
                     : "text-muted",
                 ].join(" ")}
               >

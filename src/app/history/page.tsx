@@ -96,7 +96,7 @@ export default async function HistoryPage({
                   {dinner.restaurant?.name ?? dinner.meal?.name}
                 </p>
                 <p className="text-xs text-muted">
-                  <span className="font-display">{formatDate(dinner.date)}</span> · {dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
+                  <span className="font-mono">{formatDate(dinner.date)}</span> · {dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}
                 </p>
                 {(dinner.restaurant?.notes ?? dinner.meal?.notes) && (
                   <p className="text-xs text-muted mt-1 italic">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>

@@ -2,37 +2,41 @@
 
 /* Dark mode (default) */
 :root {
-  --bg: #494f5c;
-  --surface: #3b3e48;
-  --fg: #f0f4f7;
+  --bg: #2a2f38;
+  --surface: #353b45;
+  --surface-raised: #3f4650;
+  --fg: #f0eae4;
   --muted: #a8b0bb;
   --pink: #fe5185;
   --teal: #01a890;
-  --border: rgba(168, 176, 187, 0.3);
+  --border: rgba(168, 176, 187, 0.2);
 }
 
 /* Light mode */
 @media (prefers-color-scheme: light) {
   :root {
-    --bg: #ffffff;
+    --bg: #f7f3ed;
     --surface: #e8e1d5;
+    --surface-raised: #ded7ca;
     --fg: #1c1a18;
     --muted: #706b63;
     --pink: #c42a57;
     --teal: #016858;
-    --border: rgba(28, 28, 28, 0.15);
+    --border: rgba(28, 28, 28, 0.12);
   }
 }
 
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
   --color-fg: var(--fg);
   --color-muted: var(--muted);
   --color-pink: var(--pink);
   --color-teal: var(--teal);
-  --font-sans: var(--font-geist);
-  --font-display: var(--font-space);
+  --font-sans: var(--font-instrument);
+  --font-display: var(--font-fraunces);
+  --font-mono: var(--font-geist-mono);
 }
 
 body {
