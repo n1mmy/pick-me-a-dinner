@@ -46,6 +46,10 @@ body {
   letter-spacing: 0.04em;
 }
 
+.font-display {
+  font-weight: 600;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
