@@ -168,7 +168,7 @@ export default async function Home({
             return (
               <div key={dateStr} className="border-b border-dashed border-muted/30 py-3">
                 <div className="flex justify-between items-baseline">
-                  <p className="font-display text-sm text-muted">{formatDate(day)}</p>
+                  <p className="font-mono text-sm text-muted">{formatDate(day)}</p>
                   <LoadingLink href={`/add?date=${dateStr}`} className="text-xs text-teal hover:text-pink transition-colors">
                     + Add
                   </LoadingLink>

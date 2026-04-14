@@ -99,11 +99,11 @@ export default async function MealsPage({
                   </div>
                   <Tags tags={m.tags} className="mt-0.5" />
                   {m.notes && <p className="text-xs text-muted mt-0.5 truncate italic">{m.notes}</p>}
-                  {last?.date && <p className="text-xs text-muted/60 mt-0.5">Last cooked {fmtDate(last.date, today)}</p>}
+                  {last?.date && <p className="text-xs text-muted/60 mt-0.5 font-mono">Last cooked {fmtDate(last.date, today)}</p>}
                   {last?.notes && <p className="text-xs text-muted/70 mt-0.5 truncate italic">&ldquo;{last.notes}&rdquo;</p>}
                 </div>
                 <div className="flex items-center gap-3 shrink-0 text-xs">
-                  <span className="text-muted tabular-nums">{m._count.dinners}×</span>
+                  <span className="text-muted font-mono tabular-nums">{m._count.dinners}×</span>
                   <LoadingLink href={`/add?date=${todayStr}&suggestedId=${m.id}&type=HOMECOOKED`} className="px-2 py-0.5 border border-pink text-pink rounded font-display hover:bg-pink hover:text-bg transition-colors">
                     Pick →
                   </LoadingLink>
@@ -162,7 +162,7 @@ export default async function MealsPage({
                   <Tags tags={m.tags} className="mt-0.5" />
                 </div>
                 <div className="flex items-center gap-3 shrink-0 text-xs">
-                  <span className="text-muted/50 tabular-nums">{m._count.dinners}×</span>
+                  <span className="text-muted/50 font-mono tabular-nums">{m._count.dinners}×</span>
                   <form action={unhideMeal.bind(null, m.id)}>
                     <SubmitButton className="text-xs text-teal hover:text-pink transition-colors cursor-pointer">
                       Unhide

@@ -105,11 +105,11 @@ export default async function RestaurantsPage({
                   </div>
                   <Tags tags={r.tags} className="mt-0.5" />
                   {r.notes && <p className="text-xs text-muted mt-0.5 truncate italic">{r.notes}</p>}
-                  {last?.date && <p className="text-xs text-muted/60 mt-0.5">Last ordered {fmtDate(last.date, today)}</p>}
+                  {last?.date && <p className="text-xs text-muted/60 mt-0.5 font-mono">Last ordered {fmtDate(last.date, today)}</p>}
                   {last?.notes && <p className="text-xs text-muted/70 mt-0.5 truncate italic">&ldquo;{last.notes}&rdquo;</p>}
                 </div>
                 <div className="flex items-center gap-3 shrink-0 text-xs">
-                  <span className="text-muted tabular-nums">{r._count.dinners}×</span>
+                  <span className="text-muted font-mono tabular-nums">{r._count.dinners}×</span>
                   {r.phoneNumber && (
                     <a href={`tel:${r.phoneNumber}`} className="text-muted hover:text-pink transition-colors">Call</a>
                   )}
@@ -182,7 +182,7 @@ export default async function RestaurantsPage({
                   <Tags tags={r.tags} className="mt-0.5" />
                 </div>
                 <div className="flex items-center gap-3 shrink-0 text-xs">
-                  <span className="text-muted/50 tabular-nums">{r._count.dinners}×</span>
+                  <span className="text-muted/50 font-mono tabular-nums">{r._count.dinners}×</span>
                   <form action={unhideRestaurant.bind(null, r.id)}>
                     <SubmitButton className="text-xs text-teal hover:text-pink transition-colors cursor-pointer">
                       Unhide

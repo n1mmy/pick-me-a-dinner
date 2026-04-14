@@ -56,7 +56,7 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
           {visibleRestaurants.length > 0 ? (
             <ul>
               {visibleRestaurants.map((s) => (
-                <li key={s.id} className="border-b border-dashed border-muted/30 py-3 flex items-center justify-between group hover:bg-surface/50 -mx-2 px-2 rounded transition-colors duration-150">
+                <li key={s.id} className="border-b border-dashed border-muted/30 py-3 flex items-center justify-between group hover:bg-surface-raised -mx-2 px-2 rounded transition-colors duration-150">
                   <LoadingLink
                     href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
                     className="flex-1 min-w-0"
@@ -125,7 +125,7 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
           {visibleMeals.length > 0 ? (
             <ul>
               {visibleMeals.map((s) => (
-                <li key={s.id} className="border-b border-dashed border-muted/30 py-3 flex items-center justify-between group hover:bg-surface/50 -mx-2 px-2 rounded transition-colors duration-150">
+                <li key={s.id} className="border-b border-dashed border-muted/30 py-3 flex items-center justify-between group hover:bg-surface-raised -mx-2 px-2 rounded transition-colors duration-150">
                   <LoadingLink
                     href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
                     className="flex-1 min-w-0"

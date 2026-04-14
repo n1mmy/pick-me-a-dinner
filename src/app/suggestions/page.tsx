@@ -1,8 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/db";
-import { buildEntityTags, computeLastUsed, tagAwareScore, pickTop } from "@/lib/scoring";
-import type { Suggestion } from "@/app/actions/dinners";
+import { buildEntityTags, computeLastUsed, tagAwareScore } from "@/lib/scoring";
 import { SuggestionsContent } from "./SuggestionsContent";
 
 export default async function SuggestionsPage() {
@@ -31,8 +30,8 @@ export default async function SuggestionsPage() {
     }
   }
 
-  const restaurantSuggestions = pickTop<Suggestion>(
-    restaurants.map((r) => ({
+  const restaurantSuggestions = restaurants
+    .map((r) => ({
       id: r.id, name: r.name, type: "RESTAURANT" as const,
       orderUrl: r.orderUrl, phoneNumber: r.phoneNumber,
       daysSinceLastOrder: lastUsed.get(r.id) ?? null,
@@ -40,12 +39,11 @@ export default async function SuggestionsPage() {
       score: tagAwareScore(r.id, r.tags, lastUsed, tagLastUsed),
       entityNotes: r.notes ?? null,
       lastNotes: lastNotesMap.get(r.id) ?? null,
-    })),
-    8,
-  );
+    }))
+    .sort((a, b) => b.score - a.score);
 
-  const mealSuggestions = pickTop<Suggestion>(
-    meals.map((m) => ({
+  const mealSuggestions = meals
+    .map((m) => ({
       id: m.id, name: m.name, type: "HOMECOOKED" as const,
       orderUrl: null, phoneNumber: null,
       daysSinceLastOrder: lastUsed.get(m.id) ?? null,
@@ -53,9 +51,8 @@ export default async function SuggestionsPage() {
       score: tagAwareScore(m.id, m.tags, lastUsed, tagLastUsed),
       entityNotes: m.notes ?? null,
       lastNotes: lastNotesMap.get(m.id) ?? null,
-    })),
-    5,
-  );
+    }))
+    .sort((a, b) => b.score - a.score);
 
   return (
     <div className="space-y-6">
