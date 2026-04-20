@@ -173,6 +173,20 @@ export default async function Home({
           </div>
         ) : (
           <div className="flex flex-col gap-5">
+            <div className="flex flex-wrap gap-2">
+              <LoadingLink
+                href={`/add?date=${todayStr}&type=RESTAURANT`}
+                className="min-h-11 inline-flex items-center px-3 py-1 border border-pink text-pink rounded text-sm font-display hover:bg-pink hover:text-bg transition-colors"
+              >
+                Pick restaurant →
+              </LoadingLink>
+              <LoadingLink
+                href={`/add?date=${todayStr}&type=HOMECOOKED`}
+                className="min-h-11 inline-flex items-center px-3 py-1 border border-teal text-teal rounded text-sm font-display hover:bg-teal hover:text-bg transition-colors"
+              >
+                Pick homecooked →
+              </LoadingLink>
+            </div>
             {restaurantCandidates.length === 0 && mealCandidates.length === 0 ? (
               <p className="text-muted">No dinner set for tonight yet.</p>
             ) : (
@@ -183,12 +197,6 @@ export default async function Home({
                 activeTag={activeTag}
               />
             )}
-            <LoadingLink
-              href={`/add?date=${todayStr}`}
-              className="self-start min-h-11 inline-flex items-center px-3 py-1 border border-pink text-pink rounded text-sm font-display hover:bg-pink hover:text-bg transition-colors"
-            >
-              Choose myself →
-            </LoadingLink>
           </div>
         )}
       </section>
