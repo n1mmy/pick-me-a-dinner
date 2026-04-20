@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { LoadingLink } from "@/components/LoadingLink";
+import { SubNav, HISTORY_ITEMS } from "@/components/SubNav";
 
 function formatMonthYear(year: number, month: number) {
   return new Date(Date.UTC(year, month, 1)).toLocaleDateString("en-US", {
@@ -57,6 +58,7 @@ export default async function CalendarPage({
 
   return (
     <div className="space-y-5">
+      <SubNav items={HISTORY_ITEMS} activeHref="/calendar" />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-2xl text-fg">Calendar</h1>

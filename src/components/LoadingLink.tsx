@@ -9,15 +9,23 @@ export function LoadingLink({
   children,
   className,
   scroll,
+  "aria-label": ariaLabel,
 }: {
   href: string;
   children: React.ReactNode;
   className?: string;
   scroll?: boolean;
+  "aria-label"?: string;
 }) {
   const [loading, setLoading] = useState(false);
   return (
-    <Link href={href} scroll={scroll} className={className} onClick={() => setLoading(true)}>
+    <Link
+      href={href}
+      scroll={scroll}
+      className={className}
+      aria-label={ariaLabel}
+      onClick={() => setLoading(true)}
+    >
       {loading ? <Spinner inline /> : children}
     </Link>
   );

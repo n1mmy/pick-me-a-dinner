@@ -149,6 +149,44 @@ export async function deleteDinner(id: string) {
   revalidatePath("/history");
 }
 
+export async function quickConfirmDinner(input: {
+  date: string;
+  type: "RESTAURANT" | "HOMECOOKED";
+  id: string;
+}): Promise<{ dinnerId: string } | { error: string }> {
+  const parsed = z
+    .object({
+      date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+      type: z.enum(["RESTAURANT", "HOMECOOKED"]),
+      id: z.string().min(1),
+    })
+    .safeParse(input);
+
+  if (!parsed.success) {
+    return { error: "Invalid input" };
+  }
+
+  const { date, type, id } = parsed.data;
+
+  try {
+    const dinner = await prisma.dinner.create({
+      data: {
+        date: new Date(date + "T00:00:00.000Z"),
+        type: type as DinnerType,
+        restaurantId: type === "RESTAURANT" ? id : null,
+        mealId: type === "HOMECOOKED" ? id : null,
+      },
+    });
+    // Intentionally no revalidatePath here: the client renders an inline
+    // confirmation card. Revalidating would unmount SuggestionsList and
+    // throw away the confirmed state before the user sees the Undo button.
+    // The /history and /calendar routes fetch fresh data via force-dynamic.
+    return { dinnerId: dinner.id };
+  } catch {
+    return { error: "Failed to save. Try again." };
+  }
+}
+
 export async function pickAndRedirect(formData: FormData) {
   const { date } = parseFormData(pickAndRedirectSchema, formData);
 

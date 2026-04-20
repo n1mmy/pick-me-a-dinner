@@ -10,6 +10,7 @@ import { ExpandingAddForm } from "@/components/ExpandingAddForm";
 import { LoadingLink } from "@/components/LoadingLink";
 import Link from "next/link";
 import { SearchBar } from "@/components/SearchBar";
+import { SubNav, BROWSE_ITEMS } from "@/components/SubNav";
 
 function fmtDate(date: Date, today: Date): string {
   const d = new Date(date);
@@ -57,6 +58,7 @@ export default async function MealsPage({
 
   return (
     <div className="space-y-6">
+      <SubNav items={BROWSE_ITEMS} activeHref="/meals" />
       <div>
         <h1 className="font-display text-2xl text-fg">Homecooked meals</h1>
         <hr className="border-0 border-b-[3px] border-dashed border-pink w-1/4 mt-1" />
@@ -128,8 +130,8 @@ export default async function MealsPage({
                 ) : (
                   <DeleteButton
                     action={deleteMeal.bind(null, m.id)}
-                    confirmMessage={`Delete ${m.name}? This can't be undone.`}
                     className="text-xs text-pink/60 hover:text-pink transition-colors cursor-pointer"
+                    armedClassName="text-xs text-white bg-pink px-2 py-0.5 rounded transition-colors cursor-pointer animate-pulse"
                   >
                     Delete
                   </DeleteButton>

@@ -13,10 +13,11 @@ import { SuggestionsList } from "@/app/SuggestionsList";
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ days?: string }>;
+  searchParams: Promise<{ days?: string; tag?: string }>;
 }) {
-  const { days: daysParam } = await searchParams;
+  const { days: daysParam, tag: tagParam } = await searchParams;
   const days = Math.max(14, parseInt(daysParam ?? "14", 10));
+  const activeTag = tagParam?.trim() || null;
 
   // today is midnight UTC for the local date (TZ env var controls the timezone).
   const today = localTodayUTC();
@@ -154,8 +155,9 @@ export default async function Home({
                       await deleteDinner(dinner.id);
                       return undefined;
                     }}
-                    confirmMessage={`Delete tonight's dinner (${dinner.restaurant?.name ?? dinner.meal?.name})?`}
                     className="min-h-11 inline-flex items-center px-2 text-pink/70 hover:text-pink transition-colors cursor-pointer"
+                    armedClassName="min-h-11 inline-flex items-center px-2 text-white bg-pink rounded transition-colors cursor-pointer animate-pulse"
+                    confirmLabel="Tap to undo"
                   >
                     Delete
                   </DeleteButton>
@@ -178,6 +180,7 @@ export default async function Home({
                 restaurantCandidates={restaurantCandidates}
                 mealCandidates={mealCandidates}
                 todayStr={todayStr}
+                activeTag={activeTag}
               />
             )}
             <LoadingLink
