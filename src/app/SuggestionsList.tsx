@@ -90,24 +90,42 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                       </div>
                     )}
                   </LoadingLink>
-                  <div className="flex items-start gap-3 shrink-0 ml-4">
+                  <div className="flex items-start gap-2 shrink-0 ml-3">
                     {s.phoneNumber && (
-                      <a href={`tel:${s.phoneNumber}`} className="text-xs text-muted hover:text-pink transition-colors mt-[7px]">Call</a>
+                      <a
+                        href={`tel:${s.phoneNumber}`}
+                        aria-label={`Call ${s.name}`}
+                        className="min-h-11 inline-flex items-center px-2 text-xs text-muted hover:text-pink transition-colors"
+                      >
+                        Call
+                      </a>
                     )}
                     {s.orderUrl && (
-                      <a href={s.orderUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-teal hover:text-fg transition-colors mt-[7px]">
+                      <a
+                        href={s.orderUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Order from ${s.name} (opens in new tab)`}
+                        className="min-h-11 inline-flex items-center px-2 text-xs text-teal hover:text-fg transition-colors"
+                      >
                         Order ↗
                       </a>
                     )}
-                    <div className="flex flex-col items-center gap-1.5">
-                      <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="inline-block px-3 py-1 border border-pink text-pink rounded text-sm font-display hover:bg-pink hover:text-bg transition-colors">
+                    <div className="flex flex-col items-stretch gap-1">
+                      <LoadingLink
+                        href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
+                        aria-label={`Pick ${s.name}`}
+                        className="min-h-11 inline-flex items-center justify-center px-3 py-1 border border-pink text-pink rounded text-sm font-display hover:bg-pink hover:text-bg transition-colors"
+                      >
                         Pick →
                       </LoadingLink>
                       <button
+                        type="button"
                         onClick={() => reject(s.id)}
-                        className="text-xs text-muted/60 hover:text-pink cursor-pointer transition-colors"
+                        aria-label={`Skip ${s.name}`}
+                        className="min-h-11 px-3 py-1 text-xs text-muted hover:text-pink cursor-pointer transition-colors rounded"
                       >
-                        Nah
+                        Not tonight
                       </button>
                     </div>
                   </div>
@@ -159,16 +177,22 @@ export function SuggestionsList({ restaurantCandidates: initialRestaurants, meal
                       </div>
                     )}
                   </LoadingLink>
-                  <div className="flex items-center gap-3 shrink-0 ml-4">
-                    <div className="flex flex-col items-center gap-1.5">
-                      <LoadingLink href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`} className="inline-block px-3 py-1 border border-pink text-pink rounded text-sm font-display hover:bg-pink hover:text-bg transition-colors">
+                  <div className="flex items-center gap-2 shrink-0 ml-3">
+                    <div className="flex flex-col items-stretch gap-1">
+                      <LoadingLink
+                        href={`/add?date=${todayStr}&suggestedId=${s.id}&type=${s.type}`}
+                        aria-label={`Pick ${s.name}`}
+                        className="min-h-11 inline-flex items-center justify-center px-3 py-1 border border-pink text-pink rounded text-sm font-display hover:bg-pink hover:text-bg transition-colors"
+                      >
                         Pick →
                       </LoadingLink>
                       <button
+                        type="button"
                         onClick={() => reject(s.id)}
-                        className="text-xs text-muted/60 hover:text-pink cursor-pointer transition-colors"
+                        aria-label={`Skip ${s.name}`}
+                        className="min-h-11 px-3 py-1 text-xs text-muted hover:text-pink cursor-pointer transition-colors rounded"
                       >
-                        Nah
+                        Not tonight
                       </button>
                     </div>
                   </div>

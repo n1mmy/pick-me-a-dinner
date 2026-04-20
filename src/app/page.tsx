@@ -5,7 +5,7 @@ import { deleteDinner } from "@/app/actions/dinners";
 import type { Suggestion } from "@/app/actions/dinners";
 import { buildEntityTags, computeLastUsed, tagAwareScore, pickTop } from "@/lib/scoring";
 import { toDateStr, localTodayUTC, formatDate } from "@/lib/dates";
-import { SubmitButton } from "@/components/SubmitButton";
+import { DeleteButton } from "@/components/DeleteButton";
 import { LoadingLink } from "@/components/LoadingLink";
 import { Tags } from "@/components/Tags";
 import { SuggestionsList } from "@/app/SuggestionsList";
@@ -120,23 +120,52 @@ export default async function Home({
                   )}
                   <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-2" />
                 </div>
-                <div className="flex gap-3 items-center shrink-0 ml-4 text-sm">
+                <div className="flex gap-1 items-center shrink-0 ml-3 text-sm">
                   {dinner.restaurant?.phoneNumber && (
-                    <a href={`tel:${dinner.restaurant.phoneNumber}`} className="text-muted hover:text-pink transition-colors">Call</a>
+                    <a
+                      href={`tel:${dinner.restaurant.phoneNumber}`}
+                      aria-label={`Call ${dinner.restaurant.name}`}
+                      className="min-h-11 inline-flex items-center px-2 text-muted hover:text-pink transition-colors"
+                    >
+                      Call
+                    </a>
                   )}
                   {dinner.restaurant?.orderUrl && (
-                    <a href={dinner.restaurant.orderUrl} target="_blank" rel="noopener noreferrer" className="text-teal hover:text-fg transition-colors">Order ↗</a>
+                    <a
+                      href={dinner.restaurant.orderUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Order from ${dinner.restaurant.name} (opens in new tab)`}
+                      className="min-h-11 inline-flex items-center px-2 text-teal hover:text-fg transition-colors"
+                    >
+                      Order ↗
+                    </a>
                   )}
-                  <LoadingLink href={`/add?id=${dinner.id}`} className="text-teal hover:text-fg transition-colors">
+                  <LoadingLink
+                    href={`/add?id=${dinner.id}`}
+                    aria-label="Edit tonight's dinner"
+                    className="min-h-11 inline-flex items-center px-2 text-teal hover:text-fg transition-colors"
+                  >
                     Edit
                   </LoadingLink>
-                  <form action={async () => { "use server"; await deleteDinner(dinner.id); }}>
-                    <SubmitButton className="text-pink/60 hover:text-pink transition-colors">Delete</SubmitButton>
-                  </form>
+                  <DeleteButton
+                    action={async () => {
+                      "use server";
+                      await deleteDinner(dinner.id);
+                      return undefined;
+                    }}
+                    confirmMessage={`Delete tonight's dinner (${dinner.restaurant?.name ?? dinner.meal?.name})?`}
+                    className="min-h-11 inline-flex items-center px-2 text-pink/70 hover:text-pink transition-colors cursor-pointer"
+                  >
+                    Delete
+                  </DeleteButton>
                 </div>
               </div>
             ))}
-            <LoadingLink href={`/add?date=${todayStr}`} className="inline-block text-sm text-teal hover:text-fg transition-colors">
+            <LoadingLink
+              href={`/add?date=${todayStr}`}
+              className="min-h-11 inline-flex items-center text-sm text-teal hover:text-fg transition-colors"
+            >
               + Add another
             </LoadingLink>
           </div>
@@ -151,7 +180,10 @@ export default async function Home({
                 todayStr={todayStr}
               />
             )}
-            <LoadingLink href={`/add?date=${todayStr}`} className="self-start inline-block px-3 py-1 border border-pink text-pink rounded text-sm font-display hover:bg-pink hover:text-bg transition-colors">
+            <LoadingLink
+              href={`/add?date=${todayStr}`}
+              className="self-start min-h-11 inline-flex items-center px-3 py-1 border border-pink text-pink rounded text-sm font-display hover:bg-pink hover:text-bg transition-colors"
+            >
               Choose myself →
             </LoadingLink>
           </div>
@@ -165,42 +197,66 @@ export default async function Home({
           {pastDays.map((day) => {
             const dateStr = toDateStr(day);
             const dinners = dinnersByDate[dateStr] ?? [];
+            const isEmpty = dinners.length === 0;
             return (
-              <div key={dateStr} className="border-b border-dashed border-muted/30 py-3">
-                <div className="flex justify-between items-baseline">
-                  <p className="font-mono text-sm text-muted">{formatDate(day)}</p>
-                  <LoadingLink href={`/add?date=${dateStr}`} className="text-xs text-teal hover:text-pink transition-colors">
-                    + Add
+              <div key={dateStr} className="border-b border-dashed border-muted/30">
+                {isEmpty ? (
+                  <LoadingLink
+                    href={`/add?date=${dateStr}`}
+                    aria-label={`Add dinner for ${formatDate(day)}`}
+                    className="flex justify-between items-center py-3 group hover:bg-surface-raised -mx-2 px-2 rounded transition-colors min-h-11"
+                  >
+                    <p className="font-mono text-sm text-muted">{formatDate(day)}</p>
+                    <span className="text-xs text-muted/60 group-hover:text-teal transition-colors">
+                      + Add
+                    </span>
                   </LoadingLink>
-                </div>
-                {dinners.length === 0 ? (
-                  <p className="text-sm text-muted/40 mt-1">No dinner recorded</p>
                 ) : (
-                  dinners.map((dinner) => (
-                    <div key={dinner.id} className="flex justify-between items-start mt-1">
-                      <div>
-                        <p className="text-sm text-fg">{dinner.restaurant?.name ?? dinner.meal?.name}</p>
-                        <p className="text-xs text-muted">{dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}</p>
-                        {(dinner.restaurant?.notes ?? dinner.meal?.notes) && (
-                          <p className="text-xs text-muted mt-0.5 italic">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
-                        )}
-                        {dinner.notes && (
-                          <p className="text-xs text-fg/60 mt-0.5">{dinner.notes}</p>
-                        )}
-                        <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
-                      </div>
-                      <LoadingLink href={`/add?id=${dinner.id}`} className="text-xs text-muted hover:text-pink shrink-0 ml-4 transition-colors">
-                        Edit
+                  <div className="py-3">
+                    <div className="flex justify-between items-baseline">
+                      <p className="font-mono text-sm text-muted">{formatDate(day)}</p>
+                      <LoadingLink
+                        href={`/add?date=${dateStr}`}
+                        aria-label={`Add another dinner for ${formatDate(day)}`}
+                        className="min-h-11 inline-flex items-center px-2 text-xs text-teal hover:text-pink transition-colors"
+                      >
+                        + Add
                       </LoadingLink>
                     </div>
-                  ))
+                    {dinners.map((dinner) => (
+                      <div key={dinner.id} className="flex justify-between items-start mt-1">
+                        <div>
+                          <p className="text-sm text-fg">{dinner.restaurant?.name ?? dinner.meal?.name}</p>
+                          <p className="text-xs text-muted">{dinner.type === "RESTAURANT" ? "Restaurant" : "Homecooked"}</p>
+                          {(dinner.restaurant?.notes ?? dinner.meal?.notes) && (
+                            <p className="text-xs text-muted mt-0.5 italic">{dinner.restaurant?.notes ?? dinner.meal?.notes}</p>
+                          )}
+                          {dinner.notes && (
+                            <p className="text-xs text-fg/60 mt-0.5">{dinner.notes}</p>
+                          )}
+                          <Tags tags={dinner.restaurant?.tags ?? dinner.meal?.tags ?? []} className="mt-1" />
+                        </div>
+                        <LoadingLink
+                          href={`/add?id=${dinner.id}`}
+                          aria-label={`Edit ${dinner.restaurant?.name ?? dinner.meal?.name} on ${formatDate(day)}`}
+                          className="min-h-11 inline-flex items-center px-2 text-xs text-muted hover:text-pink shrink-0 ml-3 transition-colors"
+                        >
+                          Edit
+                        </LoadingLink>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             );
           })}
         </div>
         <div className="pt-4 text-center">
-          <LoadingLink href={`/?days=${days + 14}`} scroll={false} className="text-sm text-muted hover:text-pink transition-colors">
+          <LoadingLink
+            href={`/?days=${days + 14}`}
+            scroll={false}
+            className="min-h-11 inline-flex items-center px-4 text-sm text-muted hover:text-pink transition-colors"
+          >
             Load more
           </LoadingLink>
         </div>

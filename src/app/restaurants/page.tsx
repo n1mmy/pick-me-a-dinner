@@ -146,7 +146,11 @@ export default async function RestaurantsPage({
                     </SubmitButton>
                   </form>
                 ) : (
-                  <DeleteButton action={deleteRestaurant.bind(null, r.id)} className="text-xs text-pink/60 hover:text-pink transition-colors cursor-pointer">
+                  <DeleteButton
+                    action={deleteRestaurant.bind(null, r.id)}
+                    confirmMessage={`Delete ${r.name}? This can't be undone.`}
+                    className="text-xs text-pink/60 hover:text-pink transition-colors cursor-pointer"
+                  >
                     Delete
                   </DeleteButton>
                 )}

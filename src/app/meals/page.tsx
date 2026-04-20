@@ -126,7 +126,11 @@ export default async function MealsPage({
                     </SubmitButton>
                   </form>
                 ) : (
-                  <DeleteButton action={deleteMeal.bind(null, m.id)} className="text-xs text-pink/60 hover:text-pink transition-colors cursor-pointer">
+                  <DeleteButton
+                    action={deleteMeal.bind(null, m.id)}
+                    confirmMessage={`Delete ${m.name}? This can't be undone.`}
+                    className="text-xs text-pink/60 hover:text-pink transition-colors cursor-pointer"
+                  >
                     Delete
                   </DeleteButton>
                 )}
