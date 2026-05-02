@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.2.0] - 2026-05-01
+
+### Added
+- Mobile bottom tab bar (Tonight / History / Browse) for easy thumb-reach navigation on small screens
+- Sub-navigation tabs on mobile to switch between Restaurants/Meals/Suggestions and History/Calendar without leaving the section
+- Two prominent pick-myself buttons at the top of Tonight (one per dinner type) so you can decide without scrolling
+
+### Changed
+- Mobile-first redesign across Tonight, Suggestions, History, and list pages with larger tap targets and clearer hierarchy
+- Suggestions page reworked to be faster to scan and pick from on mobile
+- Add-dinner form polished for smoother mobile entry
+- Delete buttons restyled with clearer affordance and confirmation states
+- Layout, header, and section padding tightened for small viewports
+
+### Fixed
+- LoadingLink spinner now resets on same-page navigation instead of getting stuck
+- Accessibility improvements: better focus states, ARIA labels on nav, and smoother transitions across the app
+
 ## [0.1.1.0] - 2026-04-13
 
 ### Added
