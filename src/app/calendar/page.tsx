@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { LoadingLink } from "@/components/LoadingLink";
 import { SubNav, HISTORY_ITEMS } from "@/components/SubNav";
+import { localTodayStr } from "@/lib/dates";
 
 function formatMonthYear(year: number, month: number) {
   return new Date(Date.UTC(year, month, 1)).toLocaleDateString("en-US", {
@@ -28,9 +29,9 @@ export default async function CalendarPage({
     year = y;
     month = m - 1;
   } else {
-    const now = new Date();
-    year = now.getUTCFullYear();
-    month = now.getUTCMonth();
+    const [y, m] = localTodayStr().split("-").map(Number);
+    year = y;
+    month = m - 1;
   }
 
   const first = new Date(Date.UTC(year, month, 1));
@@ -49,7 +50,7 @@ export default async function CalendarPage({
   const daysInMonth = last.getUTCDate();
   const totalCells = Math.ceil((startDow + daysInMonth) / 7) * 7;
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = localTodayStr();
 
   const prevDate = new Date(Date.UTC(year, month - 1, 1));
   const nextDate = new Date(Date.UTC(year, month + 1, 1));

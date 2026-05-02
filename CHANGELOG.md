@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3.0] - 2026-05-01
+
+### Fixed
+- "Tonight" and date inputs now use Pacific time so the app no longer jumps a day ahead after 5pm — affected the home page's Tonight section, the Add and History date pickers, the calendar's current month and today highlight, and the Pick links on restaurants and meals
+- "Last ordered" and "Last cooked" dates on the restaurants and meals pages now display the correct day instead of rolling back to the previous day in Pacific time
+
 ## [0.1.2.0] - 2026-05-01
 
 ### Added

@@ -19,7 +19,6 @@ export default async function Home({
   const days = Math.max(14, parseInt(daysParam ?? "14", 10));
   const activeTag = tagParam?.trim() || null;
 
-  // today is midnight UTC for the local date (TZ env var controls the timezone).
   const today = localTodayUTC();
   const todayStr = toDateStr(today);
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { toDateStr, localTodayStr, localTodayUTC, formatDate } from "@/lib/dates";
+import { toDateStr, localTodayStr, localTodayUTC, formatDate, formatShortDate } from "@/lib/dates";
 
 describe("toDateStr", () => {
   it("extracts the UTC date from a midnight-UTC DB date", () => {
@@ -42,6 +42,12 @@ describe("localTodayStr", () => {
     const now = new Date("2026-03-27T14:00:00.000Z");
     expect(localTodayStr(now, "America/Los_Angeles")).toBe("2026-03-27");
   });
+
+  it("defaults to America/Los_Angeles when no timezone is given", () => {
+    // 6am UTC on Mar 27 = 11pm Mar 26 in PT
+    const now = new Date("2026-03-27T06:00:00.000Z");
+    expect(localTodayStr(now)).toBe("2026-03-26");
+  });
 });
 
 describe("localTodayUTC", () => {
@@ -72,5 +78,26 @@ describe("formatDate", () => {
     // Even in a UTC-5 environment, Mar 27 midnight UTC should display as Mar 27
     const d = new Date("2026-03-27T00:00:00.000Z");
     expect(formatDate(d)).toContain("Mar 27");
+  });
+});
+
+describe("formatShortDate", () => {
+  it("omits the year when the dinner is in the current PT year", () => {
+    const dinner = new Date("2026-03-27T00:00:00.000Z");
+    const now = new Date("2026-05-01T12:00:00.000Z");
+    expect(formatShortDate(dinner, now)).toBe("Mar 27");
+  });
+
+  it("includes the year when the dinner is in a different year", () => {
+    const dinner = new Date("2025-12-31T00:00:00.000Z");
+    const now = new Date("2026-05-01T12:00:00.000Z");
+    expect(formatShortDate(dinner, now)).toBe("Dec 31, 2025");
+  });
+
+  it("reads the dinner date in UTC, so a midnight-UTC date does not roll back a day", () => {
+    // Without timeZone: "UTC", in UTC- locales this would render as Mar 26
+    const dinner = new Date("2026-03-27T00:00:00.000Z");
+    const now = new Date("2026-03-28T12:00:00.000Z");
+    expect(formatShortDate(dinner, now)).toBe("Mar 27");
   });
 });
