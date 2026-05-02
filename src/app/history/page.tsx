@@ -6,6 +6,7 @@ import { SubmitButton } from "@/components/SubmitButton";
 import { LoadingLink } from "@/components/LoadingLink";
 import { Tags } from "@/components/Tags";
 import { SearchBar } from "@/components/SearchBar";
+import { SubNav, HISTORY_ITEMS } from "@/components/SubNav";
 import { Prisma } from "@/generated/prisma/client";
 
 const PAGE_SIZE = 30;
@@ -62,6 +63,7 @@ export default async function HistoryPage({
 
   return (
     <div className="space-y-5">
+      <SubNav items={HISTORY_ITEMS} activeHref="/history" />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-2xl text-fg">Dinner history</h1>

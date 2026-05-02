@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/db";
 import { buildEntityTags, computeLastUsed, tagAwareScore } from "@/lib/scoring";
 import { SuggestionsContent } from "./SuggestionsContent";
+import { SubNav, BROWSE_ITEMS } from "@/components/SubNav";
 
 export default async function SuggestionsPage() {
   const todayStr = new Date().toISOString().split("T")[0];
@@ -56,6 +57,7 @@ export default async function SuggestionsPage() {
 
   return (
     <div className="space-y-6">
+      <SubNav items={BROWSE_ITEMS} activeHref="/suggestions" />
       <div>
         <h1 className="font-display text-2xl text-fg">Suggestions</h1>
         <hr className="border-0 border-b-[3px] border-dashed border-pink w-1/4 mt-1" />

@@ -43,18 +43,33 @@ export function AddDinnerForm({
       </div>
 
       <form action={dinnerId ? updateDinner : createDinner} className="space-y-4">
-        {dinnerId
-          ? <input type="hidden" name="id" value={dinnerId} />
-          : <input type="date" name="date" defaultValue={date} required className={inputCls} />
-        }
+        {dinnerId ? (
+          <input type="hidden" name="id" value={dinnerId} />
+        ) : (
+          <div>
+            <label htmlFor="dinner-date" className="block text-xs text-muted mb-1 uppercase tracking-wider">
+              Date
+            </label>
+            <input
+              id="dinner-date"
+              type="date"
+              name="date"
+              defaultValue={date}
+              required
+              className={inputCls}
+            />
+          </div>
+        )}
         <input type="hidden" name="type" value={type} />
 
         {/* Type toggle */}
-        <div className="flex rounded overflow-hidden w-fit border border-muted/30">
+        <div role="radiogroup" aria-label="Dinner type" className="flex rounded overflow-hidden w-fit border border-muted/30">
           <button
             type="button"
+            role="radio"
+            aria-checked={type === "RESTAURANT"}
             onClick={() => setType("RESTAURANT")}
-            className={`px-4 py-2 text-sm font-display transition-colors ${
+            className={`min-h-11 px-4 py-2 text-sm font-display transition-colors ${
               type === "RESTAURANT"
                 ? "bg-pink text-white"
                 : "bg-surface text-muted hover:text-fg"
@@ -64,8 +79,10 @@ export function AddDinnerForm({
           </button>
           <button
             type="button"
+            role="radio"
+            aria-checked={type === "HOMECOOKED"}
             onClick={() => setType("HOMECOOKED")}
-            className={`px-4 py-2 text-sm font-display border-l border-muted/30 transition-colors ${
+            className={`min-h-11 px-4 py-2 text-sm font-display border-l border-muted/30 transition-colors ${
               type === "HOMECOOKED"
                 ? "bg-pink text-white"
                 : "bg-surface text-muted hover:text-fg"
@@ -82,10 +99,11 @@ export function AddDinnerForm({
           </p>
         ) : (
           <div>
-            <label className="block text-xs text-muted mb-1 uppercase tracking-wider">
+            <label htmlFor="dinner-choice" className="block text-xs text-muted mb-1 uppercase tracking-wider">
               {type === "RESTAURANT" ? "Restaurant" : "Meal"}
             </label>
             <select
+              id="dinner-choice"
               key={type}
               name={type === "RESTAURANT" ? "restaurantId" : "mealId"}
               defaultValue={defaultId}
@@ -102,8 +120,11 @@ export function AddDinnerForm({
 
         {/* Notes */}
         <div>
-          <label className="block text-xs text-muted mb-1 uppercase tracking-wider">Notes</label>
+          <label htmlFor="dinner-notes" className="block text-xs text-muted mb-1 uppercase tracking-wider">
+            Notes
+          </label>
           <textarea
+            id="dinner-notes"
             name="notes"
             rows={2}
             defaultValue={existingNotes ?? ""}
@@ -114,7 +135,7 @@ export function AddDinnerForm({
 
         <SubmitButton
           disabled={options.length === 0}
-          className="px-5 py-2 bg-teal text-white rounded text-sm font-display hover:opacity-80 transition-opacity disabled:opacity-40 cursor-pointer"
+          className="min-h-11 px-5 py-2 bg-teal text-white rounded text-sm font-display hover:opacity-80 transition-opacity disabled:opacity-40 cursor-pointer"
         >
           Save dinner
         </SubmitButton>
@@ -122,29 +143,51 @@ export function AddDinnerForm({
 
       {/* Inline create */}
       <details className="border-t border-dashed border-muted/30 pt-4">
-        <summary className="cursor-pointer text-sm text-teal hover:text-pink transition-colors">
+        <summary className="cursor-pointer text-sm text-teal hover:text-pink transition-colors min-h-11 inline-flex items-center">
           + Add new {type === "RESTAURANT" ? "restaurant" : "meal"}
         </summary>
         <form
           action={type === "RESTAURANT" ? createRestaurantAndReturn : createMealAndReturn}
-          className="mt-3 space-y-2"
+          className="mt-3 space-y-3"
         >
           <input type="hidden" name="returnDate" value={date} />
           {dinnerId && <input type="hidden" name="returnDinnerId" value={dinnerId} />}
-          <input
-            name="name"
-            required
-            placeholder={`${type === "RESTAURANT" ? "Restaurant" : "Meal"} name *`}
-            className={inputCls}
-          />
+          <div>
+            <label htmlFor="new-name" className="block text-xs text-muted mb-1 uppercase tracking-wider">
+              {type === "RESTAURANT" ? "Restaurant name" : "Meal name"}
+              <span aria-hidden="true"> *</span>
+            </label>
+            <input
+              id="new-name"
+              name="name"
+              required
+              aria-required="true"
+              className={inputCls}
+            />
+          </div>
           {type === "RESTAURANT" && (
             <>
-              <input name="phoneNumber" placeholder="Phone number" className={inputCls} />
-              <input name="orderUrl" placeholder="Order URL" className={inputCls} />
-              <input name="menuUrl" placeholder="Menu URL" className={inputCls} />
+              <div>
+                <label htmlFor="new-phone" className="block text-xs text-muted mb-1 uppercase tracking-wider">
+                  Phone number
+                </label>
+                <input id="new-phone" type="tel" name="phoneNumber" className={inputCls} />
+              </div>
+              <div>
+                <label htmlFor="new-order-url" className="block text-xs text-muted mb-1 uppercase tracking-wider">
+                  Order URL
+                </label>
+                <input id="new-order-url" type="url" name="orderUrl" className={inputCls} />
+              </div>
+              <div>
+                <label htmlFor="new-menu-url" className="block text-xs text-muted mb-1 uppercase tracking-wider">
+                  Menu URL
+                </label>
+                <input id="new-menu-url" type="url" name="menuUrl" className={inputCls} />
+              </div>
             </>
           )}
-          <SubmitButton className="px-4 py-2 bg-surface text-fg rounded text-sm hover:opacity-80 transition-opacity cursor-pointer border border-muted/30">
+          <SubmitButton className="min-h-11 px-4 py-2 bg-surface text-fg rounded text-sm hover:opacity-80 transition-opacity cursor-pointer border border-muted/30">
             Add
           </SubmitButton>
         </form>
