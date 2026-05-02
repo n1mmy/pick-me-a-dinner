@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { AddDinnerForm } from "./AddDinnerForm";
+import { localTodayStr } from "@/lib/dates";
 
 const dinnerType = z.enum(["RESTAURANT", "HOMECOOKED"]);
 
@@ -13,7 +14,7 @@ export default async function AddPage({
 }) {
   const { id, date, type, suggestedId } = await searchParams;
 
-  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStr = localTodayStr();
 
   const [restaurants, meals] = await Promise.all([
     prisma.restaurant.findMany({ where: { hidden: false }, orderBy: { name: "asc" } }),

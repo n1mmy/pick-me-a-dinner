@@ -4,9 +4,10 @@ import { prisma } from "@/lib/db";
 import { buildEntityTags, computeLastUsed, tagAwareScore } from "@/lib/scoring";
 import { SuggestionsContent } from "./SuggestionsContent";
 import { SubNav, BROWSE_ITEMS } from "@/components/SubNav";
+import { localTodayStr } from "@/lib/dates";
 
 export default async function SuggestionsPage() {
-  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStr = localTodayStr();
 
   const scoringCutoff = new Date();
   scoringCutoff.setUTCDate(scoringCutoff.getUTCDate() - 90);

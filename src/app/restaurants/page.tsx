@@ -11,12 +11,7 @@ import { LoadingLink } from "@/components/LoadingLink";
 import Link from "next/link";
 import { SearchBar } from "@/components/SearchBar";
 import { SubNav, BROWSE_ITEMS } from "@/components/SubNav";
-
-function fmtDate(date: Date, today: Date): string {
-  const d = new Date(date);
-  const sameYear = d.getFullYear() === today.getFullYear();
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", ...(!sameYear && { year: "numeric" }) });
-}
+import { localTodayStr, formatShortDate } from "@/lib/dates";
 
 const inputCls = "w-full border border-muted/40 rounded px-3 py-2 text-sm bg-surface text-fg placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-teal";
 const halfInputCls = "border border-muted/40 rounded px-3 py-2 text-sm bg-surface text-fg placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-teal";
@@ -29,7 +24,7 @@ export default async function RestaurantsPage({
   const { showHidden, q } = await searchParams;
   const showingHidden = showHidden === "1";
   const search = q?.trim() ?? "";
-  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStr = localTodayStr();
 
   const tagMatchIds = search
     ? (await prisma.$queryRaw<{ id: string }[]>`SELECT id FROM "Restaurant" WHERE array_to_string(tags, ',') ILIKE ${`%${search}%`}`).map((r) => r.id)
@@ -38,7 +33,7 @@ export default async function RestaurantsPage({
     ? { OR: [{ name: { contains: search, mode: "insensitive" as const } }, { id: { in: tagMatchIds } }] }
     : {};
 
-  const today = new Date();
+  const now = new Date();
   const [restaurants, hiddenRestaurants] = await Promise.all([
     prisma.restaurant.findMany({
       where: { hidden: false, ...searchFilter },
@@ -107,7 +102,7 @@ export default async function RestaurantsPage({
                   </div>
                   <Tags tags={r.tags} className="mt-0.5" />
                   {r.notes && <p className="text-xs text-muted mt-0.5 truncate italic">{r.notes}</p>}
-                  {last?.date && <p className="text-xs text-muted/60 mt-0.5 font-mono">Last ordered {fmtDate(last.date, today)}</p>}
+                  {last?.date && <p className="text-xs text-muted/60 mt-0.5 font-mono">Last ordered {formatShortDate(last.date, now)}</p>}
                   {last?.notes && <p className="text-xs text-muted/70 mt-0.5 truncate italic">&ldquo;{last.notes}&rdquo;</p>}
                 </div>
                 <div className="flex items-center gap-3 shrink-0 text-xs">

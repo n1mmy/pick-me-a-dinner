@@ -8,6 +8,7 @@ import { Tags } from "@/components/Tags";
 import { SearchBar } from "@/components/SearchBar";
 import { SubNav, HISTORY_ITEMS } from "@/components/SubNav";
 import { Prisma } from "@/generated/prisma/client";
+import { localTodayStr } from "@/lib/dates";
 
 const PAGE_SIZE = 30;
 
@@ -29,7 +30,7 @@ export default async function HistoryPage({
   const { page: pageParam, q } = await searchParams;
   const search = q?.trim() ?? "";
   const page = search ? 1 : Math.max(1, parseInt(pageParam ?? "1", 10));
-  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStr = localTodayStr();
   const skip = (page - 1) * PAGE_SIZE;
 
   let where: Prisma.DinnerWhereInput = {};
@@ -73,7 +74,7 @@ export default async function HistoryPage({
           <input
             type="date"
             name="date"
-            defaultValue={new Date().toISOString().split("T")[0]}
+            defaultValue={todayStr}
             className="border border-muted/40 rounded px-3 py-1.5 text-sm bg-surface text-fg focus:outline-none focus:ring-1 focus:ring-teal"
           />
           <button type="submit" className="px-3 py-1.5 bg-teal text-white rounded text-sm font-display hover:opacity-80 transition-opacity cursor-pointer">
