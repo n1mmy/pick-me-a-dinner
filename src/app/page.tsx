@@ -156,7 +156,6 @@ export default async function Home({
                     }}
                     className="min-h-11 inline-flex items-center px-2 text-pink/70 hover:text-pink transition-colors cursor-pointer"
                     armedClassName="min-h-11 inline-flex items-center px-2 text-white bg-pink rounded transition-colors cursor-pointer animate-pulse"
-                    confirmLabel="Tap to undo"
                   >
                     Delete
                   </DeleteButton>

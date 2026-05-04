@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3.1] - 2026-05-04
+
+### Fixed
+- Deleting tonight's dinner from the home page now actually deletes on the second tap — the confirm button now reads "Tap to confirm" instead of the misleading "Tap to undo" that made people think the delete had already happened
+
 ## [0.1.3.0] - 2026-05-01
 
 ### Fixed
